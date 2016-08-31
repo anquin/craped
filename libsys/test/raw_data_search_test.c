@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "raw_data.h"
-#include "raw_data_private.h"
+#include <libsys/raw_data.h>
+#include "../src/raw_data_private.h"
 
 #include <stdio.h>
 #include <stdlib.h>

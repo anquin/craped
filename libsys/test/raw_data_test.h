@@ -24,7 +24,7 @@
 
 #ifdef TEST_RAW_DATA
 
-#include "raw_data.h"
+#include <libsys/raw_data.h>
 
 #define TestRawData RawData
 #define initTestRawData(b) rawDataInit(b, 50)
@@ -37,7 +37,7 @@
 #endif
 #ifdef TEST_PAGED_RAW_DATA
 
-#include "paged_raw_data.h"
+#include <libsys/paged_raw_data.h>
 
 #define TestRawData PagedRawData
 #define initTestRawData pagedRawDataInit

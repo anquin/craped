@@ -20,7 +20,7 @@
 #ifndef PRINT_PAGE_TABEL_H
 #define PRINT_PAGE_TABLE_H
 
-#include "paging.h"
+#include <libsys/paging.h>
 
 #include <stdio.h>
 

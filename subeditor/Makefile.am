@@ -37,7 +37,7 @@ libsubeditor_la_CFLAGS = \
 
 
 # TESTS
-check_PROGRAMS = bufcmd datatest rawdatasearchtest rawdatatest pagedrawdatatest
+check_PROGRAMS = bufcmd
 TESTS = $(check_PROGRAMS)
 AM_COLOR_TESTS=always
 AM_TESTS_FD_REDIRECT = 9>&2
@@ -48,26 +48,5 @@ SUBEDITOR_LIBSDEPS = $(builddir)/../libsys/libsys.la
 bufcmd_SOURCES = test/bufcmd.c \
 	$(libsubeditor_la_SOURCES)
 
-datatest_SOURCES = test/datatest.c \
-	src/print_page_table.c \
-	$(libsubeditor_la_SOURCES)
-
-rawdatasearchtest_SOURCES = test/raw_data_search_test.c \
-	$(libsubeditor_la_SOURCES)
-
-rawdatatest_SOURCES = test/raw_data_test_main.c \
-	$(libsubeditor_la_SOURCES)
-
-pagedrawdatatest_SOURCES = test/raw_data_test_main.c \
-	$(libsubeditor_la_SOURCES)
-
-datatest_CFLAGS = $(SUBEDITOR_BASE_CFLAGS)
-datatest_LDADD = $(SUBEDITOR_LIBSDEPS)
 bufcmd_CFLAGS = $(SUBEDITOR_BASE_CFLAGS)
 bufcmd_LDADD = $(SUBEDITOR_LIBSDEPS)
-rawdatasearchtest_CFLAGS = $(SUBEDITOR_BASE_CFLAGS)
-rawdatasearchtest_LDADD = $(SUBEDITOR_LIBSDEPS)
-rawdatatest_CFLAGS = -DTEST_RAW_DATA $(SUBEDITOR_BASE_CFLAGS)
-rawdatatest_LDADD = $(SUBEDITOR_LIBSDEPS)
-pagedrawdatatest_CFLAGS = -DTEST_PAGED_RAW_DATA $(SUBEDITOR_BASE_CFLAGS)
-pagedrawdatatest_LDADD = $(SUBEDITOR_LIBSDEPS)

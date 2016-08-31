@@ -23,9 +23,9 @@
 #include <time.h>
 
 #include <libsys/def.h>
-#include <raw_data.h>
-#include <paged_raw_data.h>
-#include <print_page_table.h>
+#include <libsys/raw_data.h>
+#include <libsys/paged_raw_data.h>
+#include <dbg/print_page_table.h>
 
 void observerUpdate(struct world_observer *wo, struct world *w) {}
 
