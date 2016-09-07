@@ -35,7 +35,7 @@ void framer(Window *window, Terminal *term, World *world)
   moveBufferPointFn = modeGetBufferPointFn(mode);
   moveLineBufferPointFn = modeGetBufferPointLineFn(mode);
   termHeight = terminalGetHeight(term);
-  wndHeight = termHeight - ((windowHasStatusLine(window)) ? 0 : 1);
+  wndHeight = termHeight - ((windowHasStatusLine(window)) ? 1 : 0);
 
   worldAddMark(world, "saved");
 
