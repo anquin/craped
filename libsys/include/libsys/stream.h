@@ -21,23 +21,29 @@
 #define LIBSYS_STREAM_H
 
 #include "fileio.h"
+#include "paged_raw_data.h"
 
 struct stream
 {
+  FileIO *file;
+
   /* The buffer used by the stream. Equals to
      selfData in case the stream owns it. */
   PagedRawData *data;
 
-  /* Used if the stream owns the buffer it is using, NULL otherwise */
-  PagedRawData *selfData;
-
   /* The low level io channel */
-  LLFile llfile;
+  LLFile *llfile;
 
   Position loc;
+
+  /* Non-zero if the stream owns the buffer it is using */
+  short ownsData;
 };
 
-FileIO *
+Stream *
+fileOpen_stream(char *filepath, FileOpenMode mode, FileError *error);
+
+Stream *
 openStreamWithExistingBuffer(char *filepath, FileOpenMode mode,
                              PagedRawData *data, FileError *error);
 

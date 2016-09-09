@@ -25,7 +25,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-FileIO *fileOpen_ll(char *filepath, FileOpenMode mode, FileError *error)
+LLFile *fileOpen_ll(char *filepath, FileOpenMode mode, FileError *error)
 {
   FileIO *fileio;
   int opnflags;
@@ -35,6 +35,8 @@ FileIO *fileOpen_ll(char *filepath, FileOpenMode mode, FileError *error)
   fileio = (FileIO *)malloc(sizeof(FileIO));
   llfile = (LLFile *)malloc(sizeof(LLFile));
   fileio->impl.llfile = llfile;
+  llfile->file = fileio;
+  fileio->type = 0;
 
   opnmode = 0;
   opnflags = 0;
@@ -65,7 +67,7 @@ FileIO *fileOpen_ll(char *filepath, FileOpenMode mode, FileError *error)
   else {
     *error = FILE_ERROR_NO_ERROR;
   }
-  return fileio;
+  return llfile;
 }
 
 FileError fileClose_ll(FileIO *fileio)

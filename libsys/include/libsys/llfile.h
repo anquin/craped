@@ -29,6 +29,6 @@ struct ll_file
   Position pos;
 };
 
-FileIO *fileOpen_ll(char *filepath, FileOpenMode mode, FileError *error);
+LLFile *fileOpen_ll(char *filepath, FileOpenMode mode, FileError *error);
 
 #endif

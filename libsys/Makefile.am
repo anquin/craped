@@ -7,8 +7,10 @@ libsys_la_SOURCES = \
 	src/raw_data.c \
 	src/paged_raw_data.c \
 	src/search-rawdata.c \
-	src/search-paged-rawdata.c
- # src/llfile.c
+	src/search-paged-rawdata.c \
+	src/fileio.c \
+	src/stream.c \
+  src/llfile.c
 
  # include_HEADERS =	
  # pkginclude_HEADERS =
@@ -22,9 +24,10 @@ noinst_HEADERS = \
 	include/libsys/raw_data.h \
 	include/libsys/paged_raw_data.h \
 	include/libsys/paging.h \
+  include/libsys/fileio.h \
+	include/libsys/llfile.h \
+	include/libsys/stream.h \
 	$(NULL)
- # include/libsys/fileio.h
- # include/libsys/llfile.h
 
 noinst_LTLIBRARIES = libsys.la
 
@@ -48,10 +51,9 @@ hashtabletest_SOURCES = test/hashtabletest.c
 hashtabletest_CFLAGS = -I$(srcdir)/include
 hashtabletest_LDADD = libsys.la
 
-# llfileopentest_SOURCES = test/llfileopentest.c
-# llfileopentest_CFLAGS = -I$(srcdir)/include
-# llfileopentest_LDADD = libsys.la
-# TODO: include llfileopentest
+llfileopentest_SOURCES = test/llfileopentest.c
+llfileopentest_CFLAGS = -I$(srcdir)/include
+llfileopentest_LDADD = libsys.la
 
 datatest_SOURCES = test/datatest.c \
 	src/print_page_table.c
@@ -70,7 +72,8 @@ pagedrawdatatest_SOURCES = test/raw_data_test_main.c
 pagedrawdatatest_CFLAGS  = -I$(srcdir)/include -DTEST_PAGED_RAW_DATA
 pagedrawdatatest_LDADD = libsys.la
 
-check_PROGRAMS = hashtabletest datatest rawdatasearchtest rawdatatest pagedrawdatatest
+# TODO: include llfileopentest
+check_PROGRAMS = hashtabletest datatest rawdatasearchtest rawdatatest pagedrawdatatest llfileopentest
 TESTS = $(check_PROGRAMS)
 AM_COLOR_TESTS=always
 AM_TESTS_FD_REDIRECT = 9>&2

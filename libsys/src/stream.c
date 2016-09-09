@@ -17,24 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "stream.h"
+#include <libsys/stream.h>
+#include <libsys/llfile.h>
+#include <libsys/dbglog.h>
 #include "page_factory.h"
 
 #include <stdlib.h>
 
-void readToBuffer_(Position *where, PagedRawData *buf)
+void readToBuffer_(Stream *stream, Position *where)
 {
   /* TODO: there must be a better to do this. */
+  Byte *buf;
   Size nbytes;
+  buf = (Byte *)malloc(sizeof(Byte) * maxPageSize);
   do {
-    nbytes = fileRead_ll(FILEOBJ(STREAM)->llfile, buffer, maxPageSize);
-    pagedRawDataInsert(STREAM(fileio)->data, *where, buffer, nbytes);
+    nbytes = fileRead_ll(FILEIO(stream->llfile), buf, maxPageSize);
+    pagedRawDataInsert(stream->data, *where, buf, nbytes);
     (*where) += nbytes;
   } while (nbytes);
 }
 
-FileIO *openStream_(char *filepath, FileOpenMode mode, PagedRawData *data,
-                    PagedRawData *selfData, FileError *error)
+Stream *openStream_(char *filepath, FileOpenMode mode, PagedRawData *data,
+                    short ownsData, FileError *error)
 {
   FileIO *fileio;
   Stream *stream;
@@ -44,50 +48,53 @@ FileIO *openStream_(char *filepath, FileOpenMode mode, PagedRawData *data,
   fileio = (FileIO *)malloc(sizeof(FileIO));
   stream = (Stream *)malloc(sizeof(Stream));
   fileio->impl.stream = stream;
+  stream->file = fileio;
+  fileio->type = 1;
 
-  STREAM(fileio->selfData) = selfData;
-  STREAM(fileio->data) = data;
+  STREAM(fileio)->ownsData = ownsData;
+  STREAM(fileio)->data = data;
 
   buffer = (Byte *)malloc(sizeof(maxPageSize));
 
-  STREAM(fileio)->llfile = fileOpen_ll(filename, mode, error);
-  if (error != FILE_ERROR_NO_ERROR) {
+  STREAM(fileio)->llfile = fileOpen_ll(filepath, mode, error);
+  if (*error != FILE_ERROR_NO_ERROR) {
     free(stream);free(fileio);
-    fileio = stream = NULL;
+    fileio = NULL;
+    stream = NULL;
   }
   else {
     where = 0;
-    readToBuffer_(&where, STREAM(fileio)->data);
+    readToBuffer_(STREAM(fileio), &where);
   }
-  return fileio;
+  return stream;
 }
 
 Stream *
 openStreamWithExistingBuffer(char *filepath, FileOpenMode mode,
                              PagedRawData *data, FileError *error)
 {
-  return openStream_(filePath, mode, data, data, error);
+  return openStream_(filepath, mode, data, 0, error);
 }
 
-FileIO *
-fileOpen_stream(FileIO *fileio, char *filepath,
-                FileOpenMode mode, FileError *error)
+Stream *
+fileOpen_stream(char *filepath, FileOpenMode mode, FileError *error)
 {
-  return openStream_(filePath, mode, data, NULL, error);
+  PagedRawData *data = createPagedRawData();
+  return openStream_(filepath, mode, data, 1, error);
 }
 
 FileError fileClose_stream(FileIO *fileio)
 {
   FileError error;
-  error = fileClose_ll(FILEOBJ(STREAM(fileio)->llfile));
-  if (STREAM(fileio)->selfData != NULL) {
-    pagedRawDataDestroy(STREAM(fileio)->selfData);
+  error = fileClose_ll(FILEIO(STREAM(fileio)->llfile));
+  if ((STREAM(fileio)->ownsData) && (STREAM(fileio)->data != NULL)) {
+    pagedRawDataDestroy(STREAM(fileio)->data);
   }
   return error;
 }
 
 
-void fileSeek_stream(FileIO *fileio, Position loc, FileIOWhence whence)
+void fileSeek_stream(FileIO *fileio, int loc, FileIOWhence whence)
 {
   switch (whence) {
   case FILE_IO_WHENCE_BEG:
@@ -97,7 +104,7 @@ void fileSeek_stream(FileIO *fileio, Position loc, FileIOWhence whence)
     STREAM(fileio)->loc = STREAM(fileio)->loc + loc;
     break;
   case FILE_IO_WHENCE_END:
-    STREAM(fileio)->loc = rawDataSize(selfData) - loc;
+    STREAM(fileio)->loc = rawDataSize(STREAM(fileio)->data) - loc;
     break;
   }
 }
@@ -109,13 +116,8 @@ Position fileTell_stream(FileIO *fileio)
 
 Size fileRead_stream(FileIO *fileio, Byte *content, Size sz)
 {
-  Size nbytes =
+  return
     pagedRawDataRead(STREAM(fileio)->data, STREAM(fileio)->loc, content, sz);
-  if (!nbytes) {
-    /* The source may have new data. */
-    readToBuffer_(&(STREAM(fileio)->loc), STREAM(fileio)->data);
-  }
-  return nbytes;
 }
 
 Size fileWrite_stream(FileIO *fileio, Byte *content, Size sz)
@@ -127,5 +129,5 @@ Size fileWrite_stream(FileIO *fileio, Byte *content, Size sz)
 void fileCommit_stream(FileIO *fileio)
 {
   /* TODO */
-  DBGLOG("fileCommit_stream() not implemented yet.\n");
+  DBGLOG("fileCommit_stream() not implemented yet.\n", 0);
 }

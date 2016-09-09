@@ -87,17 +87,13 @@ typedef struct file_io
 #define STREAM(o) (o->impl.stream)
 #define RAMFILE(o) (o->impl.ramfile)
 
+#ifndef FILE_DEFUN  /* Not been defined in fileio.c */
 #define FILE_DEFUN(ret_type, func_id, argdecl, arglst) \
   ret_type func_id ## _ll argdecl;                     \
   ret_type func_id ## _stream argdecl;                 \
   ret_type func_id ## _ramFile argdecl;                \
-  ret_type func_id argdecl {                           \
-    static ret_type (*funcs[]) argdecl =               \
-    {                                                  \
-      func_id ## _ll,                                  \
-    };                                                 \
-    return funcs[fileio->type] arglst;                 \
-  }
+  ret_type func_id argdecl;
+#endif
 
 /* Returns zero if 0k */
 FILE_DEFUN(FileError, fileClose, (FileIO *fileio), (fileio));
