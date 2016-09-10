@@ -374,3 +374,8 @@ void editorCmdFnBindKeyCombo(Editor *editor, EditorCmd *editorCmd)
     editorPromptForInput(editor, "prompt_to_bind", "Bind what...?");
   }
 }
+
+void editorCmdFnCancel(Editor *editor, EditorCmd *editorCmd)
+{
+  editorCancel(editor);
+}

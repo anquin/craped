@@ -83,6 +83,7 @@ void editorCmdFnPromptToOpenFile(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnToggleShareBuffer(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnPromptToBindKeyCombo(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnBindKeyCombo(Editor *editor, EditorCmd *editorCmd);
+void editorCmdFnCancel(Editor *editor, EditorCmd *editorCmd);
 /* ----------------- */
 
 #endif

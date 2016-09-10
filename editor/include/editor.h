@@ -78,5 +78,6 @@ void editorShareBuffer(Editor *editor, int share);
 int editorIsBufferShared(Editor *editor);
 void editorBindKeyCombo(Editor *editor, char *keyCombo, char *cmdStr);
 void editorShowMessage(Editor *, char *);
+void editorCancel(Editor *editor);
 
 #endif

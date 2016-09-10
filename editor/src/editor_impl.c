@@ -103,6 +103,7 @@ void editorCreateDefaultCommands_(Editor *editor)
   editorCmdHomeRegister(editor->editorCmdHome, "bind", editorCmdFnBindKeyCombo);
   editorCmdHomeRegister(editor->editorCmdHome,
                         "prompt_to_bind", editorCmdFnPromptToBindKeyCombo);
+  editorCmdHomeRegister(editor->editorCmdHome, "cancel", editorCmdFnCancel);
 }
 
 void editorBindKeyCombo(Editor *editor, char *keyCombo, char *cmdStr)
@@ -184,6 +185,7 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "C-l C-k", "insert Ut Queant laxis\nresonare fibris,\nMira gestorum\nfamuli tuorum,\nSolve polluti\nlabii reatum,\nSancte Iohannes\n");
   editorBindKeyCombo(editor, "M-b", "bind");
   /* editorBindKeyCombo(editor, "C-l l", "insert int main(int argc, char *argv[])\n{\n\n  return 0;\n}\n"); */
+  editorBindKeyCombo(editor, "C-g", "cancel");
 }
 
 void initEditor(Editor *editor, UI *ui, char *startupMessage)
@@ -548,13 +550,17 @@ char *editorRecoverFromPromptedInput(Editor *editor)
   char *input;
   Size sz;
   EditorCmd *editorCmd;
+  char *prevBuffer;
 
+  prevBuffer = worldGetBufferName(editor->world);
+  worldSetCurrentBuffer(editor->world, "*prompt*", 1);
   sz = worldBufferSize(editor->world);
   input = (char *)malloc(sizeof(char) * (sz + 1));
   worldSetPoint(editor->world, 0);
   worldGetChunk(editor->world, input, sz);
   worldDelete(editor->world, sz);
   input[sz] = '\0';
+  worldSetCurrentBuffer(editor->world, prevBuffer, 0);
   uiActivateMiniWindow(editor->ui, 1);
   uiSetWindowBuffer(editor->ui, "*messages*");
   uiActivateMiniWindow(editor->ui, 0);
@@ -751,4 +757,9 @@ void editorShareBuffer(Editor *editor, int share)
 int editorIsBufferShared(Editor *editor)
 {
   return worldGetBufferFlags(editor->world) & BUFFER_FLAG_SHARED;
+}
+
+void editorCancel(Editor *editor)
+{
+  editorRecoverFromPromptedInput(editor);
 }
