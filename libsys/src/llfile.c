@@ -32,6 +32,11 @@ LLFile *fileOpen_ll(char *filepath, FileOpenMode mode, FileError *error)
   int opnmode;
   LLFile *llfile;
 
+  *error = validateFileOpenMode(&mode);
+  if (*error != FILE_ERROR_NO_ERROR) {
+    return NULL;
+  }
+
   fileio = (FileIO *)malloc(sizeof(FileIO));
   llfile = (LLFile *)malloc(sizeof(LLFile));
   fileio->impl.llfile = llfile;
@@ -119,7 +124,7 @@ Size fileWrite_ll(FileIO *fileio, Byte *content, Size sz)
 }
 
 
-void fileCommit_ll(FileIO *fileio)
+FileError fileCommit_ll(FileIO *fileio)
 {
   /* Does nothing */
 }

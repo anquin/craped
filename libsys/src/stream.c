@@ -57,12 +57,13 @@ Stream *openStream_(char *filepath, FileOpenMode mode, PagedRawData *data,
   buffer = (Byte *)malloc(sizeof(maxPageSize));
 
   STREAM(fileio)->llfile = fileOpen_ll(filepath, mode, error);
+  validateFileOpenMode(&mode);
   if (*error != FILE_ERROR_NO_ERROR) {
     free(stream);free(fileio);
     fileio = NULL;
     stream = NULL;
   }
-  else {
+  else if (!(mode & FILE_OPEN_MODE_TRUNC)) {
     where = 0;
     readToBuffer_(STREAM(fileio), &where);
   }
@@ -126,8 +127,9 @@ Size fileWrite_stream(FileIO *fileio, Byte *content, Size sz)
     pagedRawDataInsert(STREAM(fileio)->data, STREAM(fileio)->loc, content, sz);
 }
 
-void fileCommit_stream(FileIO *fileio)
+FileError fileCommit_stream(FileIO *fileio)
 {
   /* TODO */
   DBGLOG("fileCommit_stream() not implemented yet.\n", 0);
+  return FILE_ERROR_OPERATION_NOT_IMPLEMENTED;
 }

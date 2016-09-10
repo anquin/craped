@@ -10,7 +10,8 @@ libsys_la_SOURCES = \
 	src/search-paged-rawdata.c \
 	src/fileio.c \
 	src/stream.c \
-  src/llfile.c
+  src/llfile.c \
+	src/filesystem.c
 
  # include_HEADERS =	
  # pkginclude_HEADERS =
@@ -27,6 +28,7 @@ noinst_HEADERS = \
   include/libsys/fileio.h \
 	include/libsys/llfile.h \
 	include/libsys/stream.h \
+	include/libsys/filesystem.h \
 	$(NULL)
 
 noinst_LTLIBRARIES = libsys.la

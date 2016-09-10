@@ -22,15 +22,13 @@
 
 #include "def.h"
 
-typedef enum file_open_mode
-{
-  FILE_OPEN_MODE_R=1 << 0,
-  FILE_OPEN_MODE_W=1 << 1,
-  FILE_OPEN_MODE_RW=3,  /* FILE_OPEN_MODE_R & FILE_OPEN_MODE_W */
-  FILE_OPEN_MODE_APPEND=1 << 2,
-  FILE_OPEN_MODE_CREATE=1 << 3,
-  FILE_OPEN_MODE_TRUNC=1 << 4
-} FileOpenMode;
+typedef unsigned FileOpenMode;
+extern const FileOpenMode FILE_OPEN_MODE_R;
+extern const FileOpenMode FILE_OPEN_MODE_W;
+extern const FileOpenMode FILE_OPEN_MODE_RW;
+extern const FileOpenMode FILE_OPEN_MODE_APPEND;
+extern const FileOpenMode FILE_OPEN_MODE_CREATE;
+extern const FileOpenMode FILE_OPEN_MODE_TRUNC;
 
 typedef enum file_error
 {
@@ -40,7 +38,8 @@ typedef enum file_error
   FILE_ERROR_NOT_EXIST,
   FILE_ERROR_NO_PERMISSION,
   FILE_ERROR_INVALID_OPEN_MODE,
-  FILE_ERROR_ON_CLOSE
+  FILE_ERROR_ON_CLOSE,
+  FILE_ERROR_OPERATION_NOT_IMPLEMENTED
 } FileError;
 
 typedef enum file_mode
@@ -105,6 +104,11 @@ FILE_DEFUN(Size, fileRead, (FileIO *fileio, Byte *content, Size sz), (fileio, co
 FILE_DEFUN(Size, fileWrite, (FileIO *fileio, Byte *content, Size sz), (fileio, content, sz));
 
 /* Should do nothing if not stream */
-FILE_DEFUN(void, fileCommit, (FileIO *fileio), (fileio));
+FILE_DEFUN(FileError, fileCommit, (FileIO *fileio), (fileio));
+
+/* This function has side effects: fileOpenMode will be changed
+   whenever a mode can be inferred. Eg.: write without read or
+   append means also truncate. */
+FileError validateFileOpenMode(FileOpenMode *mode);
 
 #endif

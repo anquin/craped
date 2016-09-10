@@ -18,6 +18,8 @@
  */
 
 #include <libsys/paged_raw_data.h>
+#include <libsys/filesystem.h>
+#include <libsys/stream.h>
 #include "buffer.h"
 #include <string.h>
 #include <assert.h>
@@ -143,50 +145,41 @@ void bufferSetPersistenceFilePath(Buffer *buf, char *filePath)
 }
 
 void bufferRead(Buffer *buf)
-/* FIXME: RawData should do this and this function should proxy it */
 {
-  unsigned i;
-  FILE *f;
-  Byte *src;
-  unsigned max = 512;
+  Byte *file_content;
+  Size max;
+  Stream *file_stream;
+  FileError file_error;
 
-  f = fopen(buf->filePath, "rb");
-  assert(f);
+  max = fileLength(buf->filePath);
+  assert(max != 0);
+  file_stream = openStreamWithExistingBuffer(buf->filePath, FILE_OPEN_MODE_R,
+                                             &buf->data, &file_error);
+  assert(file_error == FILE_ERROR_NO_ERROR);
 
-  src = (Byte *)malloc(sizeof(Byte) * max);
-
-  for (i = 0; !feof(f); i += max) {
-    fread(src, sizeof(Byte), max, f);
-    pagedRawDataInsert(&buf->data, i, src, max);
-  }
+  file_content = (Byte *)malloc(sizeof(Byte) * max);
+  fileRead(FILEIO(file_stream), file_content, max);
   /* pagedRawDataClearToEnd(&buf->data, buf->bytePoint); */
-
   buf->flags ^= BUFFER_FLAG_MODIFIED;
-  fclose(f);
+
+  fileClose(FILEIO(file_stream));
 }
 
 void bufferWrite(Buffer *buf)
-/* FIXME: RawData should do this and this function should proxy it */
 {
-  unsigned i, bread;
-  FILE *f;
-  Byte *src;
   unsigned max = 512;
+  Stream *file_stream;
+  FileError file_error;
 
-  f = fopen(buf->filePath, "wb");
-  assert(f);
+  file_stream = openStreamWithExistingBuffer(buf->filePath, FILE_OPEN_MODE_R,
+                                             &buf->data, &file_error);
+  assert(file_error == FILE_ERROR_NO_ERROR);
 
-  src = (Byte *)malloc(sizeof(Byte) * max);
-
-  i = 0;
-  while (bread = pagedRawDataRead(&buf->data, i, src, max)) {
-    fwrite(src, sizeof(Byte), bread, f);
-    i += bread;
+  if (fileCommit(FILEIO(file_stream)) != FILE_ERROR_NO_ERROR) {
+    buf->flags ^= BUFFER_FLAG_MODIFIED;
   }
 
-  buf->flags ^= BUFFER_FLAG_MODIFIED;
-  free(src);
-  fclose(f);
+  fileClose(FILEIO(file_stream));
 }
 
 void bufferAddMark(Buffer *buf, char *name, Byte flags)
