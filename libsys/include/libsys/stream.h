@@ -32,9 +32,11 @@ struct stream
   PagedRawData *data;
 
   /* The low level io channel */
-  LLFile *llfile;
+  /* LLFile *llfile; */
 
   Position loc;
+
+  char *filepath;
 
   /* Non-zero if the stream owns the buffer it is using */
   short ownsData;

@@ -24,17 +24,25 @@
 
 #include <stdlib.h>
 
-void readToBuffer_(Stream *stream, Position *where)
+FileError readToBuffer_(Stream *stream, Position *where)
 {
   /* TODO: there must be a better to do this. */
   Byte *buf;
   Size nbytes;
+  LLFile *llfile;
+  FileError error;
+  llfile = fileOpen_ll(stream->filepath, FILE_OPEN_MODE_R, &error);
+  if (error != FILE_ERROR_NO_ERROR) {
+    return error;
+  }
   buf = (Byte *)malloc(sizeof(Byte) * maxPageSize);
   do {
-    nbytes = fileRead_ll(FILEIO(stream->llfile), buf, maxPageSize);
+    nbytes = fileRead(FILEIO(llfile), buf, maxPageSize);
     pagedRawDataInsert(stream->data, *where, buf, nbytes);
     (*where) += nbytes;
   } while (nbytes);
+  free(buf);
+  return fileClose(FILEIO(llfile));
 }
 
 Stream *openStream_(char *filepath, FileOpenMode mode, PagedRawData *data,
@@ -42,7 +50,6 @@ Stream *openStream_(char *filepath, FileOpenMode mode, PagedRawData *data,
 {
   FileIO *fileio;
   Stream *stream;
-  Byte *buffer;
   Position where;
 
   fileio = (FileIO *)malloc(sizeof(FileIO));
@@ -56,16 +63,16 @@ Stream *openStream_(char *filepath, FileOpenMode mode, PagedRawData *data,
 
   buffer = (Byte *)malloc(sizeof(maxPageSize));
 
-  STREAM(fileio)->llfile = fileOpen_ll(filepath, mode, error);
   validateFileOpenMode(&mode);
-  if (*error != FILE_ERROR_NO_ERROR) {
-    free(stream);free(fileio);
-    fileio = NULL;
-    stream = NULL;
-  }
-  else if (!(mode & FILE_OPEN_MODE_TRUNC)) {
+  stream->filepath = filepath;
+  if (!(mode & FILE_OPEN_MODE_TRUNC)) {
     where = 0;
-    readToBuffer_(STREAM(fileio), &where);
+    *error = readToBuffer_(STREAM(fileio), &where);
+    if (*error != FILE_ERROR_NO_ERROR) {
+      free(stream);free(fileio);
+      fileio = NULL;
+      stream = NULL;
+    }
   }
   return stream;
 }
@@ -86,12 +93,10 @@ fileOpen_stream(char *filepath, FileOpenMode mode, FileError *error)
 
 FileError fileClose_stream(FileIO *fileio)
 {
-  FileError error;
-  error = fileClose_ll(FILEIO(STREAM(fileio)->llfile));
   if ((STREAM(fileio)->ownsData) && (STREAM(fileio)->data != NULL)) {
     pagedRawDataDestroy(STREAM(fileio)->data);
   }
-  return error;
+  return FILE_ERROR_NO_ERROR;
 }
 
 
