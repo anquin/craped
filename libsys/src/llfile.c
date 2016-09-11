@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 LLFile *fileOpen_ll(char *filepath, FileOpenMode mode, FileError *error)
 {
@@ -127,4 +128,5 @@ Size fileWrite_ll(FileIO *fileio, Byte *content, Size sz)
 FileError fileCommit_ll(FileIO *fileio)
 {
   /* Does nothing */
+  return FILE_ERROR_NO_ERROR;
 }

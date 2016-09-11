@@ -33,7 +33,7 @@ noinst_HEADERS = \
 
 noinst_LTLIBRARIES = libsys.la
 
-X_BASE_CFLAGS= # -Wall
+X_BASE_CFLAGS= -Wall
 if DEBUG_MODE
 BASE_CFLAGS=$(X_BASE_CFLAGS) -DDEBUG_MODE
 else

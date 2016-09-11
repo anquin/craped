@@ -29,6 +29,7 @@ PagedRawData *pagedRawDataInit(PagedRawData *buf)
 {
   pageTableInit(&(buf->pageTable));
   buf->size = rawDataSize(buf->pageTable.firstPage->data);
+  return buf;
 }
 
 void pagedRawDataDestroy(PagedRawData *buf)

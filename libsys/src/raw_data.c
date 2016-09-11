@@ -77,7 +77,7 @@ Size rawDataInsert(RawData *data, Position where, Byte *src, Size size)
 
   if (GAP_SIZE(data) < size) {
     assert(GAP_SIZE(data) >= size);
-    return;
+    return 0;
   }
 
   if (GAP_POS(data) != where) {
@@ -96,7 +96,7 @@ Size rawDataDelete(RawData *data, Position where, Size size)
 {
   assert(where < (rawDataSize(data)));
   if (where >= (rawDataSize(data))) {
-    return;
+    return 0;
   }
 
   if (GAP_POS(data) != where) {

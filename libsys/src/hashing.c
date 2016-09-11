@@ -49,6 +49,8 @@ HashNode *createHashNode(Hasheable *key, void *info, HashNode *next)
   node->key = key;
   node->info = info;
   node->next = next;
+
+  return node;
 }
 
 void initHashTable(HashTable *hashTable, unsigned mod)

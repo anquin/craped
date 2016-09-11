@@ -50,6 +50,7 @@ Stream *openStream_(char *filepath, FileOpenMode mode, PagedRawData *data,
 {
   FileIO *fileio;
   Stream *stream;
+  Byte *buffer;
   Position where;
 
   fileio = (FileIO *)malloc(sizeof(FileIO));

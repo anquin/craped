@@ -28,12 +28,9 @@ Position
 rawDataSearchForward(RawData *data, Byte *pattern, Size size, Position start)
 {
   Position pos;
-  Position posTmp;
   static Size qsBc[ALPHABET_SIZE];
   static Byte *lastPattern = NULL;
   Size tmpSz;
-  Size sizeAfterGap;
-  Byte *tmp;
 
   /* Performs a simple pointer comparison hoping to avoid startup */
   if (pattern != lastPattern) {
