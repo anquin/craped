@@ -486,7 +486,7 @@ void editorPrevWord(Editor *editor)
   editorProcessWorldCommand_(editor,
                              createWorldCmd(WORLDCMD_MOVE_POINT_BACKWARD,
                                             pold,
-                                            pnew - pold, 0, NULL,
+                                            pold - pnew, 0, NULL,
                                             worldGetBufferName(editor->world)),
                              editorIsBufferShared(editor));
 }

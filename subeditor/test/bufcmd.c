@@ -62,7 +62,7 @@ int main(void)
   initBuffer(&buffer, "teste");
 
   initBufferCommand(&bufCmds[0], BUF_CMD_INSERT, 0, 9, "aaAAsAAaa");
-  initBufferCommand(&bufCmds[1], BUF_CMD_MOVE_POINT, 0, -5, NULL);
+  initBufferCommand(&bufCmds[1], BUF_CMD_MOVE_POINT_BACKWARD, 0, 5, NULL);
   initBufferCommand(&bufCmds[2], BUF_CMD_DELETE, 0, 1, NULL);
   initBufferCommand(&bufCmds[3], BUF_CMD_INSERT, 0, 3, "***");
 

@@ -242,8 +242,10 @@ void worldMovePointBackward(World *world, Size size)
 
 void worldSetPoint(World *world, Position bytePos)
 {
-  /* TODO: usar o BufferCommand */
-  bufferSetPoint(world->bufferChain->buf, bytePos);
+  BufferCommand *bufCmd;
+  bufCmd = createBufferCommand(BUF_CMD_SET_POINT, bytePos, 0, NULL);
+  bufferCommandExec(bufCmd, world->bufferChain->buf);
+  bufferCmdStackPush(world->bufferChain->bufCmdStack, bufCmd);
 }
 
 void worldAddMark(World *world, char *name)
