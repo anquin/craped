@@ -408,9 +408,9 @@ void editorMoveLeft(Editor *editor)
   pnew = worldGetPoint(editor->world);
   moveBufferPointFn(editor->world, 1);
   editorProcessWorldCommand_(editor,
-                             createWorldCmd(WORLDCMD_MOVE_POINT,
+                             createWorldCmd(WORLDCMD_MOVE_POINT_BACKWARD,
                                             worldGetPoint(editor->world),
-                                            pnew - pold, 0, NULL,
+                                            pold - pnew, 0, NULL,
                                             worldGetBufferName(editor->world)),
                              editorIsBufferShared(editor));
 }
@@ -428,7 +428,7 @@ void editorMoveRight(Editor *editor)
   pnew = worldGetPoint(editor->world);
   moveBufferPointFn(editor->world, -1);
   editorProcessWorldCommand_(editor,
-                             createWorldCmd(WORLDCMD_MOVE_POINT,
+                             createWorldCmd(WORLDCMD_MOVE_POINT_FORWARD,
                                             worldGetPoint(editor->world),
                                             pnew - pold, 0, NULL,
                                             worldGetBufferName(editor->world)),
@@ -484,7 +484,7 @@ void editorPrevWord(Editor *editor)
   pnew = worldGetPoint(editor->world);
   moveWordBufferPointFn(editor->world, 1);
   editorProcessWorldCommand_(editor,
-                             createWorldCmd(WORLDCMD_MOVE_POINT,
+                             createWorldCmd(WORLDCMD_MOVE_POINT_BACKWARD,
                                             pold,
                                             pnew - pold, 0, NULL,
                                             worldGetBufferName(editor->world)),
@@ -504,7 +504,7 @@ void editorNextWord(Editor *editor)
   pnew = worldGetPoint(editor->world);
   moveWordBufferPointFn(editor->world, -1);
   editorProcessWorldCommand_(editor,
-                             createWorldCmd(WORLDCMD_MOVE_POINT,
+                             createWorldCmd(WORLDCMD_MOVE_POINT_FORWARD,
                                             pold,
                                             pnew - pold, 0, NULL,
                                             worldGetBufferName(editor->world)),

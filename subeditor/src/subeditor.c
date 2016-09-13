@@ -220,10 +220,24 @@ Size worldGetChunk(World *world, Byte *dest, Size size)
   return bufferGetChunk(world->bufferChain->buf, dest, size);
 }
 
-void worldMovePoint(World *world, int offset)
+void worldMovePointForward(World *world, Size size)
 {
-  /* TODO: usar o BufferCommand */
-  bufferMovePoint(world->bufferChain->buf, offset);
+  BufferCommand *bufCmd;
+  bufCmd = createBufferCommand(BUF_CMD_MOVE_POINT_FORWARD,
+                               bufferGetPoint(world->bufferChain->buf),
+                               size, NULL);
+  bufferCommandExec(bufCmd, world->bufferChain->buf);
+  bufferCmdStackPush(world->bufferChain->bufCmdStack, bufCmd);
+}
+
+void worldMovePointBackward(World *world, Size size)
+{
+  BufferCommand *bufCmd;
+  bufCmd = createBufferCommand(BUF_CMD_MOVE_POINT_BACKWARD,
+                               bufferGetPoint(world->bufferChain->buf),
+                               size, NULL);
+  bufferCommandExec(bufCmd, world->bufferChain->buf);
+  bufferCmdStackPush(world->bufferChain->bufCmdStack, bufCmd);
 }
 
 void worldSetPoint(World *world, Position bytePos)

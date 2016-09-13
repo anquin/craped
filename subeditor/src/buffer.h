@@ -81,7 +81,8 @@ Position bufferGetPoint(Buffer *buf);
 
 void bufferSetPoint(Buffer *buf, Position position);
 
-void bufferMovePoint(Buffer *buf, int offset);
+void bufferMovePointForward(Buffer *buf, Size size);
+void bufferMovePointBackward(Buffer *buf, Size size);
 
 Size bufferSize(Buffer *buf);
 

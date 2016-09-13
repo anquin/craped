@@ -24,11 +24,12 @@
 #include <libsys/socket.h>
 #include "worldcmd_list_lock.h"
 
-#define WORLDCMD_DIE        0
-#define WORLDCMD_INSERT     1
-#define WORLDCMD_DELETE     2
-#define WORLDCMD_MOVE_POINT 3
-#define WORLDCMD_SET_POINT  4
+#define WORLDCMD_DIE                 0
+#define WORLDCMD_INSERT              1
+#define WORLDCMD_DELETE              2
+#define WORLDCMD_MOVE_POINT_FORWARD  3
+#define WORLDCMD_MOVE_POINT_BACKWARD 4
+#define WORLDCMD_SET_POINT           5
 
 typedef unsigned WorldCmdType;
 
@@ -67,7 +68,8 @@ void worldCmdExecute(WorldCmd *, World *);
 
 void worldCmdInsertExec(WorldCmd *, World *);
 void worldCmdDeleteExec(WorldCmd *, World *);
-void worldCmdMovePoint(WorldCmd *, World *);
+void worldCmdMovePointForward(WorldCmd *, World *);
+void worldCmdMovePointBackward(WorldCmd *, World *);
 void worldCmdSetPoint(WorldCmd *, World *);
 void worldCmdDestroy(WorldCmd *, World *);
 

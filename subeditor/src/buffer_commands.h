@@ -38,7 +38,8 @@ typedef struct buffer_cmd_type
 } BufferCmdType;
 
 extern BufferCmdType *BUF_CMD_SET_POINT;
-extern BufferCmdType *BUF_CMD_MOVE_POINT;
+extern BufferCmdType *BUF_CMD_MOVE_POINT_FORWARD;
+extern BufferCmdType *BUF_CMD_MOVE_POINT_BACKWARD;
 extern BufferCmdType *BUF_CMD_INSERT;
 extern BufferCmdType *BUF_CMD_DELETE;
 
@@ -66,7 +67,8 @@ void destroyBufferCommand(BufferCommand *bufCmd);
 struct
 {
   CommandCount bufCmdCountPointSet;
-  CommandCount bufCmdCountPointMove;
+  CommandCount bufCmdCountPointMoveForward;
+  CommandCount bufCmdCountPointMoveBackward;
   CommandCount bufCmdCountInsert;
   CommandCount bufCmdCountDelete;
 } BufferCommandCounts;

@@ -109,12 +109,16 @@ void bufferSetPoint(Buffer *buf, Position position)
   buf->bytePoint = position;
 }
 
-void bufferMovePoint(Buffer *buf, int offset)
+void bufferMovePointForward(Buffer *buf, Size size)
 {
-  Position position = buf->bytePoint + offset;
+  assert(size <= (bufferSize(buf) - buf->bytePoint));
+  buf->bytePoint += size;
+}
 
-  assert((position >= 0) && (position <= bufferSize(buf)));
-  buf->bytePoint = position;
+void bufferMovePointBackward(Buffer *buf, Size size)
+{
+  assert(size <= buf->bytePoint);
+  buf->bytePoint -= size;
 }
 
 Size bufferSize(Buffer *buf)

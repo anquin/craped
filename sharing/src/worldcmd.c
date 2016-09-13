@@ -25,7 +25,8 @@
 WorldCmdExecuteFn worldCmds[] = { worldCmdDestroy,
 				  worldCmdInsertExec,
 				  worldCmdDeleteExec,
-				  worldCmdMovePoint,
+				  worldCmdMovePointForward,
+				  worldCmdMovePointBackward,
 				  worldCmdSetPoint };
 
 WorldCmd *
@@ -115,9 +116,15 @@ void worldCmdDeleteExec(WorldCmd *cmd, World *world)
   worldNotifyObservers(world);
 }
 
-void worldCmdMovePoint(WorldCmd *cmd, World *world)
+void worldCmdMovePointForward(WorldCmd *cmd, World *world)
 {
-  worldMovePoint(world, (int)cmd->size);
+  worldMovePointForward(world, cmd->size);
+  worldNotifyObservers(world);
+}
+
+void worldCmdMovePointBackward(WorldCmd *cmd, World *world)
+{
+  worldMovePointBackward(world, cmd->size);
   worldNotifyObservers(world);
 }
 

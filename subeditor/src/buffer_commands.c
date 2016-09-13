@@ -24,12 +24,14 @@
 #include <stdlib.h>
 
 void bufCmdSetPoint(BufferCommand *bufCmd, Buffer *buf);
-void bufCmdMovePoint(BufferCommand *bufCmd, Buffer *buf);
+void bufCmdMovePointForward(BufferCommand *bufCmd, Buffer *buf);
+void bufCmdMovePointBackward(BufferCommand *bufCmd, Buffer *buf);
 void bufCmdInsert(BufferCommand *bufCmd, Buffer *buf);
 void bufCmdDelete(BufferCommand *bufCmd, Buffer *buf);
 
 static struct buffer_cmd_type _BUF_CMD_SET_POINT;
-static struct buffer_cmd_type _BUF_CMD_MOVE_POINT;
+static struct buffer_cmd_type _BUF_CMD_MOVE_POINT_FORWARD;
+static struct buffer_cmd_type _BUF_CMD_MOVE_POINT_BACKWARD;
 static struct buffer_cmd_type _BUF_CMD_INSERT;
 static struct buffer_cmd_type _BUF_CMD_DELETE;
 
@@ -42,14 +44,23 @@ static struct buffer_cmd_type _BUF_CMD_SET_POINT =
   };
 BufferCmdType *BUF_CMD_SET_POINT = &_BUF_CMD_SET_POINT;
 
-static struct buffer_cmd_type _BUF_CMD_MOVE_POINT =
+static struct buffer_cmd_type _BUF_CMD_MOVE_POINT_FORWARD =
   {
     "point_move",
-    bufCmdMovePoint,
-    &(BufferCommandCounts.bufCmdCountPointMove),
-    &_BUF_CMD_MOVE_POINT
+    bufCmdMovePointForward,
+    &(BufferCommandCounts.bufCmdCountPointMoveForward),
+    &_BUF_CMD_MOVE_POINT_FORWARD
   };
-BufferCmdType *BUF_CMD_MOVE_POINT = &_BUF_CMD_MOVE_POINT;
+BufferCmdType *BUF_CMD_MOVE_POINT_FORWARD = &_BUF_CMD_MOVE_POINT_FORWARD;
+
+static struct buffer_cmd_type _BUF_CMD_MOVE_POINT_BACKWARD =
+  {
+    "point_move",
+    bufCmdMovePointBackward,
+    &(BufferCommandCounts.bufCmdCountPointMoveBackward),
+    &_BUF_CMD_MOVE_POINT_BACKWARD
+  };
+BufferCmdType *BUF_CMD_MOVE_POINT_BACKWARD = &_BUF_CMD_MOVE_POINT_BACKWARD;
 
 static struct buffer_cmd_type _BUF_CMD_INSERT =
   {
@@ -99,9 +110,14 @@ void bufCmdSetPoint(BufferCommand *bufCmd, Buffer *buf)
   bufferSetPoint(buf, bufCmd->bytePos);
 }
 
-void bufCmdMovePoint(BufferCommand *bufCmd, Buffer *buf)
+void bufCmdMovePointForward(BufferCommand *bufCmd, Buffer *buf)
 {
-  bufferMovePoint(buf, bufCmd->opSize);
+  bufferMovePointForward(buf, bufCmd->opSize);
+}
+
+void bufCmdMovePointBackward(BufferCommand *bufCmd, Buffer *buf)
+{
+  bufferMovePointBackward(buf, bufCmd->opSize);
 }
 
 void bufCmdInsert(BufferCommand *bufCmd, Buffer *buf)

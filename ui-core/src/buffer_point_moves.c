@@ -22,21 +22,24 @@
 void asciiMovePoint(World *world, int displ)
 {
   if (!displ) return;
-
-  worldMovePoint(world, displ);
+  if (displ > 0) worldMovePointForward(world, displ);
+  else worldMovePointBackward(world, -displ);
 }
+
+typedef void (*WorldMovePointFn_)(World *world, Size size);
 
 void utf8MovePoint(World *world, int displ)
 {
   Byte ch;
   int unit;
+  WorldMovePointFn_ worldMovePointFn;
 
   if (!displ) return;
-
-  unit = (displ < 0) ? -1 : 1;
+  if (displ > 0) worldMovePointFn = worldMovePointForward;
+  else worldMovePointFn = worldMovePointBackward;
 
   do {
-    worldMovePoint(world, unit);
+    worldMovePointFn(world, 1);
     if (worldBufferSize(world) == worldGetPoint(world)) {
       break;
     }
@@ -48,6 +51,7 @@ void utf8WordMovePoint(World *world, int displ)
 {
   Byte ch;
   int unit;
+  WorldMovePointFn_ worldMovePointFn;
 
   if (!displ) return;
 
@@ -65,13 +69,13 @@ void utf8WordMovePoint(World *world, int displ)
 void utf8LineMovePoint(World *world, int displ)
 {
   Byte ch;
-  int unit;
   short stop;
   short i;
+  WorldMovePointFn_ worldMovePointFn;
 
   if (!displ) return;
-
-  unit = (displ < 0) ? -1 : 1;
+  if (displ > 0) worldMovePointFn = worldMovePointForward;
+  else worldMovePointFn = worldMovePointBackward;
 
   stop = 1;
   for (i = 0; i < 2; i++) {
@@ -81,7 +85,7 @@ void utf8LineMovePoint(World *world, int displ)
           stop = 0;
           break;
         }
-        worldMovePoint(world, unit);
+        worldMovePointFn(world, 1);
         if (worldBufferSize(world) == worldGetPoint(world)) {
           stop = 0;
           break;
