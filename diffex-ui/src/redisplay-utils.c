@@ -49,28 +49,29 @@ textDiff(char **t1, char **t2,
          unsigned *diff1sz, unsigned *diff2sz,
          TextWalker *walker)
 {
-  int stepCount, nbytes, i;
+  int stepCount, nbytes, i, glyphSize;
   *diff1sz = 0;
   *diff2sz = 0;
 
   stepCount = 0;
+  glyphSize = 0;
   while (1) {
     nbytes = textWalkerWalk(walker, t1, 1);
     if (!nbytes) {
       *diff1sz = *t1sz;
       *diff2sz = *t2sz;
-      return stepCount;
+      return glyphSize;
     }
     for (i = 0; i < nbytes; i++) {
       if (*t1sz == 0 || *t2sz == 0) {
         *diff1sz = *t1sz;
         *diff2sz = *t2sz;
-        return stepCount;
+        return glyphSize;
       }
       if (**t1 != **t2) {
         *diff1sz = *t1sz;
         *diff2sz = *t2sz;
-        return stepCount;
+        return glyphSize;
       }
       ++(*t1);
       ++(*t2);
@@ -78,6 +79,7 @@ textDiff(char **t1, char **t2,
       --(*t2sz);
     }
     ++stepCount;
+    glyphSize += glyphSizeOfSingleChar_(*t1, nbytes);
   }
 }
 
@@ -128,7 +130,7 @@ void destroyTextWalker(TextWalker *walker)
   worldRemoveMark(walker->world, "walkerbeg");
 }
 
-int glyphSize_(char c[], int nbytes)
+int glyphSizeOfSingleChar_(char c[], int nbytes)
 {
   if ((nbytes == 1) && (c[0] == '\n')) {
     return 0;

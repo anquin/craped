@@ -89,6 +89,7 @@ deWindow_(Diffex *diffex, UI *ui, Window *window, World *world)
   unsigned oldSizeY, oldSizeX;
   unsigned winId;
   Terminal *terminal;
+  short mustFreeTerminal;
 
   /* There may be special windows whose lifecycle
      is not controlled by the UI (miniWindow). */
@@ -97,9 +98,11 @@ deWindow_(Diffex *diffex, UI *ui, Window *window, World *world)
     windowGetSize(window, &sizeX, &sizeY);
     winId = windowGetId(window);
     terminal = uiGetWindowTerminalById_(ui, winId);
+    mustFreeTerminal = 0;
   }
   else {
     terminal = terminalFactoryCreate(ui->termFactory);
+    mustFreeTerminal = 1;
   }
   deFifoPopPushUInt(diffex, &oldPosX, &posX);
   deFifoPopPushUInt(diffex, &oldPosY, &posY);
@@ -156,6 +159,10 @@ deWindow_(Diffex *diffex, UI *ui, Window *window, World *world)
       CALL(deStatusLine_, (diffex, ui, window, world));
     END
     break;
+  }
+  if (mustFreeTerminal) {
+    destroyTerminal(terminal);
+    free(terminal);
   }
 }
 
@@ -381,10 +388,14 @@ void deBuffer_(Diffex *diffex, World *world, Window *window, Terminal *terminal)
       while (currSz || oldSz) {
         unsigned writeSz;
         writeSz = diff1Sz - ((curr[diff1Sz - 1] == '\n') ? 1 : 0);
-        terminalSetCursor(terminal, col, row);
-        terminalDelete(terminal, diff2Sz);
-        terminalSetCursor(terminal, col, row);
-        terminalWrite(terminal, curr, writeSz);
+        if (diff2Sz) {
+          terminalSetCursor(terminal, col, row);
+          terminalDelete(terminal, diff2Sz);
+        }
+        if (writeSz) {
+          terminalSetCursor(terminal, col, row);
+          terminalWrite(terminal, curr, writeSz);
+        }
         col +=
           textNextDiff(&curr, &old, &currSz, &oldSz, &diff1Sz, &diff2Sz, &walker);
       }
@@ -401,7 +412,7 @@ void deBuffer_(Diffex *diffex, World *world, Window *window, Terminal *terminal)
     fetchBytes(world, movePoint, c, &nbytes);
     for (pointCol = 0; colSearchPoint < startPoint; colSearchPoint++) {
       if (++i == nbytes) {
-        pointCol += glyphSize_(c, nbytes);
+        pointCol += glyphSizeOfSingleChar_(c, nbytes);
         fetchBytes(world, movePoint, c, &nbytes);
         i = 0;
       }

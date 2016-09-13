@@ -52,7 +52,7 @@ fetchBytes(World *world,
  * diff1sz - size of the different hunk of text 1  [O]
  * diff2sz - size of the different hunk of text 2  [O]
  *
- * Returns the number of equivalent CHARS up untill the difference.
+ * Returns the glyph size up until the difference.
 */
 int
 textDiff(char **t1, char **t2,
@@ -72,7 +72,7 @@ textDiff(char **t1, char **t2,
  * diff1sz - size of the different hunk of text 1  [O]
  * diff2sz - size of the different hunk of text 2  [O]
  *
- * Returns the number of equivalent CHARS up untill the difference.
+ * Returns the glyph size up until the difference.
  */
 int
 textNextDiff(char **t1, char **t2,
@@ -93,6 +93,6 @@ initTextWalker(TextWalker *walker, World *world, MoveBufferPointFn movePoint);
 
 
 /* FIXME: How to handle different encodings? Is it needed? */
-int glyphSize_(char c[], int nbytes);
+int glyphSizeOfSingleChar_(char c[], int nbytes);
 
 #endif
