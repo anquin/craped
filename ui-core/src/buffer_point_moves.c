@@ -33,6 +33,8 @@ void utf8MovePoint(World *world, int displ)
   Byte ch;
   int unit;
   WorldMovePointFn_ worldMovePointFn;
+  UInt32 sentinelBufferFags;
+  sentinelBufferFags = WORLD_BUFFER_FLAG_EOB | WORLD_BUFFER_FLAG_BOB;
 
   if (!displ) return;
   if (displ > 0) worldMovePointFn = worldMovePointForward;
@@ -40,7 +42,8 @@ void utf8MovePoint(World *world, int displ)
 
   do {
     worldMovePointFn(world, 1);
-    if (worldBufferSize(world) == worldGetPoint(world)) {
+    /* if (worldBufferSize(world) == worldGetPoint(world)) { */
+    if (worldGetBufferFlags(world) & sentinelBufferFags) {
       break;
     }
     worldGetChunk(world, &ch, 1);

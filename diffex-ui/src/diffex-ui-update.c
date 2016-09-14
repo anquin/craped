@@ -308,6 +308,7 @@ void deBuffer_(Diffex *diffex, World *world, Window *window, Terminal *terminal)
   short cursorSaved;
   TextWalker walker;
   Position startPoint, colSearchPoint;
+  UInt32 bkpBufFlags;
 
   pointRow = pointCol = 0;
   cursorSaved = 0;
@@ -326,6 +327,7 @@ void deBuffer_(Diffex *diffex, World *world, Window *window, Terminal *terminal)
     line = (char *)malloc(sizeof(char) * lineMax);
 
     worldSetCurrentBuffer(world, windowGetBufferName(window), 0);
+    bkpBufFlags = worldGetBufferFlags(world);
     startPoint = worldGetPoint(world);
     worldAddMark(world, "start");
     framer(window, terminal, world);
@@ -420,6 +422,8 @@ void deBuffer_(Diffex *diffex, World *world, Window *window, Terminal *terminal)
 
     worldMarkToPoint(world, "start");
     worldRemoveMark(world, "start");
+    worldSetBufferFlag(world, ~bkpBufFlags, 0);
+    worldSetBufferFlag(world, bkpBufFlags, 1);
     DBGLOG("CURSOR: (%d, %d)\n", pointCol, pointRow);
     terminalSetCursor(terminal, pointCol, pointRow);
     terminalFlush(terminal);

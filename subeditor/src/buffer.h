@@ -25,7 +25,9 @@
 #include "time.h"
 #include "mark.h"
 
-#define BUFFER_FLAG_MODIFIED 1
+#define BUFFER_FLAG_MODIFIED 1 << 0
+#define BUFFER_FLAG_BOB 1 << 1
+#define BUFFER_FLAG_EOB 1 << 2
 
 typedef struct buffer
 {

@@ -253,7 +253,21 @@ void editorSetBufferShared_(Editor *editor, short shared)
   worldSetBufferFlag(editor->world, BUFFER_FLAG_SHARED, shared);
 }
 
-#define editorProcessWorldCommand_(editor, cmd, multicast) (multicast ? sharingServerMulticast(((Editor *)editor)->sharingServer, cmd) : worldCmdExecute(cmd, ((Editor *)editor)->world))
+void editorPostProcessWorldCommand_(Editor *editor)
+{
+  UInt32 bufFlags;
+
+  worldSetCurrentBuffer(editor->world, uiGetWindowBufferName(editor->ui), 0);
+  bufFlags = worldGetBufferFlags(editor->world);
+  if (bufFlags & WORLD_BUFFER_FLAG_EOB) {
+    editorShowMessage(editor, "End of buffer");
+  }
+  else if (bufFlags & WORLD_BUFFER_FLAG_BOB) {
+    editorShowMessage(editor, "Beggining of buffer");
+  }
+}
+
+#define editorProcessWorldCommand_(editor, cmd, multicast) (multicast ? sharingServerMulticast(((Editor *)editor)->sharingServer, cmd) : worldCmdExecute(cmd, ((Editor *)editor)->world));editorPostProcessWorldCommand_(editor)
 
 /* It is the UI callback function */
 UiFeedback editorKeyHandle(Editor *editor, KbInput *kbInput)
@@ -406,7 +420,9 @@ void editorMoveLeft(Editor *editor)
   pold = worldGetPoint(editor->world);
   moveBufferPointFn(editor->world, -1);
   pnew = worldGetPoint(editor->world);
-  moveBufferPointFn(editor->world, 1);
+  if (!(worldGetBufferFlags(editor->world) & WORLD_BUFFER_FLAG_BOB)) {
+    moveBufferPointFn(editor->world, 1);
+  }
   editorProcessWorldCommand_(editor,
                              createWorldCmd(WORLDCMD_MOVE_POINT_BACKWARD,
                                             worldGetPoint(editor->world),
@@ -426,7 +442,9 @@ void editorMoveRight(Editor *editor)
   pold = worldGetPoint(editor->world);
   moveBufferPointFn(editor->world, 1);
   pnew = worldGetPoint(editor->world);
-  moveBufferPointFn(editor->world, -1);
+  if (!(worldGetBufferFlags(editor->world) & WORLD_BUFFER_FLAG_EOB)) {
+    moveBufferPointFn(editor->world, -1);
+  }
   editorProcessWorldCommand_(editor,
                              createWorldCmd(WORLDCMD_MOVE_POINT_FORWARD,
                                             worldGetPoint(editor->world),

@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <subeditor/def.h>
 #include "subeditor-internal.h"
 #include "buffer_commands.h"
 #include "subeditor/world_observer.h"
@@ -25,6 +26,10 @@
 #include <assert.h>
 
 #include <libsys/dbgdie.h>
+
+const UInt32 WORLD_BUFFER_FLAG_EOB = BUFFER_FLAG_EOB;
+const UInt32 WORLD_BUFFER_FLAG_BOB = BUFFER_FLAG_BOB;
+const UInt32 WORLD_BUFFER_FLAG_MODIFIED = BUFFER_FLAG_MODIFIED;
 
 void
 initBufferChainNode(BufferChainNode *node, Buffer *buf,

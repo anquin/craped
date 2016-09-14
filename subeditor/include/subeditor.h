@@ -22,6 +22,10 @@
 
 #include <subeditor/def.h>
 
+extern const UInt32 WORLD_BUFFER_FLAG_EOB;
+extern const UInt32 WORLD_BUFFER_FLAG_BOB;
+extern const UInt32 WORLD_BUFFER_FLAG_MODIFIED;
+
 #define WORLD_MAX_BUFFER_NAME BUFFER_NAME_MAX
 
 typedef struct world World;

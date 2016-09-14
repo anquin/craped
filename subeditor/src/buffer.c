@@ -73,7 +73,7 @@ void bufferResetFlags(Buffer *buf, UInt32 flags)
 }
 
 /* NOTE:
- * Editing functions proxies to RawData somehow
+ * Editing functions proxy to PagedRawData somehow
 */
 
 Size bufferGetChunk(Buffer *buf, Byte *dest, Size size)
@@ -87,6 +87,8 @@ Size bufferInsert(Buffer *buf, Byte *src, Size size)
   size = pagedRawDataInsert(&buf->data, buf->bytePoint, src, size);
   buf->bytePoint += size;
 
+  bufferResetFlags(buf, BUFFER_FLAG_EOB);
+  bufferResetFlags(buf, BUFFER_FLAG_BOB);
   return size;
 }
 
@@ -107,18 +109,38 @@ void bufferSetPoint(Buffer *buf, Position position)
 {
   assert((position >= 0) && (position <= bufferSize(buf)));
   buf->bytePoint = position;
+
+  if (position != bufferSize(buf)) {
+    bufferResetFlags(buf, BUFFER_FLAG_EOB);
+  }
+  if (position) {
+    bufferResetFlags(buf, BUFFER_FLAG_BOB);
+  }
 }
 
 void bufferMovePointForward(Buffer *buf, Size size)
 {
-  assert(size <= (bufferSize(buf) - buf->bytePoint));
-  buf->bytePoint += size;
+  Size bufSz = bufferSize(buf);
+  if (size > (bufSz - buf->bytePoint)) {
+    buf->bytePoint = bufSz;
+    bufferSetFlags(buf, BUFFER_FLAG_EOB);
+  }
+  else if (size) {
+    buf->bytePoint += size;
+    bufferResetFlags(buf, BUFFER_FLAG_EOB);
+  }
 }
 
 void bufferMovePointBackward(Buffer *buf, Size size)
 {
-  assert(size <= buf->bytePoint);
-  buf->bytePoint -= size;
+  if (size > buf->bytePoint) {
+    buf->bytePoint = 0;
+    bufferSetFlags(buf, BUFFER_FLAG_BOB);
+  }
+  else if (size) {
+    buf->bytePoint -= size;
+    bufferResetFlags(buf, BUFFER_FLAG_BOB);
+  }
 }
 
 Size bufferSize(Buffer *buf)
