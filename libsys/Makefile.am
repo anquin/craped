@@ -74,8 +74,12 @@ pagedrawdatatest_SOURCES = test/raw_data_test_main.c
 pagedrawdatatest_CFLAGS  = -I$(srcdir)/include -DTEST_PAGED_RAW_DATA
 pagedrawdatatest_LDADD = libsys.la
 
-# TODO: include llfileopentest
-check_PROGRAMS = hashtabletest datatest rawdatasearchtest rawdatatest pagedrawdatatest llfileopentest
+insertonebyone_SOURCES = test/insertonebyone.c \
+	src/print_page_table.c
+insertonebyone_CFLAGS = -I$(srcdir)/include
+insertonebyone_LDADD = libsys.la
+
+check_PROGRAMS = hashtabletest datatest rawdatasearchtest rawdatatest pagedrawdatatest llfileopentest insertonebyone
 TESTS = $(check_PROGRAMS)
 AM_COLOR_TESTS=always
 AM_TESTS_FD_REDIRECT = 9>&2

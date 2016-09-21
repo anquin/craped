@@ -184,13 +184,19 @@ PageFindStatus pageTableFindPage(PageTable *pageTable, Position where)
   if (where > currHintDistance) {
     pagePtr = pageTable->currPageHint->pagePtr;
     pageBegin = pageTable->currPageHint->pageBegin;
-    pageEnd = pageBegin + rawDataSize(pagePtr->data) - 1;
+    pageEnd = pageBegin + rawDataSize(pagePtr->data);
+    if (pagePtr->next != NULL) {
+      --pageEnd;
+    }
     pageIdx = pageTable->currPageHint->pageIdx;
   }
   else {  /* ... we use the first page otherwise. */
     pagePtr = pageTable->firstPage;
     pageBegin = 0;
-    pageEnd = rawDataSize(pagePtr->data) - 1;
+    pageEnd = rawDataSize(pagePtr->data);
+    if (pagePtr->next != NULL) {
+      --pageEnd;
+    }
     pageIdx = 0;
     isAfter = 1;
   }
@@ -199,7 +205,7 @@ PageFindStatus pageTableFindPage(PageTable *pageTable, Position where)
   while (pageBegin > where || where > pageEnd) {
     if (isAfter) {
       if (pagePtr->next == NULL) {
-	  lastPagePtr = pagePtr;
+        lastPagePtr = pagePtr;
       }
       pagePtr = pagePtr->next;
       pageBegin = pageEnd + 1;
@@ -215,7 +221,10 @@ PageFindStatus pageTableFindPage(PageTable *pageTable, Position where)
       break;
     }
 
-    pageEnd = pageBegin + rawDataSize(pagePtr->data) - 1;
+    pageEnd = pageBegin + rawDataSize(pagePtr->data);
+    if ((pagePtr->next != NULL)) {
+      --pageEnd;
+    }
   }
 
   if (pagePtr != NULL) {
