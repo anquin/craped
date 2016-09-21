@@ -1,4 +1,4 @@
-bin_PROGRAMS=craped # gcraped
+bin_PROGRAMS=craped gcraped
 
 SUBDIRS = \
 	libsys \
@@ -17,9 +17,6 @@ else
 BASE_CFLAGS=$(X_BASE_CFLAGS) -O2 -ffast-math -funroll-loops \
 	-fomit-frame-pointer -fexpensive-optimizations
 endif
-
-#CFLAGS_GTK=$(CFLAGS) -DGTK_UI `pkg-config --cflags --libs gtk+-3.0 vte-2.90`
-#LDFLAGS_GTK=$(LDFLAGS) `pkg-config --cflags --libs gtk+-3.0 vte-2.90`
 
 AM_CFLAGS = \
 	$(BASE_CFLAGS) \
@@ -49,11 +46,15 @@ gcraped_SOURCES = \
 	$(NULL)
 
 gcraped_CFLAGS = \
+	-DGTK_UI \
+	$(GTK_CFLAGS) \
+	$(VTE_CFLAGS) \
 	$(AM_CFLAGS) \
+	$(CFLAGS_GTK) \
 	$(NULL)
 
 gcraped_LDADD = \
 	$(builddir)/editor/libeditor.la \
 	$(builddir)/gtk-ui/libgtkui.la
 
-gcraped_LDFLAGS= $(GTK_LIBS) -DGTK_UI $(VTE_LIBS)
+gcraped_LDFLAGS= $(GTK_LIBS) $(VTE_LIBS)
