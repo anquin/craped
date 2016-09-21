@@ -121,6 +121,7 @@ void bufferSetPoint(Buffer *buf, Position position)
 void bufferMovePointForward(Buffer *buf, Size size)
 {
   Size bufSz = bufferSize(buf);
+  bufferResetFlags(buf, BUFFER_FLAG_BOB);
   if (size > (bufSz - buf->bytePoint)) {
     buf->bytePoint = bufSz;
     bufferSetFlags(buf, BUFFER_FLAG_EOB);
@@ -133,6 +134,7 @@ void bufferMovePointForward(Buffer *buf, Size size)
 
 void bufferMovePointBackward(Buffer *buf, Size size)
 {
+  bufferResetFlags(buf, BUFFER_FLAG_EOB);
   if (size > buf->bytePoint) {
     buf->bytePoint = 0;
     bufferSetFlags(buf, BUFFER_FLAG_BOB);
