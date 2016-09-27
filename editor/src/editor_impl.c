@@ -27,7 +27,7 @@
 #include <string.h>
 #include <assert.h>
 
-Editor *createEditor(UI *ui, char *startupMessage)
+Editor *createEditor(UI *ui, const char *startupMessage)
 {
   Editor *editor;
   editor = (Editor *)malloc(sizeof(Editor));
@@ -167,7 +167,7 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "C-g", "cancel");
 }
 
-void initEditor(Editor *editor, UI *ui, char *startupMessage)
+void initEditor(Editor *editor, UI *ui, const char *startupMessage)
 {
   World *world;
   SharingServer *sharingServer;
@@ -194,6 +194,7 @@ void initEditor(Editor *editor, UI *ui, char *startupMessage)
   generateEditorDefaultKeyBindings(editor);
 
   uiSetWindowHasStatusLine(ui, 1);
+  
   uiSayCentered(ui, startupMessage);
   uiRedisplay(ui, world);
   uiSetObserver(ui, editor);

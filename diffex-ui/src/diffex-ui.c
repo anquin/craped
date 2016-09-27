@@ -91,7 +91,7 @@ struct window *uiGetWindow(UI *ui)
   return windowManagerGetWindow(ui->windowManager);
 }
 
-void uiSayCentered(UI *ui, char *message)
+void uiSayCentered(UI *ui, const char *message)
 {
   size_t i;
 

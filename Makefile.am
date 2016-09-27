@@ -33,6 +33,7 @@ AM_LDFLAGS = -lpthread
 
 craped_SOURCES = \
 	src/main.c \
+	src/setup.c \
 	src/setup-tui.c \
 	$(NULL)
 
@@ -42,6 +43,7 @@ craped_LDADD = \
 
 gcraped_SOURCES = \
 	src/main.c \
+	src/setup.c \
 	src/setup-gtk-ui.c \
 	$(NULL)
 

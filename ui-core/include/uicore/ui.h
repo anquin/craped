@@ -29,7 +29,7 @@ typedef struct world_observer UI;
 
 void uiRedisplay(UI *, World *);
 struct window *uiGetWindow(UI *);
-void uiSayCentered(UI *, char *);
+void uiSayCentered(UI *, const char *);
 void uiMainLoop(UI *);
 void uiSetObserver(UI *, UIObserver *);
 void uiNextWindow(UI *);

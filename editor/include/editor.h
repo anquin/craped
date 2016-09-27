@@ -34,8 +34,8 @@ typedef struct editor Editor;
 #define editorKeyHandle uiObserverHandleInput
 
 #include <uicore/ui.h>
-Editor *createEditor(UI *ui, char *startupMessage);
-void initEditor(Editor *, UI *, char *startupMessage);
+Editor *createEditor(UI *ui, const char *startupMessage);
+void initEditor(Editor *, UI *, const char *startupMessage);
 void destroyEditor(Editor *);
 
 void editorRun(Editor *editor);

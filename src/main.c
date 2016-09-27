@@ -17,8 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
-
 #include <libsys/dbglog.h>
 
 #include <editor.h>
@@ -28,8 +26,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-
-static const char progname[] = PACKAGE_NAME;
 
 int main(int argc, char *argv[])
 {
@@ -45,7 +41,7 @@ int main(int argc, char *argv[])
   initMode(mode, utf8MovePoint, utf8WordMovePoint, utf8LineMovePoint);
   windowSetMode(uiGetWindow(edsetup.ui), mode);
 
-  editor = createEditor(edsetup.ui, PACKAGE_STRING);
+  editor = createEditor(edsetup.ui, edsetup.progName);
   editorRun(editor);
   destroyEditor(editor);
   free(editor);
@@ -54,17 +50,4 @@ int main(int argc, char *argv[])
   DBGLOG_CLOSE();
 
   return 0;
-}
-
-void setup(EditorSetup *edsetup, int argc, char *argv[])
-{
-  edsetup->progName = progname;
-  /* TODO: parse configuration file */
-  /* TODO: parse command line args */
-  setupUI(edsetup);
-}
-
-void cleanup(EditorSetup *edsetup)
-{
-  cleanupUI(edsetup);
 }
