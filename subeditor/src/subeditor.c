@@ -353,3 +353,8 @@ SUBEDITOR_INLINE_ Position worldGetPoint(World *world)
 {
   return bufferGetPoint(world->bufferChain->buf);
 }
+
+SUBEDITOR_INLINE_ short worldBufferExists(World *world, char *name)
+{
+  return (bufferChainFind(world->bufferChain, name) != NULL);
+}

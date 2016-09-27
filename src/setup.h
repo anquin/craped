@@ -21,8 +21,6 @@
 #define SETUP_H
 
 #include <uicore/ui.h>
-#include <uicore/windowmanager.h>
-#include <uicore/terminalfactory.h>
 
 typedef struct ui_setup UISetup;
 

@@ -37,73 +37,52 @@ Editor *createEditor(UI *ui, char *startupMessage)
 
 void editorCreateDefaultCommands_(Editor *editor)
 {
-  editorCmdHomeRegister(editor->editorCmdHome, "exit", editorCmdFnExit);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "cursor_right", editorCmdFnMoveRight);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "cursor_left", editorCmdFnMoveLeft);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "cursor_up", editorCmdFnMoveUp);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "cursor_down", editorCmdFnMoveDown);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "prev_word", editorCmdFnPrevWord);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "next_word", editorCmdFnNextWord);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "backspace", editorCmdFnBackspace);
-  editorCmdHomeRegister(editor->editorCmdHome, "insert", editorCmdFnInsert);
-  editorCmdHomeRegister(editor->editorCmdHome, "delete", editorCmdFnDelete);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "line_feed", editorCmdFnLineFeed);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "insert_tab", editorCmdFnInsertTab);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "init_sharing", editorCmdFnInitSharing);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "prompt_to_init_sharing",
+  editorRegisterCommand(editor, "exit", editorCmdFnExit);
+  editorRegisterCommand(editor, "cursor_right", editorCmdFnMoveRight);
+  editorRegisterCommand(editor, "cursor_left", editorCmdFnMoveLeft);
+  editorRegisterCommand(editor, "cursor_up", editorCmdFnMoveUp);
+  editorRegisterCommand(editor, "cursor_down", editorCmdFnMoveDown);
+  editorRegisterCommand(editor, "prev_word", editorCmdFnPrevWord);
+  editorRegisterCommand(editor, "next_word", editorCmdFnNextWord);
+  editorRegisterCommand(editor, "backspace", editorCmdFnBackspace);
+  editorRegisterCommand(editor, "insert", editorCmdFnInsert);
+  editorRegisterCommand(editor, "delete", editorCmdFnDelete);
+  editorRegisterCommand(editor, "line_feed", editorCmdFnLineFeed);
+  editorRegisterCommand(editor, "insert_tab", editorCmdFnInsertTab);
+  editorRegisterCommand(editor, "init_sharing", editorCmdFnInitSharing);
+  editorRegisterCommand(editor, "prompt_to_init_sharing",
                         editorCmdFnPromptToInitSharing);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "sharing_connect", editorCmdFnConnectToSharing);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "prompt_to_sharing_connect",
+  editorRegisterCommand(editor, "sharing_connect", editorCmdFnConnectToSharing);
+  editorRegisterCommand(editor, "prompt_to_sharing_connect",
                         editorCmdFnPromptToConnectToSharing);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "set_buffer", editorCmdFnChooseBuffer);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "prompt_to_set_buffer", editorCmdFnPromptToSetBuffer);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "next_buffer", editorCmdFnNextBuffer);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "prev_buffer", editorCmdFnPrevBuffer);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "split_window", editorCmdFnSplitWindowHorz);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "next_window", editorCmdFnNextWindow);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "prev_window", editorCmdFnPrevWindow);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "remove_current_window",
+  editorRegisterCommand(editor, "set_buffer", editorCmdFnChooseBuffer);
+  editorRegisterCommand(editor, "set_window_buffer", editorCmdFnChooseWindowBuffer);
+  editorRegisterCommand(editor, "prompt_to_set_window_buffer",
+                        editorCmdFnPromptToSetWindowBuffer);
+  editorRegisterCommand(editor, "next_buffer", editorCmdFnNextBuffer);
+  editorRegisterCommand(editor, "prev_buffer", editorCmdFnPrevBuffer);
+  editorRegisterCommand(editor, "split_window", editorCmdFnSplitWindowHorz);
+  editorRegisterCommand(editor, "next_window", editorCmdFnNextWindow);
+  editorRegisterCommand(editor, "prev_window", editorCmdFnPrevWindow);
+  editorRegisterCommand(editor, "remove_current_window",
                         editorCmdFnRemoveCurrentWindow);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "close_current_buffer", editorCmdFnCloseCurrentBuffer);
-  editorCmdHomeRegister(editor->editorCmdHome,
+  editorRegisterCommand(editor, "close_current_buffer",
+                        editorCmdFnCloseCurrentBuffer);
+  editorRegisterCommand(editor,
                         "point_to_end_of_line", editorCmdFnPointToEndOfLine);
-  editorCmdHomeRegister(editor->editorCmdHome,
+  editorRegisterCommand(editor,
                         "point_to_line_begin", editorCmdFnPointToLineBegin);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "write_buffer", editorCmdFnWriteBuffer);
-  editorCmdHomeRegister(editor->editorCmdHome,
-                        "read_to_buffer", editorCmdFnOpenFile);
-  editorCmdHomeRegister(editor->editorCmdHome,
+  editorRegisterCommand(editor, "write_buffer", editorCmdFnWriteBuffer);
+  editorRegisterCommand(editor, "read_to_buffer", editorCmdFnOpenFile);
+  editorRegisterCommand(editor,
                         "prompt_to_open_file", editorCmdFnPromptToOpenFile);
-  editorCmdHomeRegister(editor->editorCmdHome,
+  editorRegisterCommand(editor,
                         "toggle_share_current_buffer",
                         editorCmdFnToggleShareBuffer);
-  editorCmdHomeRegister(editor->editorCmdHome, "bind", editorCmdFnBindKeyCombo);
-  editorCmdHomeRegister(editor->editorCmdHome,
+  editorRegisterCommand(editor, "bind", editorCmdFnBindKeyCombo);
+  editorRegisterCommand(editor,
                         "prompt_to_bind", editorCmdFnPromptToBindKeyCombo);
-  editorCmdHomeRegister(editor->editorCmdHome, "cancel", editorCmdFnCancel);
+  editorRegisterCommand(editor, "cancel", editorCmdFnCancel);
 }
 
 void editorBindKeyCombo(Editor *editor, char *keyCombo, char *cmdStr)
@@ -163,7 +142,7 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "C-s", "cursor_down");
   editorBindKeyCombo(editor, "C-c", "prev_word");
   editorBindKeyCombo(editor, "C-v", "next_word");
-  editorBindKeyCombo(editor, "C-b", "set_buffer");
+  editorBindKeyCombo(editor, "C-b", "set_window_buffer");
   editorBindKeyCombo(editor, "backspace", "backspace");
   editorBindKeyCombo(editor, "delete", "delete");
   editorBindKeyCombo(editor, "tab", "insert_tab");
@@ -601,8 +580,17 @@ char *editorRecoverFromPromptedInput(Editor *editor)
 void editorChooseBuffer(Editor *editor, char *bufferName)
 {
   assert(bufferName != NULL);
-
   worldSetCurrentBuffer(editor->world, bufferName, 1);
+}
+
+void editorChooseWindowBuffer(Editor *editor, char *bufferName)
+{
+  char *currBufName;
+  assert(bufferName != NULL);
+  currBufName = worldGetBufferName(editor->world);
+  if (!worldBufferExists(editor->world, bufferName)) {
+    worldCreateBuffer(editor->world, bufferName);
+  }
   uiSetWindowBuffer(editor->ui, bufferName);
   worldNotifyObservers(editor->world);
 }

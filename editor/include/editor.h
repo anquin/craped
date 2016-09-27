@@ -55,6 +55,7 @@ void editorConnectToSharing(Editor *editor, char *host, int port);
 void editorPromptForInput(Editor *editor, char *editorCmdStr, char *label);
 char *editorRecoverFromPromptedInput(Editor *editor);
 void editorChooseBuffer(Editor *editor, char *bufferName);
+void editorChooseWindowBuffer(Editor *editor, char *buffername);
 void editorSplitWindowHorz(Editor *editor);
 void editorRemoveCurrentWindow(Editor *editor);
 void editorNextWindow(Editor *editor);
@@ -76,6 +77,7 @@ void editorSetBufferFilePath(Editor *editor, char *filePath);
 void editorShareBuffer(Editor *editor, int share);
 /* Returns non-zero if the current buffer is shared. */
 int editorIsBufferShared(Editor *editor);
+void editorRegisterCommand(Editor *editor, char *cmdStr, void *fn);
 void editorBindKeyCombo(Editor *editor, char *keyCombo, char *cmdStr);
 void editorShowMessage(Editor *, char *);
 void editorCancel(Editor *editor);

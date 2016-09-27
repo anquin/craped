@@ -67,5 +67,6 @@ SUBEDITOR_INLINE_ short worldIsAlive(World *world);
 SUBEDITOR_INLINE_ char *worldGetBufferName(World *world);
 SUBEDITOR_INLINE_ Size worldBufferSize(World *world);
 SUBEDITOR_INLINE_ Position worldGetPoint(World *world);
+SUBEDITOR_INLINE_ short worldBufferExists(World *world, char *name);
 
 #endif

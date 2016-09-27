@@ -48,7 +48,7 @@ struct editor_cmd
 
 void editorCmdExecute(EditorCmd *, Editor *);
 
-/* EditorCmd ExecuteFns */
+/* Default EditorCmd ExecuteFns */
 void editorCmdFnExit(Editor *, EditorCmd *);
 void editorCmdFnInsert(Editor *, EditorCmd *);
 void editorCmdFnBackspace(Editor *, EditorCmd *);
@@ -66,7 +66,8 @@ void editorCmdFnInitSharing(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnPromptToConnectToSharing(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnConnectToSharing(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnChooseBuffer(Editor *editor, EditorCmd *editorCmd);
-void editorCmdFnPromptToSetBuffer(Editor *editor, EditorCmd *editorCmd);
+void editorCmdFnChooseWindowBuffer(Editor *editor, EditorCmd *editorCmd);
+void editorCmdFnPromptToSetWindowBuffer(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnSplitWindowHorz(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnRemoveCurrentWindow(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnNextWindow(Editor *editor, EditorCmd *editorCmd);

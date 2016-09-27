@@ -33,4 +33,8 @@ struct editor
   EditorCmdTree *editorCmdTree;
 };
 
+#define editorRegisterCommand(editor, cmdStr, fn) do { \
+    editorCmdHomeRegister(editor->editorCmdHome, cmdStr, (EditorCmdExecuteFn)fn); \
+  } while(0)
+
 #endif

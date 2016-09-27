@@ -199,24 +199,33 @@ void editorCmdFnConnectToSharing(Editor *editor, EditorCmd *editorCmd)
   }
 }
 
-void editorCmdFnPromptToSetBuffer(Editor *editor, EditorCmd *editorCmd)
-{
-  char *bufferName;
-  bufferName = editorRecoverFromPromptedInput(editor);
-  editorChooseBuffer(editor, bufferName);
-}
-
 void editorCmdFnChooseBuffer(Editor *editor, EditorCmd *editorCmd)
 {
   char *bufferName;
+  bufferName = parseStringParam(editorCmd);
+  editorChooseBuffer(editor, bufferName);
+  free(bufferName);
+}
+
+void editorCmdFnPromptToSetWindowBuffer(Editor *editor, EditorCmd *editorCmd)
+{
+  char *bufferName;
+  bufferName = editorRecoverFromPromptedInput(editor);
+  editorChooseWindowBuffer(editor, bufferName);
+}
+
+void editorCmdFnChooseWindowBuffer(Editor *editor, EditorCmd *editorCmd)
+{
+  char *bufferName;
   if (editorCmd->paramSz) {
-    bufferName = (char *)malloc(sizeof(char) * editorCmd->paramSz + 1);
-    strncpy(bufferName, editorCmd->param, editorCmd->paramSz);
-    bufferName[editorCmd->paramSz] = '\0';
-    editorChooseBuffer(editor, bufferName);
+    bufferName = parseStringParam(editorCmd);
+    editorChooseWindowBuffer(editor, bufferName);
+    free(bufferName);
   }
   else {
-    editorPromptForInput(editor, "prompt_to_set_buffer", "Enter a buffer name...");
+    editorPromptForInput(editor,
+                         "prompt_to_set_window_buffer",
+                         "Enter a buffer name...");
   }
 }
 
