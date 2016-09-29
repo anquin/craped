@@ -26,6 +26,7 @@ typedef struct editor_cmd_tree_node EditorCmdTreeNode;
 typedef EditorCmdTreeNode EditorCmdTree;
 
 #include "editorcmd.h"
+#include <libsys/hashing.h>
 
 struct editor_cmd_tree_node
 {

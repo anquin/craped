@@ -17,36 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EDITORCMD_H
-#define EDITORCMD_H
+#ifndef EDITORCMD_FUNCS_H
+#define EDITORCMD_FUNCS_H
 
-#include <libsys/hashing.h>
-
-typedef struct editor_cmd EditorCmd;
-
-typedef struct editor_cmd_home
-{
-  HashTable editorCmdEntries;
-} EditorCmdHome;
-
-#include "editor.h"
-
-typedef void (*EditorCmdExecuteFn)(Editor *, EditorCmd *);
-
-void initEditorCmdHome(EditorCmdHome *);
-void destroyEditorCmdHome(EditorCmdHome *);
-void editorCmdHomeRegister(EditorCmdHome *, char *, EditorCmdExecuteFn);
-void editorCmdHomeUnregister(EditorCmdHome *, char *);
-EditorCmd *editorCmdHomeCreateCmd(EditorCmdHome *, char *name, int paramSz, char *param);
-
-struct editor_cmd
-{
-  int paramSz;
-  char *param;
-  EditorCmdExecuteFn editorCmdExecuteFn;
-};
-
-void editorCmdExecute(EditorCmd *, Editor *);
+#include <editorcmd.h>
 
 /* Default EditorCmd ExecuteFns */
 void editorCmdFnExit(Editor *, EditorCmd *);

@@ -20,9 +20,10 @@
 #ifndef EDITOR_IMPL_H
 #define EDITOR_IMPL_H
 
-#include <editor.h>
+#include <editorcmd.h>
 #include "keybinding.h"
 #include <sharing.h>
+#include <uicore/ui.h>
 
 struct editor
 {
@@ -32,9 +33,5 @@ struct editor
   EditorCmdHome *editorCmdHome;
   EditorCmdTree *editorCmdTree;
 };
-
-#define editorRegisterCommand(editor, cmdStr, fn) do { \
-    editorCmdHomeRegister(editor->editorCmdHome, cmdStr, (EditorCmdExecuteFn)fn); \
-  } while(0)
 
 #endif

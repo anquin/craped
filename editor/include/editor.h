@@ -20,8 +20,7 @@
 #ifndef EDITOR_H
 #define EDITOR_H
 
-#include <uicore/ui_observer.h>
-#include <subeditor.h>
+#include <libsys/def.h>
 
 #define DEFAULT_SHARING_PORT 4444
 #define KEY_COMBO_MAX_SIZE 10
@@ -33,9 +32,8 @@ typedef struct editor Editor;
 /* TODO: add encoding param */
 #define editorKeyHandle uiObserverHandleInput
 
-#include <uicore/ui.h>
-Editor *createEditor(UI *ui, const char *startupMessage);
-void initEditor(Editor *, UI *, const char *startupMessage);
+Editor *createEditor(void *ui, const char *startupMessage);
+void initEditor(Editor *, void *ui, const char *startupMessage);
 void destroyEditor(Editor *);
 
 void editorRun(Editor *editor);
@@ -71,7 +69,7 @@ void editorPointToEndOfLine(Editor *editor);
 void editorPointToLineBegin(Editor *editor);
 void editorWriteBuffer(Editor *editor);
 void editorOpenFile(Editor *editor, char *filePath);
-void editorGetBufferFilePath(Editor *editor);
+char *editorGetBufferFilePath(Editor *editor);
 void editorSetBufferFilePath(Editor *editor, char *filePath);
 /* shares current buffer if share != 0 */
 void editorShareBuffer(Editor *editor, int share);

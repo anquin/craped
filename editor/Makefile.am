@@ -1,6 +1,7 @@
-libeditor_la_SOURCES =																\
-	src/editor_impl.c																		\
-	src/editorcmd.c																			\
+libeditor_la_SOURCES = \
+	src/editor_impl.c \
+	src/editorcmd.c \
+	src/editorcmd-funcs.c \
 	src/keybinding.c
 
 #include_HEADERS =																\

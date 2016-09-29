@@ -17,17 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+#include "setup.h"
 
-#include "lib/craped.h"
-
-int main(int argc, char *argv[])
+void setup(EditorSetup *edsetup, int argc, char *argv[])
 {
-  Craped *craped;
-  craped = createCraped(argc, argv);
-  crapedRun(craped);
-  destroyCraped(craped);
-  free(craped);
-  return 0;
+  edsetup->progName = PACKAGE_STRING;
+  /* TODO: parse configuration file */
+  /* TODO: parse command line args */
+  setupUI(edsetup);
+}
+
+void cleanup(EditorSetup *edsetup)
+{
+  cleanupUI(edsetup);
 }

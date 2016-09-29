@@ -167,6 +167,9 @@ void uiRemoveCurrentWindow(UI *ui)
 void uiSplitWindowHorz(UI *ui)
 {
   unsigned wndId;
+  if (ui->miniWindowActive) {
+    return;
+  }
   wndId = windowManagerSplitWindow(ui->windowManager, HORIZONTAL);
   ui->terminals[wndId] = terminalFactoryCreate(ui->termFactory);
 }

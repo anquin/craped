@@ -18,6 +18,7 @@
  */
 
 #include "editor_impl.h"
+#include "editorcmd-funcs.h"
 #include <libsys/socket.h>
 #include <uicore/keys.h>
 #include "keybinding.h"
@@ -27,12 +28,17 @@
 #include <string.h>
 #include <assert.h>
 
-Editor *createEditor(UI *ui, const char *startupMessage)
+Editor *createEditor(void *ui, const char *startupMessage)
 {
   Editor *editor;
   editor = (Editor *)malloc(sizeof(Editor));
   initEditor(editor, ui, startupMessage);
   return editor;
+}
+
+void editorRegisterCommand(Editor *editor, char *cmdStr, void *fn)
+{
+  editorCmdHomeRegister(editor->editorCmdHome, cmdStr, (EditorCmdExecuteFn)fn);
 }
 
 void editorCreateDefaultCommands_(Editor *editor)
@@ -147,6 +153,7 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "delete", "delete");
   editorBindKeyCombo(editor, "tab", "insert_tab");
   editorBindKeyCombo(editor, "return", "line_feed");
+  editorBindKeyCombo(editor, "M-j", "line_feed");
   editorBindKeyCombo(editor, "M-l", "init_sharing");
   editorBindKeyCombo(editor, "M-c", "sharing_connect");
   editorBindKeyCombo(editor, "M-m", "toggle_share_current_buffer");
@@ -167,37 +174,35 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "C-g", "cancel");
 }
 
-void initEditor(Editor *editor, UI *ui, const char *startupMessage)
+void initEditor(Editor *editor, void *ui, const char *startupMessage)
 {
   World *world;
   SharingServer *sharingServer;
 
-  world = createWorld(ui);
+  world = createWorld((UI *)ui);
   /* Create auxiliary buffers */
   worldCreateBuffer(world, "*prompt*");
   worldCreateBuffer(world, "*messages*");
 
-  windowSetBufferName(uiGetWindow(ui), worldGetBufferName(world));
+  windowSetBufferName(uiGetWindow((UI *)ui), worldGetBufferName(world));
 
   sharingServer = (SharingServer *)malloc(sizeof(SharingServer));
   initSharingServer(sharingServer, world, DEFAULT_SHARING_PORT);
   sharingServerCreateBufferServer(sharingServer, NULL);
 
   editor->world = world;
-  editor->ui = ui;
+  editor->ui = (UI *)ui;
   editor->sharingServer = sharingServer;
-  editor->editorCmdHome = (EditorCmdHome *)malloc(sizeof(EditorCmdHome));
-  initEditorCmdHome(editor->editorCmdHome);
+  editor->editorCmdHome = createEditorCmdHome();
   editorCreateDefaultCommands_(editor);
   editor->editorCmdTree = (EditorCmdTree *)malloc(sizeof(EditorCmdTree));
   initEditorCmdTree(editor->editorCmdTree);
   generateEditorDefaultKeyBindings(editor);
 
-  uiSetWindowHasStatusLine(ui, 1);
-  
-  uiSayCentered(ui, startupMessage);
-  uiRedisplay(ui, world);
-  uiSetObserver(ui, editor);
+  uiSetWindowHasStatusLine((UI *)ui, 1);
+  uiSayCentered((UI *)ui, startupMessage);
+  uiRedisplay((UI *)ui, world);
+  uiSetObserver((UI *)ui, editor);
 }
 
 void destroyEditor(Editor *editor)
@@ -744,9 +749,9 @@ void editorOpenFile(Editor *editor, char *filePath)
   worldNotifyObservers(editor->world);
 }
 
-void editorGetBufferFilePath(Editor *editor)
+char *editorGetBufferFilePath(Editor *editor)
 {
-  worldGetBufferFilePath(editor->world);
+  return worldGetBufferFilePath(editor->world);
 }
 
 void editorSetBufferFilePath(Editor *editor, char *filePath)

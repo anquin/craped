@@ -17,17 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
+#ifndef EDITORCMD_H
+#define EDITORCMD_H
 
-#include "lib/craped.h"
+typedef struct editor_cmd EditorCmd;
+typedef struct editor_cmd_home EditorCmdHome;
 
-int main(int argc, char *argv[])
+#include "editor.h"
+
+typedef void (*EditorCmdExecuteFn)(Editor *, EditorCmd *);
+
+EditorCmdHome *createEditorCmdHome(void);
+void destroyEditorCmdHome(EditorCmdHome *);
+void editorCmdHomeRegister(EditorCmdHome *, char *, EditorCmdExecuteFn);
+void editorCmdHomeUnregister(EditorCmdHome *, char *);
+EditorCmd *editorCmdHomeCreateCmd(EditorCmdHome *, char *name, int paramSz, char *param);
+
+struct editor_cmd
 {
-  Craped *craped;
-  craped = createCraped(argc, argv);
-  crapedRun(craped);
-  destroyCraped(craped);
-  free(craped);
-  return 0;
-}
+  int paramSz;
+  char *param;
+  EditorCmdExecuteFn editorCmdExecuteFn;
+};
+
+void editorCmdExecute(EditorCmd *, Editor *);
+
+#endif

@@ -1,13 +1,15 @@
 AC_PREREQ([2.69])
 AC_INIT([craped], [0.0.1])
 AC_CONFIG_AUX_DIR([.])
-AC_CONFIG_SRCDIR([src/setup-ui.h])
+AC_CONFIG_SRCDIR([src/lib/craped.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
-LT_INIT
 
 # Checks for programs.
 AC_PROG_CC
+AM_PROG_AR
+AC_PROG_RANLIB
+LT_INIT
 
 # Checks for libraries.
 PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 1.2.10)
