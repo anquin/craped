@@ -20,26 +20,44 @@
 #ifndef EDITORCMD_H
 #define EDITORCMD_H
 
-typedef struct editor_cmd EditorCmd;
-typedef struct editor_cmd_home EditorCmdHome;
-
 #include "editor.h"
 
-typedef void (*EditorCmdExecuteFn)(Editor *, EditorCmd *);
+typedef struct editor_cmd_declaration EditorCmdDeclaration;
+typedef struct editor_cmd EditorCmd;
 
-EditorCmdHome *createEditorCmdHome(void);
-void destroyEditorCmdHome(EditorCmdHome *);
-void editorCmdHomeRegister(EditorCmdHome *, char *, EditorCmdExecuteFn);
-void editorCmdHomeUnregister(EditorCmdHome *, char *);
-EditorCmd *editorCmdHomeCreateCmd(EditorCmdHome *, char *name, int paramSz, char *param);
+typedef void (*EditorCmdExecuteFn)(Editor *, EditorCmd *);
+typedef void (*EditorExtensionCmdExecuteFn)(void *, void *);
+
+struct editor_cmd_declaration
+{
+  char *name;
+  EditorCmdExecuteFn execFn;
+  char *editorExtName;
+  EditorExtensionCmdExecuteFn customFn;
+};
+
+EditorCmdDeclaration *
+createEditorCmdDeclaration(char *name, EditorCmdExecuteFn fn);
+EditorCmdDeclaration *
+createEditorExtensionCmdDeclaration(const char *editorExtName,
+                                    char *name, EditorExtensionCmdExecuteFn fn);
 
 struct editor_cmd
 {
   int paramSz;
   char *param;
-  EditorCmdExecuteFn editorCmdExecuteFn;
+  EditorCmdDeclaration *decl;
 };
 
 void editorCmdExecute(EditorCmd *, Editor *);
+
+
+typedef struct editor_cmd_home EditorCmdHome;
+
+EditorCmdHome *createEditorCmdHome(void);
+void destroyEditorCmdHome(EditorCmdHome *);
+void editorCmdHomeRegister(EditorCmdHome *, EditorCmdDeclaration *cmdDecl);
+void editorCmdHomeUnregister(EditorCmdHome *, char *);
+EditorCmd *editorCmdHomeCreateCmd(EditorCmdHome *, char *name, int paramSz, char *param);
 
 #endif

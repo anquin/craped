@@ -1,5 +1,3 @@
-bin_PROGRAMS=craped gcraped
-
 SUBDIRS = \
 	libsys \
 	subeditor \
@@ -26,6 +24,10 @@ AM_CFLAGS = \
 
 AM_LDFLAGS = -lpthread
 
+
+# APPLICATION
+bin_PROGRAMS=craped gcraped
+
 craped_SOURCES = src/main.c
 craped_LDADD =  $(builddir)/libcraped.la
 
@@ -34,57 +36,49 @@ gcraped_LDADD = $(builddir)/libgcraped.la
 gcraped_LDFLAGS= $(GTK_LIBS) $(VTE_LIBS)
 
 
-# LIBCRAPED and LIBGCRAPED
-
+# LIBRARIES (LIBCRAPED and LIBGCRAPED)
 include_HEADERS = src/lib/craped.h
-pkginclude_HEADERS = src/lib/craped.h
-noinst_LTLIBRARIES = libcraped.la libgcraped.la
+pkginclude_HEADERS = libsys/include/libsys/def.h
+lib_LTLIBRARIES = libcraped.la libgcraped.la
 
-libcraped_la_SOURCES = \
+CRAPED_LIBS_SOURCES = \
 	src/lib/setup.c \
-	src/lib/setup-tui.c \
 	src/lib/craped.c \
 	$(NULL)
 
+CRAPED_LIBS_CFLAGS = \
+	-I$(srcdir)/libsys/include \
+	-I$(srcdir)/subeditor/include \
+	-I$(srcdir)/sharing/include \
+	-I$(srcdir)/ui-core/include \
+	-I$(srcdir)/diffex-ui/include \
+	-I$(srcdir)/editor/include \
+	$(NULL)
+
+libcraped_la_SOURCES = \
+	$(CRAPED_LIBS_SOURCES) \
+	src/lib/setup-tui.c \
+	$(NULL)
+libcraped_la_CFLAGS = \
+	$(CRAPED_LIBS_CFLAGS) \
+	-I$(srcdir)/tui/include \
+	$(NULL)
 libcraped_la_LIBADD = \
 	$(builddir)/editor/libeditor.la \
 	$(builddir)/tui/libtui.la \
 	$(NULL)
 
-libcraped_la_CFLAGS = \
-	-I$(srcdir)/libsys/include \
-	-I$(srcdir)/subeditor/include \
-	-I$(srcdir)/ui-core/include \
-	-I$(srcdir)/diffex-ui/include \
-	-I$(srcdir)/tui/include \
-	-I$(srcdir)/sharing/include \
-	-I$(srcdir)/editor/include \
-	$(NULL)
-
 libgcraped_la_SOURCES = \
-	src/lib/setup.c \
+	$(CRAPED_LIBS_SOURCES) \
 	src/lib/setup-gtk-ui.c \
-	src/lib/craped.c \
 	$(NULL)
-
+libgcraped_la_CFLAGS = \
+	$(CRAPED_LIBS_CFLAGS) \
+	-I$(srcdir)/gtk-ui/include \
+	$(GTK_CFLAGS) \
+	$(NULL)
 libgcraped_la_LIBADD = \
 	$(builddir)/editor/libeditor.la \
 	$(builddir)/gtk-ui/libgtkui.la \
 	$(NULL)
-
-libgcraped_la_CFLAGS = \
-	-I$(srcdir)/libsys/include \
-	-I$(srcdir)/subeditor/include \
-	-I$(srcdir)/ui-core/include \
-	-I$(srcdir)/diffex-ui/include \
-	-I$(srcdir)/sharing/include \
-	-I$(srcdir)/editor/include \
-	-I$(srcdir)/gtk-ui/include \
-	-DGTK_UI \
-	$(GTK_CFLAGS) \
-	$(VTE_CFLAGS) \
-	$(AM_CFLAGS) \
-	$(CFLAGS_GTK) \
-	$(NULL)
-
 libgcraped_la_LDFLAGS = $(GTK_LIBS) $(VTE_LIBS)

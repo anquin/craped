@@ -18,12 +18,39 @@
  */
 
 #include "editorcmd.h"
-#include "string.h"
+#include <string.h>
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include <libsys/hashing.h>
+
+EditorCmdDeclaration *
+createEditorCmdDeclaration(char *name, EditorCmdExecuteFn fn)
+{
+  EditorCmdDeclaration *decl;
+  decl = (EditorCmdDeclaration *)malloc(sizeof(EditorCmdDeclaration));
+  decl->name = strcpy((char *)malloc(sizeof(char) * (strlen(name) + 1)), name);
+  decl->execFn = fn;
+  decl->editorExtName = NULL;
+  decl->customFn = NULL;
+  return decl;
+}
+
+EditorCmdDeclaration *
+createEditorExtensionCmdDeclaration(const char *editorExtName,
+                                    char *name, EditorExtensionCmdExecuteFn fn)
+{
+  EditorCmdDeclaration *decl;
+  decl = (EditorCmdDeclaration *)malloc(sizeof(EditorCmdDeclaration));
+  decl->name = strcpy((char *)malloc(sizeof(char) * (strlen(name) + 1)), name);
+  decl->execFn = NULL;
+  decl->editorExtName =
+    strcpy((char *)malloc(sizeof(char) * (strlen(name) + 1)), editorExtName);
+  decl->customFn = fn;
+  return decl;
+}
 
 struct editor_cmd_home
 {
@@ -32,7 +59,17 @@ struct editor_cmd_home
 
 void editorCmdExecute(EditorCmd *editorCmd, Editor *editor)
 {
-  return editorCmd->editorCmdExecuteFn(editor, editorCmd);
+  if (editorCmd->decl->execFn != NULL) {
+    return editorCmd->decl->execFn(editor, editorCmd);
+  }
+  /* FIXME: These asserts... */
+  assert(editorCmd->decl != NULL);
+  EditorExtension *editorExt;
+  editorExt =
+    editorGetExtension(editor, editorCmd->decl->editorExtName);
+  assert(editorExt != NULL);
+  return editorCmd->decl->customFn(editorExtensionGetImpl(editorExt),
+                                   (void *)editorCmd);
 }
 
 EditorCmdHome *createEditorCmdHome(void)
@@ -48,14 +85,14 @@ void destroyEditorCmdHome(EditorCmdHome *editorCmdHome)
   destroyHashTable(&editorCmdHome->editorCmdEntries);
 }
 
-void
-editorCmdHomeRegister(EditorCmdHome *editorCmdHome, char *name, EditorCmdExecuteFn execFn)
+void editorCmdHomeRegister(EditorCmdHome *editorCmdHome,
+                           EditorCmdDeclaration *cmdDecl)
 {
   Hasheable *hasheable;
   hasheable = createHasheable(strHashFn,
                               (int (*)(void *, void *))strcmp,
-                              (void *)name);
-  hashTablePut(&editorCmdHome->editorCmdEntries, hasheable, execFn);
+                              (void *)cmdDecl->name);
+  hashTablePut(&editorCmdHome->editorCmdEntries, hasheable, cmdDecl);
 }
 
 void editorCmdHomeUnregister(EditorCmdHome *editorCmdHome, char *name)
@@ -79,10 +116,11 @@ editorCmdHomeCreateCmd(EditorCmdHome *editorCmdHome, char *name, int paramSz, ch
   editorCmd = (EditorCmd *)malloc(sizeof(EditorCmd));
   editorCmd->paramSz = paramSz;
   editorCmd->param = param;
-  editorCmd->editorCmdExecuteFn =
-    (EditorCmdExecuteFn)hashTableGet(&editorCmdHome->editorCmdEntries, hasheable);
+  editorCmd->decl =
+    (EditorCmdDeclaration *)hashTableGet(&editorCmdHome->editorCmdEntries,
+                                         hasheable);
 
-  if (editorCmd->editorCmdExecuteFn == NULL) {
+  if (editorCmd->decl == NULL) {
     return NULL;
   }
 

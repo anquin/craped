@@ -41,6 +41,11 @@ Hasheable *createHasheable(unsigned (*hashfn)(void *, unsigned),
   return hasheable;
 }
 
+void destroyHasheable(Hasheable *hasheable)
+{
+  /* Does nohing */
+}
+
 HashNode *createHashNode(Hasheable *key, void *info, HashNode *next)
 {
   HashNode *node;

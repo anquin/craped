@@ -34,7 +34,10 @@ struct craped
 {
   Editor *editor;
   EditorSetup *edsetup;
+  EditorExtension *editorExt;
 };
+
+const char CRAPED_EXT_KEY[] = "craped";
 
 Craped *createCraped(int argc, char *argv[])
 {
@@ -57,6 +60,11 @@ Craped *createCraped(int argc, char *argv[])
   editor = createEditor(edsetup->ui, edsetup->progName);
   craped->editor = editor;
   craped->edsetup = edsetup;
+
+  EditorExtension * extension = createEditorExtension(CRAPED_EXT_KEY, craped);
+  editorAddExtension(editor, extension);
+  craped->editorExt = extension;
+
   return craped;
 }
 
@@ -66,6 +74,8 @@ void destroyCraped(Craped *craped)
   free(craped->editor);
   cleanup(craped->edsetup);
   free(craped->edsetup);
+  destroyEditorExtension(craped->editorExt);
+  free(craped->editorExt);
 
   DBGLOG_CLOSE();
 }
@@ -256,9 +266,10 @@ int crapedIsBufferShared(Craped *craped)
   editorIsBufferShared(craped->editor);
 }
 
-void crapedRegisterCommand(Craped *craped, char *cmdStr, void *fn)
+void crapedRegisterCommand(Craped *craped, char *cmdStr, CrapedCmdFn fn)
 {
-  editorRegisterCommand(craped->editor, cmdStr, fn);
+  editorRegisterExtensionCommand(craped->editor, CRAPED_EXT_KEY,
+                                 cmdStr, (void (*)(void *, void*))fn);
 }
 
 void crapedBindKeyCombo(Craped *craped, char *keyCombo, char *cmdStr)
@@ -274,4 +285,24 @@ void crapedShowMessage(Craped *craped, char *msg)
 void crapedCancel(Craped *craped)
 {
   editorCancel(craped->editor);
+}
+
+int crapedCmdGetParamSz(CrapedCmd *crapedCmd)
+{
+  return ((EditorCmd *)crapedCmd)->paramSz;
+}
+
+void crapedCmdSetParamSz(CrapedCmd *crapedCmd, int paramSz)
+{
+  ((EditorCmd *)crapedCmd)->paramSz = paramSz;
+}
+
+char *crapedCmdGetParam(CrapedCmd *crapedCmd)
+{
+  return ((EditorCmd *)crapedCmd)->param;
+}
+
+void crapedCmdSetParam(CrapedCmd *crapedCmd, char *param)
+{
+  ((EditorCmd *)crapedCmd)->param = param;
 }

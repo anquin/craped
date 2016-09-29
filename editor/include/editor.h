@@ -76,8 +76,19 @@ void editorShareBuffer(Editor *editor, int share);
 /* Returns non-zero if the current buffer is shared. */
 int editorIsBufferShared(Editor *editor);
 void editorRegisterCommand(Editor *editor, char *cmdStr, void *fn);
+void editorRegisterExtensionCommand(Editor *editor, const char *editorExtKey,
+                                    char *cmdStr, void *fn);
 void editorBindKeyCombo(Editor *editor, char *keyCombo, char *cmdStr);
 void editorShowMessage(Editor *, char *);
 void editorCancel(Editor *editor);
+typedef struct editor_extension EditorExtension;
+void editorAddExtension(Editor *editor, EditorExtension *extension);
+EditorExtension *editorGetExtension(Editor *editor, char *key);
+void editorRemoveExtension(Editor *editor, char *key);
+
+EditorExtension *createEditorExtension(const char *key, void *impl);
+void destroyEditorExtension(EditorExtension *editorExt);
+const char *editorExtensionGetKey(EditorExtension *editorExt);
+void *editorExtensionGetImpl(EditorExtension *editorExt);
 
 #endif

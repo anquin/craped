@@ -38,7 +38,20 @@ Editor *createEditor(void *ui, const char *startupMessage)
 
 void editorRegisterCommand(Editor *editor, char *cmdStr, void *fn)
 {
-  editorCmdHomeRegister(editor->editorCmdHome, cmdStr, (EditorCmdExecuteFn)fn);
+  EditorCmdDeclaration *cmdDecl;
+  cmdDecl = createEditorCmdDeclaration(cmdStr, (EditorCmdExecuteFn)fn);
+  editorCmdHomeRegister(editor->editorCmdHome, cmdDecl);
+}
+
+void editorRegisterExtensionCommand(Editor *editor, const char *editorExtKey,
+                                    char *cmdStr, void *fn)
+{
+  EditorCmdDeclaration *cmdDecl;
+  cmdDecl =
+    createEditorExtensionCmdDeclaration(editorExtKey,
+                                        cmdStr,
+                                        (EditorExtensionCmdExecuteFn)fn);
+  editorCmdHomeRegister(editor->editorCmdHome, cmdDecl);
 }
 
 void editorCreateDefaultCommands_(Editor *editor)
@@ -203,14 +216,19 @@ void initEditor(Editor *editor, void *ui, const char *startupMessage)
   uiSayCentered((UI *)ui, startupMessage);
   uiRedisplay((UI *)ui, world);
   uiSetObserver((UI *)ui, editor);
+
+  editor->extensions = (HashTable *)malloc(sizeof(HashTable));
+  initHashTable(editor->extensions, 257);  /* 257 is prime */
 }
 
 void destroyEditor(Editor *editor)
 {
   destroySharingServer(editor->sharingServer);
   destroyEditorCmdHome(editor->editorCmdHome);
+  destroyHashTable(editor->extensions);
   free(editor->sharingServer);
   free(editor->editorCmdHome);
+  free(editor->extensions);
   free(editor->world);
 }
 
@@ -774,4 +792,64 @@ int editorIsBufferShared(Editor *editor)
 void editorCancel(Editor *editor)
 {
   editorRecoverFromPromptedInput(editor);
+}
+
+void editorAddExtension(Editor *editor, EditorExtension *extension)
+{
+  Hasheable *hasheable;
+  hasheable = createHasheable(strHashFn,
+                              (int (*)(void *, void *))strcmp,
+                              (void *)extension->key);
+  hashTablePut(editor->extensions, hasheable, extension);
+}
+
+EditorExtension *editorGetExtension(Editor *editor, char *key)
+{
+  Hasheable *hasheable;
+  hasheable = createHasheable(strHashFn,
+                              (int (*)(void *, void *))strcmp,
+                              (void *)key);
+  EditorExtension * match =
+    (EditorExtension *)hashTableGet(editor->extensions, hasheable);
+
+  destroyHasheable(hasheable);
+  free(hasheable);
+  return match;
+}
+
+void editorRemoveExtension(Editor *editor, char *key)
+{
+  Hasheable *hasheable;
+  hasheable = createHasheable(strHashFn,
+                              (int (*)(void *, void *))strcmp,
+                              (void *)key);
+  hashTableRemove(editor->extensions, hasheable);
+  destroyHasheable(hasheable);
+  free(hasheable);
+}
+
+
+EditorExtension *createEditorExtension(const char *key, void *impl)
+{
+  EditorExtension *editorExt =
+    (EditorExtension *)malloc(sizeof(EditorExtension));
+  editorExt->key = strcpy((char *)malloc(sizeof(char) * (strlen(key) + 1)), key);
+  editorExt->impl = impl;
+  return editorExt;
+}
+
+void destroyEditorExtension(EditorExtension *editorExt)
+{
+ /* FIXME: This generates a warning */
+ /*  free(editorExt->key); */
+}
+
+const char *editorExtensionGetKey(EditorExtension *editorExt)
+{
+  return editorExt->key;
+}
+
+void *editorExtensionGetImpl(EditorExtension *editorExt)
+{
+  return editorExt->impl;
 }

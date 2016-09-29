@@ -32,6 +32,7 @@ void initHasheable(Hasheable *hasheable, unsigned (*hashfn)(void *, unsigned),
 		   int (*equalsfn)(void *, void *), void *);
 Hasheable *createHasheable(unsigned (*hashfn)(void *, unsigned),
 			   int (*equalsfn)(void *, void *), void *info);
+void destroyHasheable(Hasheable *hasheable);
 unsigned hasheableHashFn(Hasheable *hasheable, unsigned mod);
 int hasheableEquaslFn(Hasheable *hasheable, void *info);
 unsigned strHashFn(void *s, unsigned mod);

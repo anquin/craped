@@ -27,9 +27,6 @@ LIBSYS_CFLAGS=-I$(top_srcdir)/../libsys/include
 LIBSUBEDITOR_CFLAGS=-I$(top_srcdir)/../subeditor/include
 LIBUICORE_CFLAGS=-I$(top_srcdir)/../ui-core/include
 
-libdiffexui_la_LIBADD = \
-	$(builddir)/../ui-core/libuicore.la
-
 libdiffexui_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(LIBSYS_CFLAGS) \

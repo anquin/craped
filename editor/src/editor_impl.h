@@ -24,6 +24,7 @@
 #include "keybinding.h"
 #include <sharing.h>
 #include <uicore/ui.h>
+#include <libsys/hashing.h>
 
 struct editor
 {
@@ -32,6 +33,13 @@ struct editor
   SharingServer *sharingServer;
   EditorCmdHome *editorCmdHome;
   EditorCmdTree *editorCmdTree;
+  HashTable *extensions;
+};
+
+struct editor_extension
+{
+  const char *key;
+  void *impl;
 };
 
 #endif

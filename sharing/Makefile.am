@@ -24,9 +24,6 @@ endif
 LIBSUBEDITOR_CFLAGS=-I$(top_srcdir)/../subeditor/include
 LIBSYS_CFLAGS=-I$(top_srcdir)/../libsys/include
 
-libsharing_la_LIBADD = \
-	$(builddir)/../subeditor/libsubeditor.la
-
 libsharing_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(LIBSYS_CFLAGS) \

@@ -38,10 +38,6 @@ endif
 LIBSYS_CFLAGS=-I$(top_srcdir)/../libsys/include
 LIBSUBEDITOR_CFLAGS=-I$(top_srcdir)/../subeditor/include
 
-libuicore_la_LIBADD = \
-	$(builddir)/../libsys/libsys.la \
-	$(builddir)/../subeditor/libsubeditor.la
-
 libuicore_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(LIBSYS_CFLAGS) \

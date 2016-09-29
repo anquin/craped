@@ -20,9 +20,17 @@
 #ifndef CRAPED_H
 #define CRAPED_H
 
-#include <libsys/def.h>
+#ifndef LIBSYS_DEF_H
+#include <craped/def.h>
+#endif
 
 typedef struct craped Craped;
+typedef void CrapedCmd;
+typedef void (*CrapedCmdFn)(Craped *, CrapedCmd *);
+int crapedCmdGetParamSz(CrapedCmd *crapedCmd);
+void crapedCmdSetParamSz(CrapedCmd *crapedCmd, int paramSz);
+char *crapedCmdGetParam(CrapedCmd *crapedCmd);
+void crapedCmdSetParam(CrapedCmd *crapedCmd, char *param);
 
 Craped *createCraped(int argc, char *argv[]);
 void destroyCraped(Craped *craped);
@@ -67,7 +75,7 @@ void crapedSetBufferFilePath(Craped *craped, char *filePath);
 void crapedShareBuffer(Craped *craped, int share);
 /* Recrapednon-zero if the current buffer is shared. */
 int crapedIsBufferShared(Craped *craped);
-void crapedRegisterCommand(Craped *craped, char *cmdStr, void *fn);
+void crapedRegisterCommand(Craped *craped, char *cmdStr, CrapedCmdFn fn);
 void crapedBindKeyCombo(Craped *craped, char *keyCombo, char *cmdStr);
 void crapedShowMessage(Craped *, char *);
 void crapedCancel(Craped *craped);
