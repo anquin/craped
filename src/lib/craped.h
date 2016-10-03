@@ -65,6 +65,7 @@ void crapedNextBuffer(Craped *craped);
 void crapedPrevBuffer(Craped *craped);
 void crapedSplitWindow(Craped *craped);
 void crapedCloseCurrentBuffer(Craped *craped);
+void crapedSetPoint(Craped *craped, Position position);
 void crapedPointToEndOfLine(Craped *craped);
 void crapedPointToLineBegin(Craped *craped);
 void crapedWriteBuffer(Craped *craped);
@@ -75,9 +76,12 @@ void crapedSetBufferFilePath(Craped *craped, char *filePath);
 void crapedShareBuffer(Craped *craped, int share);
 /* Recrapednon-zero if the current buffer is shared. */
 int crapedIsBufferShared(Craped *craped);
+Size crapedBufferSize(Craped *craped);
+Size
+crapedFetchBufferData(Craped *craped, Byte *dest, Position beg, Position end);
 void crapedRegisterCommand(Craped *craped, char *cmdStr, CrapedCmdFn fn);
 void crapedBindKeyCombo(Craped *craped, char *keyCombo, char *cmdStr);
-void crapedShowMessage(Craped *, char *);
+void crapedShowMessage(Craped *, char *, short lf);
 void crapedCancel(Craped *craped);
 /* *** */
 

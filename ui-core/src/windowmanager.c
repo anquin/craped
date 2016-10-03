@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <uicore/window.h>
 #include <uicore/windowmanager.h>
 #include <string.h>
 #include <stdlib.h>
@@ -90,6 +91,21 @@ Window *windowManagerGetWindowById(WindowManager *windowManager, unsigned id)
     currWin = currWin->next;
   }
   return (windowGetId(currWin) == id) ? currWin : NULL;
+}
+
+Window *windowManagerFindWindow(WindowManager *windowManager, char *bufName)
+{
+  Window *lastWin, *currWin;
+
+  currWin = windowManager->window;
+  lastWin = currWin;
+  do {
+    if (!strcmp(windowGetBufferName(currWin), bufName)) {
+      return currWin;
+    }
+    currWin = currWin->next;
+  } while (currWin != lastWin);
+  return NULL;
 }
 
 void windowManagerPrevWindow(WindowManager *windowManager)

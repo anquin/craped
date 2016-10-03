@@ -20,7 +20,7 @@
 #ifndef WINDOWMANAGER_H
 #define WINDOWMANAGER_H
 
-#include "window.h"
+#include "window-reference.h"
 
 #define WNDMAN_MAX_SPLITS_H 10
 #define WNDMAN_MAX_SPLITS_V 10
@@ -42,6 +42,7 @@ void destroyWindowManager(WindowManager *);
 
 Window *windowManagerGetWindow(WindowManager *);
 Window *windowManagerGetWindowById(WindowManager *, unsigned id);
+Window *windowManagerFindWindow(WindowManager *, char *bufName);
 void windowManagerPrevWindow(WindowManager *);
 void windowManagerNextWindow(WindowManager *);
 typedef enum {HORIZONTAL, VERTICAL} Orientation;

@@ -20,10 +20,10 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <uicore/window-reference.h>
 #include <subeditor.h>
-#include <subeditor/mode.h>
 
-typedef struct window
+struct window
 {
   unsigned posX, posY;
   unsigned sizeX, sizeY;
@@ -36,7 +36,7 @@ typedef struct window
   struct window *next;
   unsigned id;
   short hasStatusLine;
-} Window;
+};
 
 Window *
 createWindow(unsigned posX, unsigned posY,
@@ -68,8 +68,5 @@ unsigned windowGetId(Window *window);
 void windowSetId(Window *window, unsigned id);
 short windowHasStatusLine(Window *window);
 void windowSetHasStatusLine(Window *window, short hasStatusLine);
-
-void windowSetMode(Window *, Mode *);
-Mode *windowGetMode(Window *window);
 
 #endif

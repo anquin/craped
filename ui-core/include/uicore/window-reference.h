@@ -17,30 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_H
-#define UI_H
+#ifndef UI_WINDOW_H
+#define UI_WINDOW_H
 
-#include "ui_observer.h"
-#include <subeditor.h>
-#include "keys.h"
-#include "window-reference.h"
+/* Window type must be known outside but its operations and ttributes must not. */
+/* The main need here is to let the outside world reference the windows. */
+/* Let the outside world reference the windows by id is not a good idea*/
+/* because ids are always reused when a window gets destroyed. */
 
-typedef struct world_observer UI;
+typedef struct window Window;
 
-void uiRedisplay(UI *, World *);
-Window *uiGetActiveWindow(UI *);
-Window *uiFindWindow(UI *, char *bufName);
-void uiSayCentered(UI *, const char *);
-void uiMainLoop(UI *);
-void uiSetObserver(UI *, UIObserver *);
-void uiNextWindow(UI *);
-void uiPrevWindow(UI *);
-void uiRemoveCurrentWindow(UI *);
-void uiSplitWindowHorz(UI *);
-void uiSetWindowBufferName(UI *, Window *wnd, char *bufName);
-char *uiGetWindowBufferName(UI *, Window *wnd);
-void uiSetWindowHasStatusLine(UI *, short flag);
-KbInput *uiWaitForInput(UI *);
-void uiActivateMiniWindow(UI *, short flag);
+/* These are (hopefully) temporary functions needed */
+/* while mode doesn't make its way to the buffer structure */
+#include <subeditor/mode.h>
+void windowSetMode(Window *, Mode *);
+Mode *windowGetMode(Window *window);
 
 #endif

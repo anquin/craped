@@ -55,7 +55,7 @@ Craped *createCraped(int argc, char *argv[])
 
   mode = (Mode *)malloc(sizeof(Mode));
   initMode(mode, utf8MovePoint, utf8WordMovePoint, utf8LineMovePoint);
-  windowSetMode(uiGetWindow(edsetup->ui), mode);
+  windowSetMode(uiGetActiveWindow(edsetup->ui), mode);
 
   editor = createEditor(edsetup->ui, edsetup->progName);
   craped->editor = editor;
@@ -226,6 +226,11 @@ void crapedCloseCurrentBuffer(Craped *craped)
   editorCloseCurrentBuffer(craped->editor);
 }
 
+void crapedSetPoint(Craped *craped, Position position)
+{
+  editorSetPoint(craped->editor, position);
+}
+
 void crapedPointToEndOfLine(Craped *craped)
 {
   editorPointToEndOfLine(craped->editor);
@@ -263,7 +268,18 @@ void crapedShareBuffer(Craped *craped, int share)
 
 int crapedIsBufferShared(Craped *craped)
 {
-  editorIsBufferShared(craped->editor);
+  return editorIsBufferShared(craped->editor);
+}
+
+Size crapedBufferSize(Craped *craped)
+{
+  return editorBufferSize(craped->editor);
+}
+
+Size
+crapedFetchBufferData(Craped *craped, Byte *dest, Position beg, Position end)
+{
+  return editorFetchBufferData(craped->editor, dest, beg, end);
 }
 
 void crapedRegisterCommand(Craped *craped, char *cmdStr, CrapedCmdFn fn)
@@ -277,9 +293,9 @@ void crapedBindKeyCombo(Craped *craped, char *keyCombo, char *cmdStr)
   editorBindKeyCombo(craped->editor, keyCombo, cmdStr);
 }
 
-void crapedShowMessage(Craped *craped, char *msg)
+void crapedShowMessage(Craped *craped, char *msg, short lf)
 {
-  editorShowMessage(craped->editor, msg);
+  editorShowMessage(craped->editor, msg, lf);
 }
 
 void crapedCancel(Craped *craped)

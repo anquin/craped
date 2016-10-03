@@ -197,7 +197,7 @@ void initEditor(Editor *editor, void *ui, const char *startupMessage)
   worldCreateBuffer(world, "*prompt*");
   worldCreateBuffer(world, "*messages*");
 
-  windowSetBufferName(uiGetWindow((UI *)ui), worldGetBufferName(world));
+  windowSetBufferName(uiGetActiveWindow((UI *)ui), worldGetBufferName(world));
 
   sharingServer = (SharingServer *)malloc(sizeof(SharingServer));
   initSharingServer(sharingServer, world, DEFAULT_SHARING_PORT);
@@ -232,7 +232,7 @@ void destroyEditor(Editor *editor)
   free(editor->world);
 }
 
-void editorShowMessage(Editor *editor, char *msg)
+void editorShowMessage(Editor *editor, char *msg, short lf)
 {
   char *bufferName;
   bufferName = worldGetBufferName(editor->world);
@@ -240,7 +240,9 @@ void editorShowMessage(Editor *editor, char *msg)
   worldSetCurrentBuffer(editor->world, "*messages*", 1);
   worldSetPoint(editor->world, worldBufferSize(editor->world));
   worldInsert(editor->world, (Byte *)msg, strlen(msg));
-  worldInsert(editor->world, (Byte *)"\n", 1);
+  if (lf) {
+    worldInsert(editor->world, (Byte *)"\n", 1);
+  }
   worldSetCurrentBuffer(editor->world, bufferName, 0);
   uiRedisplay(editor->ui, editor->world);
 }
@@ -256,21 +258,30 @@ void editorSetBufferShared_(Editor *editor, short shared)
   worldSetBufferFlag(editor->world, BUFFER_FLAG_SHARED, shared);
 }
 
-void editorPostProcessWorldCommand_(Editor *editor)
+void editorPostProcessWorldCommand_(Editor *editor, WorldCmd *cmd)
 {
   UInt32 bufFlags;
+  char *cmdBuffer;
 
-  worldSetCurrentBuffer(editor->world, uiGetWindowBufferName(editor->ui), 0);
-  bufFlags = worldGetBufferFlags(editor->world);
-  if (bufFlags & WORLD_BUFFER_FLAG_EOB) {
-    editorShowMessage(editor, "End of buffer");
+  cmdBuffer = worldCmdGetBufferName(cmd);
+  if (!worldBufferExists(editor->world, cmdBuffer)) {
+    editorShowMessage(editor, "Buffer ", 0);
+    editorShowMessage(editor, cmdBuffer, 0);
+    editorShowMessage(editor, " died", 1);
   }
-  else if (bufFlags & WORLD_BUFFER_FLAG_BOB) {
-    editorShowMessage(editor, "Beggining of buffer");
+  else {
+    worldSetCurrentBuffer(editor->world, cmdBuffer, 0);
+    bufFlags = worldGetBufferFlags(editor->world);
+    if (bufFlags & WORLD_BUFFER_FLAG_EOB) {
+      editorShowMessage(editor, "End of buffer", 1);
+    }
+    else if (bufFlags & WORLD_BUFFER_FLAG_BOB) {
+      editorShowMessage(editor, "Beggining of buffer", 1);
+    }
   }
 }
 
-#define editorProcessWorldCommand_(editor, cmd, multicast) (multicast ? sharingServerMulticast(((Editor *)editor)->sharingServer, cmd) : worldCmdExecute(cmd, ((Editor *)editor)->world));editorPostProcessWorldCommand_(editor)
+#define editorProcessWorldCommand_(editor, cmd, multicast) (multicast ? sharingServerMulticast(((Editor *)editor)->sharingServer, cmd) : worldCmdExecute(cmd, ((Editor *)editor)->world));editorPostProcessWorldCommand_(editor, cmd)
 
 /* It is the UI callback function */
 UiFeedback editorKeyHandle(Editor *editor, KbInput *kbInput)
@@ -278,6 +289,8 @@ UiFeedback editorKeyHandle(Editor *editor, KbInput *kbInput)
   EditorCmdTree *editorCmdTreeRoot;
   static EditorCmdTree *editorCmdTree = NULL;
   EditorCmd *editorCmd;
+  Window *activeWnd;
+  char *activeWndBufName;
 
   /* Clears everything that the editor could have said. */
   uiSayCentered(editor->ui, "");
@@ -288,7 +301,9 @@ UiFeedback editorKeyHandle(Editor *editor, KbInput *kbInput)
     editorCmdTree = editorCmdTreeRoot;
   }
 
-  worldSetCurrentBuffer(editor->world, uiGetWindowBufferName(editor->ui), 0);
+  activeWnd = uiGetActiveWindow(editor->ui);
+  activeWndBufName = uiGetWindowBufferName(editor->ui, activeWnd);
+  worldSetCurrentBuffer(editor->world, activeWndBufName, 0);
 
   if (editorCmdTree == editorCmdTreeRoot) {
     if (kbInput->key == KEY_SYMBOL) {
@@ -297,8 +312,7 @@ UiFeedback editorKeyHandle(Editor *editor, KbInput *kbInput)
                                                 worldGetPoint(editor->world),
                                                 kbInput->size, kbInput->size,
                                                 kbInput->info,
-                                                uiGetWindowBufferName(editor->ui)
-                                                ),
+                                                activeWndBufName),
                                  editorIsBufferShared(editor));
       return worldIsAlive(editor->world) ? UI_CONTINUE : UI_STOP;
     }
@@ -306,13 +320,13 @@ UiFeedback editorKeyHandle(Editor *editor, KbInput *kbInput)
 
   editorCmdTree = editorCmdTreeGet(editorCmdTree, kbInput);
   if (editorCmdTree == NULL) {
-    editorShowMessage(editor, "Key not bound");
+    editorShowMessage(editor, "Key not bound", 1);
     editorCmdTree = editorCmdTreeRoot;
   }
   else {
     editorCmd = editorCmdTreeGetCmd(editorCmdTree);
     if (editorCmd != NULL) {
-      worldSetCurrentBuffer(editor->world, uiGetWindowBufferName(editor->ui), 0);
+      worldSetCurrentBuffer(editor->world, activeWndBufName, 0);
       editorCmdExecute(editorCmd, editor);
       editorCmdTree = editorCmdTreeRoot;
     }
@@ -347,7 +361,12 @@ void editorBackspace(Editor *editor)
   Position pold, pnew;
   MoveBufferPointFn moveBufferPointFn;
   Mode *mode;
-  mode = windowGetMode(uiGetWindow(editor->ui));
+  Window *currWnd;
+  char *currBuffer;
+
+  currBuffer = worldGetBufferName(editor->world);
+  currWnd = uiFindWindow(editor->ui, currBuffer);
+  mode = windowGetMode(currWnd);
   moveBufferPointFn = modeGetBufferPointFn(mode);
 
   pold = worldGetPoint(editor->world);
@@ -358,7 +377,7 @@ void editorBackspace(Editor *editor)
   editorProcessWorldCommand_(editor,
                           createWorldCmd(WORLDCMD_DELETE,
                                          pnew, pold - pnew, 0, NULL,
-                                         worldGetBufferName(editor->world)),
+                                         currBuffer),
                           editorIsBufferShared(editor));
 }
 
@@ -367,7 +386,12 @@ void editorDelete(Editor *editor)
   Position pold, pnew;
   MoveBufferPointFn moveBufferPointFn;
   Mode *mode;
-  mode = windowGetMode(uiGetWindow(editor->ui));
+  Window *currWnd;
+  char *currBuffer;
+
+  currBuffer = worldGetBufferName(editor->world);
+  currWnd = uiFindWindow(editor->ui, currBuffer);
+  mode = windowGetMode(currWnd);
   moveBufferPointFn = modeGetBufferPointFn(mode);
 
   pnew = worldGetPoint(editor->world);
@@ -379,7 +403,7 @@ void editorDelete(Editor *editor)
                           createWorldCmd(WORLDCMD_DELETE,
                                          worldGetPoint(editor->world),
                                          pold - pnew, 0, NULL,
-                                         worldGetBufferName(editor->world)),
+                                         currBuffer),
                           editorIsBufferShared(editor));
 }
 
@@ -417,7 +441,12 @@ void editorMoveLeft(Editor *editor)
   Position pold, pnew;
   MoveBufferPointFn moveBufferPointFn;
   Mode *mode;
-  mode = windowGetMode(uiGetWindow(editor->ui));
+  Window *currWnd;
+  char *currBuffer;
+
+  currBuffer = worldGetBufferName(editor->world);
+  currWnd = uiFindWindow(editor->ui, currBuffer);
+  mode = windowGetMode(currWnd);
   moveBufferPointFn = modeGetBufferPointFn(mode);
 
   pold = worldGetPoint(editor->world);
@@ -430,7 +459,7 @@ void editorMoveLeft(Editor *editor)
                              createWorldCmd(WORLDCMD_MOVE_POINT_BACKWARD,
                                             worldGetPoint(editor->world),
                                             pold - pnew, 0, NULL,
-                                            worldGetBufferName(editor->world)),
+                                            currBuffer),
                              editorIsBufferShared(editor));
 }
 
@@ -439,7 +468,12 @@ void editorMoveRight(Editor *editor)
   Position pold, pnew;
   MoveBufferPointFn moveBufferPointFn;
   Mode *mode;
-  mode = windowGetMode(uiGetWindow(editor->ui));
+  Window *currWnd;
+  char *currBuffer;
+
+  currBuffer = worldGetBufferName(editor->world);
+  currWnd = uiFindWindow(editor->ui, currBuffer);
+  mode = windowGetMode(currWnd);
   moveBufferPointFn = modeGetBufferPointFn(mode);
 
   pold = worldGetPoint(editor->world);
@@ -452,7 +486,7 @@ void editorMoveRight(Editor *editor)
                              createWorldCmd(WORLDCMD_MOVE_POINT_FORWARD,
                                             worldGetPoint(editor->world),
                                             pnew - pold, 0, NULL,
-                                            worldGetBufferName(editor->world)),
+                                            currBuffer),
                              editorIsBufferShared(editor));
 }
 
@@ -461,7 +495,12 @@ void editorMoveUp(Editor *editor)
   Position pnew;
   MoveBufferPointFn moveLineBufferPointFn;
   Mode *mode;
-  mode = windowGetMode(uiGetWindow(editor->ui));
+  Window *currWnd;
+  char *currBuffer;
+
+  currBuffer = worldGetBufferName(editor->world);
+  currWnd = uiFindWindow(editor->ui, currBuffer);
+  mode = windowGetMode(currWnd);
   moveLineBufferPointFn = modeGetBufferPointLineFn(mode);
 
   moveLineBufferPointFn(editor->world, -1);
@@ -470,7 +509,7 @@ void editorMoveUp(Editor *editor)
   editorProcessWorldCommand_(editor,
                              createWorldCmd(WORLDCMD_SET_POINT,
                                             pnew, 0, 0, NULL,
-                                            worldGetBufferName(editor->world)),
+                                            currBuffer),
                              editorIsBufferShared(editor));
 }
 
@@ -479,7 +518,12 @@ void editorMoveDown(Editor *editor)
   Position pnew;
   MoveBufferPointFn moveLineBufferPointFn;
   Mode *mode;
-  mode = windowGetMode(uiGetWindow(editor->ui));
+  Window *currWnd;
+  char *currBuffer;
+
+  currBuffer = worldGetBufferName(editor->world);
+  currWnd = uiFindWindow(editor->ui, currBuffer);
+  mode = windowGetMode(currWnd);
   moveLineBufferPointFn = modeGetBufferPointLineFn(mode);
 
   moveLineBufferPointFn(editor->world, 1);
@@ -488,7 +532,7 @@ void editorMoveDown(Editor *editor)
   editorProcessWorldCommand_(editor,
                              createWorldCmd(WORLDCMD_SET_POINT,
                                             pnew, 0, 0, NULL,
-                                            worldGetBufferName(editor->world)),
+                                            currBuffer),
                              editorIsBufferShared(editor));
 }
 
@@ -497,7 +541,12 @@ void editorPrevWord(Editor *editor)
   Position pold, pnew;
   MoveBufferPointFn moveWordBufferPointFn;
   Mode *mode;
-  mode = windowGetMode(uiGetWindow(editor->ui));
+  Window *currWnd;
+  char *currBuffer;
+
+  currBuffer = worldGetBufferName(editor->world);
+  currWnd = uiFindWindow(editor->ui, currBuffer);
+  mode = windowGetMode(currWnd);
   moveWordBufferPointFn = modeGetBufferPointWordFn(mode);
 
   pold = worldGetPoint(editor->world);
@@ -508,7 +557,7 @@ void editorPrevWord(Editor *editor)
                              createWorldCmd(WORLDCMD_MOVE_POINT_BACKWARD,
                                             pold,
                                             pold - pnew, 0, NULL,
-                                            worldGetBufferName(editor->world)),
+                                            currBuffer),
                              editorIsBufferShared(editor));
 }
 
@@ -517,7 +566,12 @@ void editorNextWord(Editor *editor)
   Position pold, pnew;
   MoveBufferPointFn moveWordBufferPointFn;
   Mode *mode;
-  mode = windowGetMode(uiGetWindow(editor->ui));
+  Window *currWnd;
+  char *currBuffer;
+
+  currBuffer = worldGetBufferName(editor->world);
+  currWnd = uiFindWindow(editor->ui, currBuffer);
+  mode = windowGetMode(currWnd);
   moveWordBufferPointFn = modeGetBufferPointWordFn(mode);
 
   pold = worldGetPoint(editor->world);
@@ -528,7 +582,7 @@ void editorNextWord(Editor *editor)
                              createWorldCmd(WORLDCMD_MOVE_POINT_FORWARD,
                                             pold,
                                             pnew - pold, 0, NULL,
-                                            worldGetBufferName(editor->world)),
+                                            currBuffer),
                              editorIsBufferShared(editor));
 }
 
@@ -544,9 +598,12 @@ void editorPromptForInput(Editor *editor, char *editorCmdStr, char *label)
   EditorCmd *editorCmd;
   KbInput kbInput[2];
   size_t labelLen;
+  Window *activeWnd;
+
   labelLen = strlen(label);
   uiActivateMiniWindow(editor->ui, 1);
-  uiSetWindowBuffer(editor->ui, "*prompt*");
+  activeWnd = uiGetActiveWindow(editor->ui);
+  uiSetWindowBufferName(editor->ui, activeWnd, "*prompt*");
   worldSetCurrentBuffer(editor->world, "*prompt*", 1);
   worldInsert(editor->world, label, labelLen);
 
@@ -572,6 +629,7 @@ char *editorRecoverFromPromptedInput(Editor *editor)
   Size sz;
   EditorCmd *editorCmd;
   char *prevBuffer;
+  Window *activeWnd;
 
   prevBuffer = worldGetBufferName(editor->world);
   worldSetCurrentBuffer(editor->world, "*prompt*", 1);
@@ -583,7 +641,8 @@ char *editorRecoverFromPromptedInput(Editor *editor)
   input[sz] = '\0';
   worldSetCurrentBuffer(editor->world, prevBuffer, 0);
   uiActivateMiniWindow(editor->ui, 1);
-  uiSetWindowBuffer(editor->ui, "*messages*");
+  activeWnd = uiGetActiveWindow(editor->ui);
+  uiSetWindowBufferName(editor->ui, activeWnd, "*messages*");
   uiActivateMiniWindow(editor->ui, 0);
   worldNotifyObservers(editor->world);
 
@@ -609,13 +668,13 @@ void editorChooseBuffer(Editor *editor, char *bufferName)
 
 void editorChooseWindowBuffer(Editor *editor, char *bufferName)
 {
-  char *currBufName;
+  Window *activeWnd;
+  activeWnd = uiGetActiveWindow(editor->ui);
   assert(bufferName != NULL);
-  currBufName = worldGetBufferName(editor->world);
   if (!worldBufferExists(editor->world, bufferName)) {
     worldCreateBuffer(editor->world, bufferName);
   }
-  uiSetWindowBuffer(editor->ui, bufferName);
+  uiSetWindowBufferName(editor->ui, activeWnd, bufferName);
   worldNotifyObservers(editor->world);
 }
 
@@ -636,15 +695,21 @@ void editorRemoveCurrentWindow(Editor *editor)
 
 void editorNextWindow(Editor *editor)
 {
+  char *activeWndBufName;
+  activeWndBufName = uiGetWindowBufferName(editor->ui,
+                                           uiGetActiveWindow(editor->ui));
   uiNextWindow(editor->ui);
-  worldSetCurrentBuffer(editor->world, uiGetWindowBufferName(editor->ui), 0);
+  worldSetCurrentBuffer(editor->world, activeWndBufName, 0);
   uiRedisplay(editor->ui, editor->world);
 }
 
 void editorPrevWindow(Editor *editor)
 {
+  char *activeWndBufName;
+  activeWndBufName = uiGetWindowBufferName(editor->ui,
+                                           uiGetActiveWindow(editor->ui));
   uiPrevWindow(editor->ui);
-  worldSetCurrentBuffer(editor->world, uiGetWindowBufferName(editor->ui), 0);
+  worldSetCurrentBuffer(editor->world, activeWndBufName, 0);
   uiRedisplay(editor->ui, editor->world);
 }
 
@@ -666,33 +731,53 @@ void editorSetSharingPort(Editor *editor, int port)
 
 void editorNextBuffer(Editor *editor)
 {
+  Window *activeWnd;
+  activeWnd = uiGetActiveWindow(editor->ui);
   worldNextBuffer(editor->world);
-  uiSetWindowBuffer(editor->ui, worldGetBufferName(editor->world));
+  uiSetWindowBufferName(editor->ui, activeWnd, worldGetBufferName(editor->world));
   worldNotifyObservers(editor->world);
 }
 
 void editorPrevBuffer(Editor *editor)
 {
+  Window *activeWnd;
+  activeWnd = uiGetActiveWindow(editor->ui);
   worldPrevBuffer(editor->world);
-  uiSetWindowBuffer(editor->ui, worldGetBufferName(editor->world));
+  uiSetWindowBufferName(editor->ui, activeWnd, worldGetBufferName(editor->world));
   worldNotifyObservers(editor->world);
 }
 
 void editorCloseCurrentBuffer(Editor *editor)
 {
-  char *bufName;
-  bufName = worldGetBufferName(editor->world);
+  Window *bufferWnd;
+  char *bufNameClose, *bufNameSwitch;
+
+  bufNameClose = worldGetBufferName(editor->world);
   worldNextBuffer(editor->world);
-  if (!strcmp(bufName, worldGetBufferName(editor->world))) {
-    editorShowMessage(editor, "The last buffer cannot be closed.");
+  if (!strcmp(bufNameClose, worldGetBufferName(editor->world))) {
+    editorShowMessage(editor, "The last buffer cannot be closed.", 1);
     return;
   }
-  /* FIXME: passing 1 as create arg only because it would
-     cause less trouble under an inconsistent state */
-  worldSetCurrentBuffer(editor->world, uiGetWindowBufferName(editor->ui), 1);
+
+  bufferWnd = uiFindWindow(editor->ui, bufNameClose);
+  if (bufferWnd) {
+    bufNameSwitch = worldGetBufferName(editor->world);
+    editorShowMessage(editor, "Buffer \"", 0);
+    editorShowMessage(editor, bufNameClose, 0);
+    editorShowMessage(editor, "\" closed", 1);
+    uiSetWindowBufferName(editor->ui, bufferWnd, bufNameSwitch);
+  }
+
+  /* FIXME: This is not cool, setting the create flag below shouldn't be. */
+  /* necessary. This may obfuscate a real problem. */
+  worldSetCurrentBuffer(editor->world, bufNameClose, 1);
   worldCloseBuffer(editor->world);
-  uiSetWindowBuffer(editor->ui, worldGetBufferName(editor->world));
   worldNotifyObservers(editor->world);
+}
+
+void editorSetPoint(Editor *editor, Position position)
+{
+  worldSetPoint(editor->world, position);
 }
 
 /* FIXME: Must use WorldCmds */
@@ -701,7 +786,12 @@ void editorPointToEndOfLine(Editor *editor)
   MoveBufferPointFn moveBufferPointFn;
   MoveBufferPointFn moveLineBufferPointFn;
   Mode *mode;
-  mode = windowGetMode(uiGetWindow(editor->ui));
+  Window *currWnd;
+  char *currBuffer;
+
+  currBuffer = worldGetBufferName(editor->world);
+  currWnd = uiFindWindow(editor->ui, currBuffer);
+  mode = windowGetMode(currWnd);
 
   moveBufferPointFn = modeGetBufferPointFn(mode);
   moveLineBufferPointFn = modeGetBufferPointLineFn(mode);
@@ -720,7 +810,12 @@ void editorPointToLineBegin(Editor *editor)
   MoveBufferPointFn moveBufferPointFn;
   MoveBufferPointFn moveLineBufferPointFn;
   Mode *mode;
-  mode = windowGetMode(uiGetWindow(editor->ui));
+  Window *currWnd;
+  char *currBuffer;
+
+  currBuffer = worldGetBufferName(editor->world);
+  currWnd = uiFindWindow(editor->ui, currBuffer);
+  mode = windowGetMode(currWnd);
 
   moveBufferPointFn = modeGetBufferPointFn(mode);
   moveLineBufferPointFn = modeGetBufferPointLineFn(mode);
@@ -758,12 +853,14 @@ char *fileName(char *fpath)
 void editorOpenFile(Editor *editor, char *filePath)
 {
   char *bufferName;
+  Window *activeWnd;
+  activeWnd = uiGetActiveWindow(editor->ui);
   bufferName = fileName(filePath);
   worldCreateBuffer(editor->world, bufferName);
   worldSetCurrentBuffer(editor->world, bufferName, 1);
   worldSetBufferFilePath(editor->world, filePath);
   worldReadBuffer(editor->world);
-  uiSetWindowBuffer(editor->ui, bufferName);
+  uiSetWindowBufferName(editor->ui, activeWnd, bufferName);
   worldNotifyObservers(editor->world);
 }
 
@@ -787,6 +884,26 @@ void editorShareBuffer(Editor *editor, int share)
 int editorIsBufferShared(Editor *editor)
 {
   return worldGetBufferFlags(editor->world) & BUFFER_FLAG_SHARED;
+}
+
+Size editorBufferSize(Editor *editor)
+{
+  return worldBufferSize(editor->world);
+}
+
+Size
+editorFetchBufferData(Editor *editor, Byte *dest, Position beg, Position end)
+{
+  Size nbytes;
+  nbytes = ((end > beg) ? (end - beg) : (beg - end));
+  worldAddMark(editor->world, "*_ed_fetch_bytes_*");
+  if (nbytes) {
+    worldSetPoint(editor->world, (beg < end) ? beg : end);
+    nbytes = worldGetChunk(editor->world, dest, nbytes);
+  }
+  worldMarkToPoint(editor->world, "*_ed_fetch_bytes_*");
+  worldRemoveMark(editor->world, "*_ed_fetch_bytes_*");
+  return nbytes;
 }
 
 void editorCancel(Editor *editor)

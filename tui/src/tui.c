@@ -45,10 +45,10 @@ void ActualUIPrepareTerminal(ActualUI *actualUi, DiffexUI *ui,
   }
 
   root = actualUi->rootTerm;
-  terminal->posX = posX * terminalGetWidth(root) / 10 + 1;
-  terminal->posY = posY * terminalGetHeight(root) / 10;
-  terminal->height = sizeY * terminalGetHeight(root) / 10 - 1;
-  terminal->width =  sizeX * terminalGetWidth(root) / 10 - 1;
+  terminal->posX = posX * terminalGetWidth(root) / WNDMAN_MAX_SPLITS_H + 1;
+  terminal->posY = posY * terminalGetHeight(root) / WNDMAN_MAX_SPLITS_V;
+  terminal->height = sizeY * terminalGetHeight(root) / WNDMAN_MAX_SPLITS_V - 1;
+  terminal->width =  sizeX * terminalGetWidth(root) / WNDMAN_MAX_SPLITS_H - 1;
 }
 
 void ActualUIDrawTerminal(ActualUI *actualUi, DiffexUI *ui, Terminal *terminal)
@@ -164,6 +164,6 @@ void ActualUIMainLoop(ActualUI *actualUi, UI *ui)
   unsigned wndId;
 
   do {
-    input = terminalGetInput(ui->terminals[windowGetId(uiGetWindow(ui))]);
+    input = terminalGetInput(ui->terminals[windowGetId(uiGetActiveWindow(ui))]);
   } while (uiObserverHandleInput(ui->observer, input) == UI_CONTINUE);
 }

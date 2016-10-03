@@ -127,7 +127,7 @@ void editorCmdFnConnectToSharing(Editor *editor, EditorCmd *editorCmd)
   int port;
   if (editorCmd->paramSz) {
     if (!(parseIntParam(editorCmd, &port))) {
-      editorShowMessage(editor, "Invalid port.");
+      editorShowMessage(editor, "Invalid port.", 1);
     }
     else {
       editorConnectToSharing(editor, "127.0.0.1", port);
@@ -203,7 +203,7 @@ void editorCmdFnInitSharing(Editor *editor, EditorCmd *editorCmd)
   int port;
   if (editorCmd->paramSz) {
     if (!(parseIntParam(editorCmd, &port))) {
-      editorShowMessage(editor, "Invalid port.");
+      editorShowMessage(editor, "Invalid port.", 1);
     }
     else {
       editorSetSharingPort(editor, port);

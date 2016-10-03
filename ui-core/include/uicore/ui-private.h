@@ -23,6 +23,7 @@
 #include <uicore/ui.h>
 #include <uicore/terminal.h>
 #include <uicore/windowmanager.h>
+#include <uicore/window.h>
 
 /* Returns window's terminal or NULL if can't find it. */
 Terminal *uiGetWindowTerminalById_(UI *ui, unsigned winId);

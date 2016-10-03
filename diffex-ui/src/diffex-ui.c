@@ -83,12 +83,17 @@ void uiRedisplay(UI *diffexUi, World *world)
   observerUpdate(diffexUi, world);
 }
 
-struct window *uiGetWindow(UI *ui)
+struct window *uiGetActiveWindow(UI *ui)
 {
   if (ui->miniWindowActive) {
     return ui->miniWindow;
   }
   return windowManagerGetWindow(ui->windowManager);
+}
+
+struct window *uiFindWindow(UI *ui, char *bufName)
+{
+  return windowManagerFindWindow(ui->windowManager, bufName);
 }
 
 void uiSayCentered(UI *ui, const char *message)
@@ -157,7 +162,7 @@ void uiPrevWindow(UI *ui)
 void uiRemoveCurrentWindow(UI *ui)
 {
   unsigned winId;
-  winId = windowGetId(uiGetWindow(ui));
+  winId = windowGetId(uiGetActiveWindow(ui));
   destroyTerminal(ui->terminals[winId]);
   free(ui->terminals[winId]);
   ui->terminals[winId] = NULL;
@@ -174,23 +179,20 @@ void uiSplitWindowHorz(UI *ui)
   ui->terminals[wndId] = terminalFactoryCreate(ui->termFactory);
 }
 
-void uiSetWindowBuffer(UI *ui, char *bufName)
+void uiSetWindowBufferName(UI *ui, Window *wnd, char *bufName)
 {
-  windowSetBufferName(uiGetWindow(ui), bufName);
+  windowSetBufferName(wnd, bufName);
 }
 
-char *uiGetWindowBufferName(UI *ui)
+char *uiGetWindowBufferName(UI *ui, Window *wnd)
 {
-  if (ui->miniWindowActive) {
-    return windowGetBufferName(ui->miniWindow);
-  }
-  return windowGetBufferName(uiGetWindow(ui));
+  return windowGetBufferName(wnd);
 }
 
-void uiSetWindowHeight(UI *ui, unsigned height)
-{
-  windowManagerResizeWindow(ui->windowManager, height);
-}
+/* void uiSetWindowHeight(UI *ui, unsigned height) */
+/* { */
+/*   windowManagerResizeWindow(ui->windowManager, height); */
+/* } */
 
 void uiSetWindowHasStatusLine(UI *ui, short flag)
 {
@@ -199,10 +201,10 @@ void uiSetWindowHasStatusLine(UI *ui, short flag)
   windowSetHasStatusLine(wnd, flag);
 }
 
-short uiGetWindowHasStatusLine(UI *ui)
-{
-  return windowHasStatusLine(windowManagerGetWindow(ui->windowManager)) ? 1 : 0;
-}
+/* short uiGetWindowHasStatusLine(UI *ui) */
+/* { */
+/*   return windowHasStatusLine(windowManagerGetWindow(ui->windowManager)) ? 1 : 0; */
+/* } */
 
 KbInput *uiWaitForInput(UI *ui)
 {

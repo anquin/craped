@@ -40,9 +40,7 @@ void uiSplitWindowHorz(UI *ui){}
 void uiSetWindowHR(UI *ui, short h){}
 void uiSetWindowBuffer(UI *ui, char *bufName){}
 char *uiGetWindowBufferName(UI *ui){return "*scratch*";}
-void uiSetWindowHeight(UI *ui, unsigned height){}
 unsigned uiGetWindowHeight(UI *ui){}
-void uiSetWindowHasStatusLine(FakeUI *textUi, short b){}
 void observerUpdate(FakeUI *textUi, World *world){}
 void uiSayCentered(UI *ui, char *txt){}
 void uiActivateMiniWindow(UI *ui, short flag){}

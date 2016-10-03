@@ -65,6 +65,7 @@ void editorNextBuffer(Editor *editor);
 void editorPrevBuffer(Editor *editor);
 void editorSplitWindow(Editor *editor);
 void editorCloseCurrentBuffer(Editor *editor);
+void editorSetPoint(Editor *editor, Position position);
 void editorPointToEndOfLine(Editor *editor);
 void editorPointToLineBegin(Editor *editor);
 void editorWriteBuffer(Editor *editor);
@@ -75,11 +76,15 @@ void editorSetBufferFilePath(Editor *editor, char *filePath);
 void editorShareBuffer(Editor *editor, int share);
 /* Returns non-zero if the current buffer is shared. */
 int editorIsBufferShared(Editor *editor);
+/* Returns buffer size in bytes */
+Size editorBufferSize(Editor *editor);
+Size
+editorFetchBufferData(Editor *editor, Byte *dest, Position beg, Position end);
 void editorRegisterCommand(Editor *editor, char *cmdStr, void *fn);
 void editorRegisterExtensionCommand(Editor *editor, const char *editorExtKey,
                                     char *cmdStr, void *fn);
 void editorBindKeyCombo(Editor *editor, char *keyCombo, char *cmdStr);
-void editorShowMessage(Editor *, char *);
+void editorShowMessage(Editor *, char *, short lf);
 void editorCancel(Editor *editor);
 typedef struct editor_extension EditorExtension;
 void editorAddExtension(Editor *editor, EditorExtension *extension);

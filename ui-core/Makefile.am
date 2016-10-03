@@ -22,7 +22,7 @@ noinst_HEADERS =  													\
 	include/uicore/ui.h												\
 	include/uicore/ui_observer.h							\
 	include/uicore/window.h										\
-	include/uicore/windowmanager.h						\
+	include/uicore/window-reference.h					\
 	$(NULL)
 
 noinst_LTLIBRARIES = libuicore.la

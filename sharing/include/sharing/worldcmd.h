@@ -63,6 +63,7 @@ initWorldCmd(WorldCmd *cmd,
 
 void copyWorldCmd(WorldCmd *dest, WorldCmd *src);
 void destroyWorldCmd(WorldCmd *cmd);
+#define worldCmdGetBufferName(cmd) (((WorldCmd *)cmd)->bufferName)
 
 void worldCmdExecute(WorldCmd *, World *);
 

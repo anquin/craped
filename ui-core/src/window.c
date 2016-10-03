@@ -92,8 +92,8 @@ char *windowGetBufferName(Window *wnd)
 
 void windowSetBufferName(Window *wnd, char *bufName)
 {
-  wnd->bufferName = (char *)realloc(wnd->bufferName,
-                                    sizeof(char) * strlen(bufName));
+  wnd->bufferName =
+    (char *)realloc(wnd->bufferName, sizeof(char) * (strlen(bufName) + 1));
   strcpy(wnd->bufferName, bufName);
 }
 
