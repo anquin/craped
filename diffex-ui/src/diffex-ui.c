@@ -93,7 +93,14 @@ struct window *uiGetActiveWindow(UI *ui)
 
 struct window *uiFindWindow(UI *ui, char *bufName)
 {
-  return windowManagerFindWindow(ui->windowManager, bufName);
+  Window *wnd;
+  wnd = windowManagerFindWindow(ui->windowManager, bufName);
+  if (wnd == NULL) {
+    if (!strcmp(windowGetBufferName(ui->miniWindow), bufName)) {
+      wnd = ui->miniWindow;
+    }
+  }
+  return wnd;
 }
 
 void uiSayCentered(UI *ui, const char *message)
