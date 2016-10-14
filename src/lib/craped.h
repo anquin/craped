@@ -74,7 +74,7 @@ char *crapedGetBufferFilePath(Craped *craped);
 void crapedSetBufferFilePath(Craped *craped, char *filePath);
 /* shcrapedurrent buffer if share != 0 */
 void crapedShareBuffer(Craped *craped, int share);
-/* Recrapednon-zero if the current buffer is shared. */
+/* Returns non-zero if the current buffer is shared. */
 int crapedIsBufferShared(Craped *craped);
 Size crapedBufferSize(Craped *craped);
 Size

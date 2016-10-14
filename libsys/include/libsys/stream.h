@@ -27,8 +27,7 @@ struct stream
 {
   FileIO *file;
 
-  /* The buffer used by the stream. Equals to
-     selfData in case the stream owns it. */
+  /* The buffer used by the stream. */
   PagedRawData *data;
 
   /* The low level io channel */
