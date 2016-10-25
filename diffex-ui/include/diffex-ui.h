@@ -23,7 +23,7 @@
 #include <ui-core.h>
 #include <subeditor.h>
 
-typedef struct world_observer DiffexUI;
+typedef struct ui DiffexUI;
 
 #include <diffexui/actual-ui.h>
 
@@ -31,7 +31,7 @@ typedef struct world_observer DiffexUI;
 
 #include <diffexui/diffex.h>
 
-struct world_observer
+struct ui
 {
   WindowManager *windowManager;
   TerminalFactory *termFactory;

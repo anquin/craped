@@ -2,11 +2,12 @@ libeditor_la_SOURCES = \
 	src/editor_impl.c \
 	src/editorcmd.c \
 	src/editorcmd-funcs.c \
-	src/keybinding.c
+	src/keybinding.c \
+	src/frontend.c
 
-#include_HEADERS =																\
-#	include/editor.h																	\
-#	$(NULL)
+noinst_HEADERS = \
+	include/editor.h \
+	$(NULL)
 
 #lib_LIBRARIES
 noinst_LTLIBRARIES = libeditor.la

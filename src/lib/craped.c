@@ -29,6 +29,7 @@
 #include "craped.h"
 #include "setup.h"
 #include "setup-ui.h"
+#include "craped-editor-subscriber.h"
 
 struct craped
 {
@@ -39,12 +40,15 @@ struct craped
 
 const char CRAPED_EXT_KEY[] = "craped";
 
-Craped *createCraped(int argc, char *argv[])
+Craped *createCraped(int argc, char *argv[], CrapedSubscriber **subscribers)
 {
   Craped *craped;
   EditorSetup *edsetup;
   Editor *editor;
   Mode *mode;
+  EditorSubscriber **editorSubscribers;
+  CrapedEditorSubscriber *crapedEditorSubscriber;
+  unsigned subsLen, i;
 
   DBGLOG_OPEN(fopen("/tmp/crapeddbg.log", "wb"));
 
@@ -53,15 +57,32 @@ Craped *createCraped(int argc, char *argv[])
   edsetup = (EditorSetup *)malloc(sizeof(EditorSetup));
   setup(edsetup, argc, argv);
 
+  subsLen = 10; i = 0;
+  editorSubscribers =
+    (EditorSubscriber **)malloc(sizeof(EditorSubscriber *) * subsLen);
+  while (*subscribers != NULL) {
+    crapedEditorSubscriber =
+      createCrapedEditorSubscriber(*(subscribers++), craped);
+    editorSubscribers[i++] =
+      createEditorSubscriber(crapedEditorSubscriber, crapedEditorSubscriberFn);
+    if (i >= (subsLen - 1)) {
+      subsLen *= 2;
+      editorSubscribers =
+        (EditorSubscriber **)realloc(editorSubscribers,
+                                     sizeof(EditorSubscriber *) * subsLen);
+    }
+  }
+  editorSubscribers[i] = NULL;
+
   mode = (Mode *)malloc(sizeof(Mode));
   initMode(mode, utf8MovePoint, utf8WordMovePoint, utf8LineMovePoint);
   windowSetMode(uiGetActiveWindow(edsetup->ui), mode);
 
-  editor = createEditor(edsetup->ui, edsetup->progName);
+  editor = createEditor(edsetup->ui, editorSubscribers, edsetup->progName);
   craped->editor = editor;
   craped->edsetup = edsetup;
 
-  EditorExtension * extension = createEditorExtension(CRAPED_EXT_KEY, craped);
+  EditorExtension *extension = createEditorExtension(CRAPED_EXT_KEY, craped);
   editorAddExtension(editor, extension);
   craped->editorExt = extension;
 

@@ -32,8 +32,19 @@ typedef struct editor Editor;
 /* TODO: add encoding param */
 #define editorKeyHandle uiObserverHandleInput
 
-Editor *createEditor(void *ui, const char *startupMessage);
-void initEditor(Editor *, void *ui, const char *startupMessage);
+typedef struct editor_subscriber EditorSubscriber;
+typedef void (*EditorSubscriberFn)(void *, Editor *);
+EditorSubscriber *createEditorSubscriber(void *impl, EditorSubscriberFn fn);
+
+/* "subscribers" is a NULL terminated array of subscribers */
+Editor *createEditor(void *ui,
+                     EditorSubscriber **subscribers,
+                     const char *startupMessage);
+/* "subscribers" is a NULL terminated array of subscribers */
+void initEditor(Editor *,
+                void *ui,
+                EditorSubscriber **subscribers,
+                const char *startupMessage);
 void destroyEditor(Editor *);
 
 void editorRun(Editor *editor);

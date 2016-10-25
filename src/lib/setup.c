@@ -21,6 +21,8 @@
 #include "config.h"
 #endif
 #include "setup.h"
+#include "craped.h"
+
 
 void setup(EditorSetup *edsetup, int argc, char *argv[])
 {

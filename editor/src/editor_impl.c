@@ -19,6 +19,7 @@
 
 #include "editor_impl.h"
 #include "editorcmd-funcs.h"
+#include "frontend.h"
 #include <libsys/socket.h>
 #include <uicore/keys.h>
 #include "keybinding.h"
@@ -28,11 +29,13 @@
 #include <string.h>
 #include <assert.h>
 
-Editor *createEditor(void *ui, const char *startupMessage)
+Editor *createEditor(void *ui,
+                     EditorSubscriber **subscribers,
+                     const char *startupMessage)
 {
   Editor *editor;
   editor = (Editor *)malloc(sizeof(Editor));
-  initEditor(editor, ui, startupMessage);
+  initEditor(editor, (UI *)ui, subscribers, startupMessage);
   return editor;
 }
 
@@ -187,12 +190,20 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "C-g", "cancel");
 }
 
-void initEditor(Editor *editor, void *ui, const char *startupMessage)
+void initEditor(Editor *editor,
+                void *ui,
+                EditorSubscriber **subscribers,
+                const char *startupMessage)
 {
   World *world;
   SharingServer *sharingServer;
+  EditorFrontend *frontend;
 
-  world = createWorld((UI *)ui);
+  frontend = createEditorFrontend((UI *)ui);
+  while (*subscribers != NULL) {
+    editorFrontendAddSubscriber(frontend, *(subscribers++));
+  }
+  world = createWorld(frontend);
   /* Create auxiliary buffers */
   worldCreateBuffer(world, "*prompt*");
   worldCreateBuffer(world, "*messages*");

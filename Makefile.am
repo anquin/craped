@@ -37,13 +37,14 @@ gcraped_LDFLAGS= $(GTK_LIBS) $(VTE_LIBS)
 
 
 # LIBRARIES (LIBCRAPED and LIBGCRAPED)
+lib_LTLIBRARIES = libcraped.la libgcraped.la
 include_HEADERS = src/lib/craped.h
 pkginclude_HEADERS = libsys/include/libsys/def.h
-lib_LTLIBRARIES = libcraped.la libgcraped.la
 
 CRAPED_LIBS_SOURCES = \
 	src/lib/setup.c \
 	src/lib/craped.c \
+	src/lib/craped-editor-subscriber.c \
 	$(NULL)
 
 CRAPED_LIBS_CFLAGS = \

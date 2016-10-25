@@ -17,30 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_H
-#define UI_H
+#ifndef EDITOR_FRONTEND_H
+#define EDITOR_FRONTEND_H
 
-#include "ui_observer.h"
-#include <subeditor.h>
-#include "keys.h"
-#include "window-reference.h"
+#include "editor_impl.h"
 
-typedef struct ui UI;
+typedef struct world_observer EditorFrontend;
 
-void uiRedisplay(UI *, World *);
-Window *uiGetActiveWindow(UI *);
-Window *uiFindWindow(UI *, char *bufName);
-void uiSayCentered(UI *, const char *);
-void uiMainLoop(UI *);
-void uiSetObserver(UI *, UIObserver *);
-void uiNextWindow(UI *);
-void uiPrevWindow(UI *);
-void uiRemoveCurrentWindow(UI *);
-void uiSplitWindowHorz(UI *);
-void uiSetWindowBufferName(UI *, Window *wnd, char *bufName);
-char *uiGetWindowBufferName(UI *, Window *wnd);
-void uiSetWindowHasStatusLine(UI *, short flag);
-KbInput *uiWaitForInput(UI *);
-void uiActivateMiniWindow(UI *, short flag);
+EditorFrontend *createEditorFrontend(UI *ui);
+void destroyEditorFrontend(EditorFrontend *frontend);
 
+void editorFrontendAddSubscriber(EditorFrontend *frontend,
+                                 EditorSubscriber *subscriber);
 #endif

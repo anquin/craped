@@ -67,7 +67,7 @@ void destroyDiffexUI(DiffexUI *diffexUi)
   destroyDiffex(diffexUi->diffex);
 }
 
-void observerUpdate(DiffexUI *diffexUi, World *world)
+void uiRedisplay(UI *diffexUi, World *world)
 {
   if (!worldIsAlive(world)) {
     diffexSetMode(diffexUi->diffex, DE_ERASE);
@@ -76,11 +76,6 @@ void observerUpdate(DiffexUI *diffexUi, World *world)
   if (diffexGetMode(diffexUi->diffex) == DE_SHOW) {
     diffexSetMode(diffexUi->diffex, DE_UPDATE);
   }
-}
-
-void uiRedisplay(UI *diffexUi, World *world)
-{
-  observerUpdate(diffexUi, world);
 }
 
 struct window *uiGetActiveWindow(UI *ui)

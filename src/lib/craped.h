@@ -32,7 +32,16 @@ void crapedCmdSetParamSz(CrapedCmd *crapedCmd, int paramSz);
 char *crapedCmdGetParam(CrapedCmd *crapedCmd);
 void crapedCmdSetParam(CrapedCmd *crapedCmd, char *param);
 
-Craped *createCraped(int argc, char *argv[]);
+typedef void (*CrapedSubscriberFn)(void *, Craped *);
+typedef struct craped_subscriber
+{
+  void *impl;
+  CrapedSubscriberFn fn;
+} CrapedSubscriber;
+CrapedSubscriber *createCrapedSubscriber(void *impl, CrapedSubscriberFn fn);
+
+/* "subscribers" is a NULL terminated array of subscribers */
+Craped *createCraped(int argc, char *argv[], CrapedSubscriber **subscribers);
 void destroyCraped(Craped *craped);
 
 /* API */

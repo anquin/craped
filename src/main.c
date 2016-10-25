@@ -26,7 +26,8 @@
 int main(int argc, char *argv[])
 {
   Craped *craped;
-  craped = createCraped(argc, argv);
+  CrapedSubscriber *subscribers[] = { NULL };
+  craped = createCraped(argc, argv, subscribers);
   crapedRun(craped);
   destroyCraped(craped);
   free(craped);
