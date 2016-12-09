@@ -61,6 +61,7 @@ libcraped_la_SOURCES = \
 	src/lib/setup-tui.c \
 	$(NULL)
 libcraped_la_CFLAGS = \
+	$(BASE_CFLAGS) \
 	$(CRAPED_LIBS_CFLAGS) \
 	-I$(srcdir)/tui/include \
 	$(NULL)
@@ -74,6 +75,7 @@ libgcraped_la_SOURCES = \
 	src/lib/setup-gtk-ui.c \
 	$(NULL)
 libgcraped_la_CFLAGS = \
+	$(BASE_CFLAGS) \
 	$(CRAPED_LIBS_CFLAGS) \
 	-I$(srcdir)/gtk-ui/include \
 	$(GTK_CFLAGS) \
