@@ -122,9 +122,9 @@ void crapedBackspace(Craped *craped)
   editorBackspace(craped->editor);
 }
 
-void crapedDelete(Craped *craped)
+void crapedDelete(Craped *craped, Size size)
 {
-  editorDelete(craped->editor);
+  editorDelete(craped->editor, size);
 }
 
 void crapedLineFeed(Craped *craped)

@@ -51,7 +51,7 @@ void editorRun(Editor *editor);
 void editorExit(Editor *editor);
 void editorInsert(Editor *editor, Byte *info, Size size);
 void editorBackspace(Editor *editor);
-void editorDelete(Editor *editor);
+void editorDelete(Editor *editor, Size size);
 void editorLineFeed(Editor *editor);
 void editorInsertTab(Editor *editor);
 void editorMoveLeft(Editor *editor);

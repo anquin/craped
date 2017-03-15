@@ -49,7 +49,7 @@ void crapedRun(Craped *craped);
 void crapedExit(Craped *craped);
 void crapedInsert(Craped *craped, Byte *info, Size size);
 void crapedBackspace(Craped *craped);
-void crapedDelete(Craped *craped);
+void crapedDelete(Craped *craped, Size size);
 void crapedLineFeed(Craped *craped);
 void crapedInsertTab(Craped *craped);
 void crapedMoveLeft(Craped *craped);

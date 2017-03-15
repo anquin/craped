@@ -392,7 +392,7 @@ void editorBackspace(Editor *editor)
                           editorIsBufferShared(editor));
 }
 
-void editorDelete(Editor *editor)
+void editorDelete(Editor *editor, Size size)
 {
   Position pold, pnew;
   MoveBufferPointFn moveBufferPointFn;
@@ -406,9 +406,9 @@ void editorDelete(Editor *editor)
   moveBufferPointFn = modeGetBufferPointFn(mode);
 
   pnew = worldGetPoint(editor->world);
-  moveBufferPointFn(editor->world, 1);
+  moveBufferPointFn(editor->world, size);
   pold = worldGetPoint(editor->world);
-  moveBufferPointFn(editor->world, -1);
+  moveBufferPointFn(editor->world, -size);
 
   editorProcessWorldCommand_(editor,
                           createWorldCmd(WORLDCMD_DELETE,
