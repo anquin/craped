@@ -98,6 +98,8 @@ void ActualUIPrepareTerminal(ActualUI *actualUi, DiffexUI *ui,
                              unsigned sizeX, unsigned sizeY,
                              Terminal *terminal)
 {
+  fprintf(stderr, "ActualUIPrepareTerminal(%d, %d, %d, %d)\n",
+          posX, posY, sizeX, sizeY);
   vteSetGridPosition(terminal, posX, posY);
   vteSetGridSize(terminal, sizeX, sizeY);
 }
@@ -114,7 +116,7 @@ void ActualUIDrawTerminal(ActualUI *actualUi, DiffexUI *ui, Terminal *terminal)
   }
 
   vteGetGridPosition(terminal, &posX, &posY);
-  vteGetGridPosition(terminal, &sizeX, &sizeY);
+  vteGetGridSize(terminal, &sizeX, &sizeY);
   vw = actualUi->grid.windows[posX][posY];
   if (vw == NULL) {
     /* TODO: Can it be non-null? */
@@ -154,7 +156,7 @@ void ActualUIDrawBox(ActualUI *actualUi,
   }
 
   vteGetGridPosition(terminal, &posX, &posY);
-  vteGetGridPosition(terminal, &sizeX, &sizeY);
+  vteGetGridSize(terminal, &sizeX, &sizeY);
   vw = actualUi->grid.windows[posX][posY];
   vw->terminalWg = terminal->wg;
 }
@@ -209,8 +211,12 @@ void ActualUIDrawStatusLine(ActualUI *actualUi, DiffexUI *ui,
   GtkWidget *label;
   char *zs;
 
-  printf("ActualUIDrawBox(%d, %d, %d, %d)\n",
+  printf("ActualUIDrawStatusLine(%d, %d, %d, %d)\n",
          wndPosX, wndPosY, wndSizeX, wndSizeY);
+
+  /* FIXME: sad workaround for now, labels font size is different from VTE's.
+   This causes the status bar to get increased therefore VTE is also resized. */
+  size = 80;
 
   zs = (char *)malloc(sizeof(char) * size + 1);
   strncpy(zs, text, size);

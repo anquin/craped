@@ -27,7 +27,7 @@
 
 typedef struct text_walker TextWalker;
 void destroyTextWalker(TextWalker *walker);
-int textWalkerWalk(TextWalker *walker, char **s, int steps);
+int textWalkerWalk(TextWalker *walker, int steps);
 
 /*
  * Fetches the text from current position until the

@@ -98,8 +98,8 @@ deWindow_(Diffex *diffex, UI *ui, Window *window, World *world)
   Terminal *terminal;
   short mustFreeTerminal;
 
-  /* There may be special windows whose lifecycle
-     is not controlled by the UI (miniWindow). */
+  /* There may be special windows whose lifecycles
+     are not controlled by the UI (miniWindow). */
   if ((diffex->mode != DE_ERASE) || (window != NULL)) {
     windowGetPosition(window, &posX, &posY);
     windowGetSize(window, &sizeX, &sizeY);
@@ -396,7 +396,8 @@ void deBuffer_(Diffex *diffex, World *world, Window *window, Terminal *terminal)
         textDiff(&curr, &old, &currSz, &oldSz, &diff1Sz, &diff2Sz, &walker);
       while (currSz || oldSz) {
         unsigned writeSz;
-        writeSz = diff1Sz - ((curr[diff1Sz - 1] == '\n') ? 1 : 0);
+        writeSz = ((curr[diff1Sz - 1] == '\n') ? diff1Sz - 1 : diff1Sz);
+
         if (diff2Sz) {
           terminalSetCursor(terminal, col, row);
           terminalDelete(terminal, diff2Sz);

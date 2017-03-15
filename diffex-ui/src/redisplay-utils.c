@@ -56,7 +56,7 @@ textDiff(char **t1, char **t2,
   stepCount = 0;
   glyphSize = 0;
   while (1) {
-    nbytes = textWalkerWalk(walker, t1, 1);
+    nbytes = textWalkerWalk(walker, 1);
     if (!nbytes) {
       *diff1sz = *t1sz;
       *diff2sz = *t2sz;
@@ -99,7 +99,7 @@ textNextDiff(char **t1, char **t2,
 
 #include <subeditor.h>
 
-int textWalkerWalk(TextWalker *walker, char **s, int steps)
+int textWalkerWalk(TextWalker *walker, int steps)
 {
   register unsigned oldPos, newPos;
   int nbytes;
