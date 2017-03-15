@@ -81,6 +81,22 @@ Size bufferGetChunk(Buffer *buf, Byte *dest, Size size)
   return pagedRawDataRead(&buf->data, buf->bytePoint, dest, size);
 }
 
+Size bufferGetChunkByMarkName(Buffer *buf, Byte *dest, char *markName)
+{
+  Mark *match;
+  Position markPos;
+
+  match = markChainFind(&buf->markChain, markName);
+  if (match == NULL) return 0;
+
+  markPos = markGetPosition(match);
+  if (buf->bytePoint < markPos) {
+    return pagedRawDataRead(&buf->data, buf->bytePoint,
+                            dest, markPos - buf->bytePoint);
+  }
+  return pagedRawDataRead(&buf->data, markPos, dest, buf->bytePoint - markPos);
+}
+
 Size bufferInsert(Buffer *buf, Byte *src, Size size)
 {
   buf->flags |= BUFFER_FLAG_MODIFIED;

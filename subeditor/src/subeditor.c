@@ -225,6 +225,12 @@ Size worldGetChunk(World *world, Byte *dest, Size size)
   return bufferGetChunk(world->bufferChain->buf, dest, size);
 }
 
+Size worldGetChunkByMark(World *world, Byte *dest, char *markName)
+{
+  /* TODO: usar o BufferCommand */
+  return bufferGetChunkByMarkName(world->bufferChain->buf, dest, markName);
+}
+
 void worldMovePointForward(World *world, Size size)
 {
   BufferCommand *bufCmd;

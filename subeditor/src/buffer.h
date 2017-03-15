@@ -70,8 +70,14 @@ void bufferResetFlags(Buffer *buf, UInt32 flags);
  * Editing functions proxies to RawData somehow
 */
 
-/* Returns a copy of a chunk from the buffer current position */
+/* Writes in 'dest' a copy of the chunk from the buffer current position
+   Returns the total of bytes fetched */
 Size bufferGetChunk(Buffer *buf, Byte *dest, Size size);
+
+/* Writes in 'dest' a copy of the chunk from the buffer 
+   between the current position and the mark position
+   Returns the total of bytes fetched */
+Size bufferGetChunkByMarkName(Buffer *buf, Byte *dest, char *markName);
 
 /* Writes to the buffer current position */
 Size bufferInsert(Buffer *buf, Byte *src, Size size);

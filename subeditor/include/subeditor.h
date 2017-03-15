@@ -47,6 +47,7 @@ void worldPrevBuffer(World *world);
 void worldInsert(World *world, Byte *src, Size size);
 void worldDelete(World *world, Size size);
 Size worldGetChunk(World *world, Byte *dest, Size size);
+Size worldGetChunkByMark(World *world, Byte *dest, char *markName);
 void worldMovePointForward(World *world, Size size);
 void worldMovePointBackward(World *world, Size size);
 void worldSetPoint(World *world, Position bytePos);
