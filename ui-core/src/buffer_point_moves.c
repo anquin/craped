@@ -80,6 +80,12 @@ void utf8LineMovePoint(World *world, int displ)
   if (displ > 0) worldMovePointFn = worldMovePointForward;
   else worldMovePointFn = worldMovePointBackward;
 
+  worldGetChunk(world, &ch, 1);
+  if ((displ > 0) && (ch == '\n')) {
+    worldMovePointForward(world, 1);
+    if (!(--displ)) return;
+  }
+
   stop = 1;
   for (i = 0; i < 2; i++) {
     do {
