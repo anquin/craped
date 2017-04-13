@@ -162,9 +162,11 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "C-w", "cursor_up");
   editorBindKeyCombo(editor, "downarrow", "cursor_down");
   editorBindKeyCombo(editor, "C-s", "cursor_down");
-  editorBindKeyCombo(editor, "C-c", "prev_word");
-  editorBindKeyCombo(editor, "C-v", "next_word");
+  editorBindKeyCombo(editor, "C-c", "point_to_line_begin");
+  editorBindKeyCombo(editor, "C-v", "point_to_end_of_line");
   editorBindKeyCombo(editor, "C-b", "set_window_buffer");
+  editorBindKeyCombo(editor, "C-e", "next_word");
+  editorBindKeyCombo(editor, "C-q", "prev_word");
   editorBindKeyCombo(editor, "backspace", "backspace");
   editorBindKeyCombo(editor, "delete", "delete");
   editorBindKeyCombo(editor, "tab", "insert_tab");
@@ -180,8 +182,6 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "M-p", "prev_window");
   editorBindKeyCombo(editor, "M-k", "remove_current_window");
   editorBindKeyCombo(editor, "C-k", "close_current_buffer");
-  editorBindKeyCombo(editor, "C-e", "point_to_end_of_line");
-  editorBindKeyCombo(editor, "C-q", "point_to_line_begin");
   editorBindKeyCombo(editor, "M-,", "read_to_buffer");
   editorBindKeyCombo(editor, "M-.", "write_buffer");
   editorBindKeyCombo(editor, "C-l C-k", "insert Ut Queant laxis\nresonare fibris,\nMira gestorum\nfamuli tuorum,\nSolve polluti\nlabii reatum,\nSancte Iohannes\n");
