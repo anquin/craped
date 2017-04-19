@@ -48,7 +48,7 @@ libuicore_la_CFLAGS = \
 
 
 # TESTS
-check_PROGRAMS = split_wnd_test windowidtest
+check_PROGRAMS = split_wnd_test windowidtest fetch-lines
 TESTS = $(check_PROGRAMS)
 AM_COLOR_TESTS=always
 AM_TESTS_FD_REDIRECT = 9>&2
@@ -62,7 +62,12 @@ split_wnd_test_SOURCES = test/split_wnd_test.c \
 windowidtest_SOURCES = test/windowidtest.c \
 	$(libuicore_la_SOURCES)
 
+fetch_lines_SOURCES = test/fetch_lines.c \
+	$(libuicore_la_SOURCES)
+
 split_wnd_test_CFLAGS = $(UICORE_BASE_CFLAGS)
 split_wnd_test_LDADD = $(UICORE_LIBSDEPS)
 windowidtest_CFLAGS = $(UICORE_BASE_CFLAGS)
 windowidtest_LDADD = $(UICORE_LIBSDEPS)
+fetch_lines_CFLAGS = $(UICORE_BASE_CFLAGS)
+fetch_lines_LDADD = $(UICORE_LIBSDEPS)
