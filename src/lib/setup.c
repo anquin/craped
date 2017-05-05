@@ -24,15 +24,22 @@
 #include "craped.h"
 
 
+void parseCmdLineArgs(EditorSetup *edsetup, int argc, char *argv[]);
+
 void setup(EditorSetup *edsetup, int argc, char *argv[])
 {
   edsetup->progName = PACKAGE_STRING;
   /* TODO: parse configuration file */
-  /* TODO: parse command line args */
+  parseCmdLineArgs(edsetup, argc, argv);
   setupUI(edsetup);
 }
 
 void cleanup(EditorSetup *edsetup)
 {
   cleanupUI(edsetup);
+}
+
+void parseCmdLineArgs(EditorSetup *edsetup, int argc, char *argv[]) {
+  edsetup->filesToOpen = argv + 1;
+  edsetup->nFilesToOpen = argc - 1;
 }

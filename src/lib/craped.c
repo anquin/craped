@@ -86,6 +86,10 @@ Craped *createCraped(int argc, char *argv[], CrapedSubscriber **subscribers)
   editorAddExtension(editor, extension);
   craped->editorExt = extension;
 
+  for (i = 0; i < edsetup->nFilesToOpen; i++) {
+    crapedOpenFile(craped, edsetup->filesToOpen[i]);
+  }
+
   return craped;
 }
 

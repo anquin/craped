@@ -29,6 +29,9 @@ typedef struct editor_setup
   const char *progName;
   UI *ui;
   struct ui_setup *uiSetup;
+
+  int nFilesToOpen;
+  char **filesToOpen;
 } EditorSetup;
 
 void setup(EditorSetup *edsetup, int argc, char *argv[]);
