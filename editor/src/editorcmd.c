@@ -121,6 +121,7 @@ editorCmdHomeCreateCmd(EditorCmdHome *editorCmdHome, char *name, int paramSz, ch
                                          hasheable);
 
   if (editorCmd->decl == NULL) {
+    free(editorCmd);
     return NULL;
   }
 
