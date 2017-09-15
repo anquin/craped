@@ -43,6 +43,7 @@ void editorCmdFnChooseBuffer(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnChooseWindowBuffer(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnPromptToSetWindowBuffer(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnSplitWindowHorz(Editor *editor, EditorCmd *editorCmd);
+void editorCmdFnSplitWindowVert(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnRemoveCurrentWindow(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnNextWindow(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnPrevWindow(Editor *editor, EditorCmd *editorCmd);

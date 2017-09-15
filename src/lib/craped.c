@@ -199,6 +199,12 @@ void crapedChooseWindowBuffer(Craped *craped, char *buffername)
 void crapedSplitWindowHorz(Craped *craped)
 {
   editorSplitWindowHorz(craped->editor);
+
+}
+
+void crapedSplitWindowVert(Craped *craped)
+{
+  editorSplitWindowVert(craped->editor);
 }
 
 void crapedRemoveCurrentWindow(Craped *craped)

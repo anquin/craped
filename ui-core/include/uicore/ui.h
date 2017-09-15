@@ -37,6 +37,7 @@ void uiNextWindow(UI *);
 void uiPrevWindow(UI *);
 void uiRemoveCurrentWindow(UI *);
 void uiSplitWindowHorz(UI *);
+void uiSplitWindowVert(UI *);
 void uiSetWindowBufferName(UI *, Window *wnd, char *bufName);
 char *uiGetWindowBufferName(UI *, Window *wnd);
 void uiSetWindowHasStatusLine(UI *, short flag);

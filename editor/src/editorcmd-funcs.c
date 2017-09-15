@@ -174,6 +174,11 @@ void editorCmdFnSplitWindowHorz(Editor *editor, EditorCmd *editorCmd)
   editorSplitWindowHorz(editor);
 }
 
+void editorCmdFnSplitWindowVert(Editor *editor, EditorCmd *editorCmd)
+{
+  editorSplitWindowVert(editor);
+}
+
 void editorCmdFnRemoveCurrentWindow(Editor *editor, EditorCmd *editorCmd)
 {
   editorRemoveCurrentWindow(editor);

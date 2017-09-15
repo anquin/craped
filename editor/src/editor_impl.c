@@ -83,7 +83,8 @@ void editorCreateDefaultCommands_(Editor *editor)
                         editorCmdFnPromptToSetWindowBuffer);
   editorRegisterCommand(editor, "next_buffer", editorCmdFnNextBuffer);
   editorRegisterCommand(editor, "prev_buffer", editorCmdFnPrevBuffer);
-  editorRegisterCommand(editor, "split_window", editorCmdFnSplitWindowHorz);
+  editorRegisterCommand(editor, "hsplit_window", editorCmdFnSplitWindowHorz);
+  editorRegisterCommand(editor, "vsplit_window", editorCmdFnSplitWindowVert);
   editorRegisterCommand(editor, "next_window", editorCmdFnNextWindow);
   editorRegisterCommand(editor, "prev_window", editorCmdFnPrevWindow);
   editorRegisterCommand(editor, "remove_current_window",
@@ -177,7 +178,8 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "M-m", "toggle_share_current_buffer");
   editorBindKeyCombo(editor, "C-n", "next_buffer");
   editorBindKeyCombo(editor, "C-p", "prev_buffer");
-  editorBindKeyCombo(editor, "M-s", "split_window");
+  editorBindKeyCombo(editor, "M-s", "hsplit_window");
+  editorBindKeyCombo(editor, "M-v", "vsplit_window");
   editorBindKeyCombo(editor, "M-o", "next_window");
   editorBindKeyCombo(editor, "M-p", "prev_window");
   editorBindKeyCombo(editor, "M-k", "remove_current_window");
@@ -692,6 +694,15 @@ void editorChooseWindowBuffer(Editor *editor, char *bufferName)
 void editorSplitWindowHorz(Editor *editor)
 {
   uiSplitWindowHorz(editor->ui);
+  uiNextWindow(editor->ui);
+  uiSetWindowHasStatusLine(editor->ui, 1);
+  uiPrevWindow(editor->ui);
+  uiRedisplay(editor->ui, editor->world);
+}
+
+void editorSplitWindowVert(Editor *editor)
+{
+  uiSplitWindowVert(editor->ui);
   uiNextWindow(editor->ui);
   uiSetWindowHasStatusLine(editor->ui, 1);
   uiPrevWindow(editor->ui);

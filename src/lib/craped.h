@@ -64,6 +64,7 @@ char *crapedRecoverFromPromptedInput(Craped *craped);
 void crapedChooseBuffer(Craped *craped, char *bufferName);
 void crapedChooseWindowBuffer(Craped *craped, char *buffername);
 void crapedSplitWindowHorz(Craped *craped);
+void crapedSplitWindowVert(Craped *craped);
 void crapedRemoveCurrentWindow(Craped *craped);
 void crapedNextWindow(Craped *craped);
 void crapedPrevWindow(Craped *craped);

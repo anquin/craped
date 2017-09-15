@@ -181,6 +181,16 @@ void uiSplitWindowHorz(UI *ui)
   ui->terminals[wndId] = terminalFactoryCreate(ui->termFactory);
 }
 
+void uiSplitWindowVert(UI *ui)
+{
+  unsigned wndId;
+  if (ui->miniWindowActive) {
+    return;
+  }
+  wndId = windowManagerSplitWindow(ui->windowManager, VERTICAL);
+  ui->terminals[wndId] = terminalFactoryCreate(ui->termFactory);
+}
+
 void uiSetWindowBufferName(UI *ui, Window *wnd, char *bufName)
 {
   windowSetBufferName(wnd, bufName);
