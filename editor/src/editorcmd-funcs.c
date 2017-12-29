@@ -272,6 +272,17 @@ void editorCmdFnOpenFile(Editor *editor, EditorCmd *editorCmd)
   }
 }
 
+void editorCmdFnToggleReadOnly(Editor *editor, EditorCmd *editorCmd)
+{
+  editorSetBufferReadOnly(editor, !editorGetBufferReadOnly(editor));
+  if (editorGetBufferReadOnly(editor)) {
+    editorShowMessage(editor, "Buffer is now read only.", 1);
+  }
+  else {
+    editorShowMessage(editor, "Buffer is now editable.", 1);
+  }
+}
+
 void editorCmdFnToggleShareBuffer(Editor *editor, EditorCmd *editorCmd)
 {
   editorShareBuffer(editor, !editorIsBufferShared(editor));

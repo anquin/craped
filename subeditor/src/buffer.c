@@ -99,9 +99,11 @@ Size bufferGetChunkByMarkName(Buffer *buf, Byte *dest, char *markName)
 
 Size bufferInsert(Buffer *buf, Byte *src, Size size)
 {
-  buf->flags |= BUFFER_FLAG_MODIFIED;
+  if (buf->flags & BUFFER_FLAG_RDONLY) return;
+
   size = pagedRawDataInsert(&buf->data, buf->bytePoint, src, size);
   buf->bytePoint += size;
+  buf->flags |= BUFFER_FLAG_MODIFIED;
 
   bufferResetFlags(buf, BUFFER_FLAG_EOB);
   bufferResetFlags(buf, BUFFER_FLAG_BOB);
@@ -110,6 +112,8 @@ Size bufferInsert(Buffer *buf, Byte *src, Size size)
 
 Size bufferDelete(Buffer *buf, Size size)
 {
+  if (buf->flags & BUFFER_FLAG_RDONLY) return;
+
   assert(bufferSize(buf) >= buf->bytePoint + size);
 
   buf->flags |= BUFFER_FLAG_MODIFIED;

@@ -56,6 +56,7 @@ void editorCmdFnPointToLineBegin(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnWriteBuffer(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnOpenFile(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnPromptToOpenFile(Editor *editor, EditorCmd *editorCmd);
+void editorCmdFnToggleReadOnly(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnToggleShareBuffer(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnPromptToBindKeyCombo(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnBindKeyCombo(Editor *editor, EditorCmd *editorCmd);

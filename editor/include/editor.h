@@ -89,6 +89,8 @@ void editorShareBuffer(Editor *editor, int share);
 int editorIsBufferShared(Editor *editor);
 /* Returns buffer size in bytes */
 Size editorBufferSize(Editor *editor);
+int editorGetBufferReadOnly(Editor *editor);
+void editorSetBufferReadOnly(Editor *editor, int state);
 Size
 editorFetchBufferData(Editor *editor, Byte *dest, Position beg, Position end);
 void editorRegisterCommand(Editor *editor, char *cmdStr, void *fn);

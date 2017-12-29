@@ -100,6 +100,8 @@ void editorCreateDefaultCommands_(Editor *editor)
   editorRegisterCommand(editor,
                         "prompt_to_open_file", editorCmdFnPromptToOpenFile);
   editorRegisterCommand(editor,
+                        "toggle_buffer_rdonly", editorCmdFnToggleReadOnly);
+  editorRegisterCommand(editor,
                         "toggle_share_current_buffer",
                         editorCmdFnToggleShareBuffer);
   editorRegisterCommand(editor, "bind", editorCmdFnBindKeyCombo);
@@ -175,6 +177,7 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "M-j", "line_feed");
   editorBindKeyCombo(editor, "M-l", "init_sharing");
   editorBindKeyCombo(editor, "M-c", "sharing_connect");
+  editorBindKeyCombo(editor, "M-r", "toggle_buffer_rdonly");
   editorBindKeyCombo(editor, "M-m", "toggle_share_current_buffer");
   editorBindKeyCombo(editor, "C-n", "next_buffer");
   editorBindKeyCombo(editor, "C-p", "prev_buffer");
@@ -911,6 +914,16 @@ int editorIsBufferShared(Editor *editor)
 Size editorBufferSize(Editor *editor)
 {
   return worldBufferSize(editor->world);
+}
+
+int editorGetBufferReadOnly(Editor *editor)
+{
+  return worldGetBufferFlags(editor->world) & WORLD_BUFFER_FLAG_RDONLY;
+}
+
+void editorSetBufferReadOnly(Editor *editor, int state)
+{
+  worldSetBufferFlag(editor->world, WORLD_BUFFER_FLAG_RDONLY, state);
 }
 
 Size

@@ -28,6 +28,7 @@
 #define BUFFER_FLAG_MODIFIED 1 << 0
 #define BUFFER_FLAG_BOB 1 << 1
 #define BUFFER_FLAG_EOB 1 << 2
+#define BUFFER_FLAG_RDONLY 1 << 3
 
 typedef struct buffer
 {
