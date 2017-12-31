@@ -209,11 +209,11 @@ void initEditor(Editor *editor,
     editorFrontendAddSubscriber(frontend, *(subscribers++));
   }
   world = createWorld(frontend);
-  /* Create auxiliary buffers */
-  worldCreateBuffer(world, "*prompt*");
-  worldCreateBuffer(world, "*messages*");
-
   windowSetBufferName(uiGetActiveWindow((UI *)ui), worldGetBufferName(world));
+
+  /* Create auxiliary buffers */
+  worldSetCurrentBuffer(world, "*messages*", 1);
+  worldSetBufferFlag(world, WORLD_BUFFER_FLAG_RDONLY, 1);
 
   sharingServer = (SharingServer *)malloc(sizeof(SharingServer));
   initSharingServer(sharingServer, world, DEFAULT_SHARING_PORT);
@@ -255,10 +255,12 @@ void editorShowMessage(Editor *editor, char *msg, short lf)
 
   worldSetCurrentBuffer(editor->world, "*messages*", 1);
   worldSetPoint(editor->world, worldBufferSize(editor->world));
+  worldSetBufferFlag(editor->world, WORLD_BUFFER_FLAG_RDONLY, 0);
   worldInsert(editor->world, (Byte *)msg, strlen(msg));
   if (lf) {
     worldInsert(editor->world, (Byte *)"\n", 1);
   }
+  worldSetBufferFlag(editor->world, WORLD_BUFFER_FLAG_RDONLY, 1);
   worldSetCurrentBuffer(editor->world, bufferName, 0);
   uiRedisplay(editor->ui, editor->world);
 }
@@ -653,7 +655,7 @@ char *editorRecoverFromPromptedInput(Editor *editor)
   input = (char *)malloc(sizeof(char) * (sz + 1));
   worldSetPoint(editor->world, 0);
   worldGetChunk(editor->world, input, sz);
-  worldDelete(editor->world, sz);
+  worldCloseBuffer(editor->world);
   input[sz] = '\0';
   worldSetCurrentBuffer(editor->world, prevBuffer, 0);
   uiActivateMiniWindow(editor->ui, 1);
@@ -784,6 +786,15 @@ void editorCloseCurrentBuffer(Editor *editor)
     return;
   }
 
+  /* FIXME: This is not cool, setting the create flag below shouldn't be. */
+  /* necessary. This may obfuscate a real problem. */
+  worldSetCurrentBuffer(editor->world, bufNameClose, 1);
+  worldCloseBuffer(editor->world);
+
+  if (!strcmp(bufNameClose, "*messages*")) {
+    worldCreateBuffer(editor->world, "*messages*");
+  }
+
   bufferWnd = uiFindWindow(editor->ui, bufNameClose);
   if (bufferWnd) {
     bufNameSwitch = worldGetBufferName(editor->world);
@@ -792,11 +803,6 @@ void editorCloseCurrentBuffer(Editor *editor)
     editorShowMessage(editor, "\" closed", 1);
     uiSetWindowBufferName(editor->ui, bufferWnd, bufNameSwitch);
   }
-
-  /* FIXME: This is not cool, setting the create flag below shouldn't be. */
-  /* necessary. This may obfuscate a real problem. */
-  worldSetCurrentBuffer(editor->world, bufNameClose, 1);
-  worldCloseBuffer(editor->world);
   worldNotifyObservers(editor->world);
 }
 
