@@ -5,8 +5,13 @@ SUBDIRS = \
 	ui-core \
 	diffex-ui \
 	tui \
-	editor \
-	gtk-ui
+	editor
+
+if ENABLE_GUI
+	SUBDIRS += gtk-ui
+endif
+
+ACLOCAL_AMFLAGS=-I m4
 
 X_BASE_CFLAGS= # -Wall
 if DEBUG_MODE
@@ -26,18 +31,26 @@ AM_LDFLAGS = -lpthread
 
 
 # APPLICATION
-bin_PROGRAMS=craped gcraped
+bin_PROGRAMS=craped
+if ENABLE_GUI
+	bin_PROGRAMS += gcraped
+endif
 
 craped_SOURCES = src/main.c
-craped_LDADD =  $(builddir)/libcraped.la
+craped_LDADD = $(builddir)/libcraped.la
 
-gcraped_SOURCES = src/main.c
-gcraped_LDADD = $(builddir)/libgcraped.la
-gcraped_LDFLAGS= $(GTK_LIBS) $(VTE_LIBS)
+if ENABLE_GUI
+  gcraped_SOURCES = src/main.c
+  gcraped_LDADD = $(builddir)/libgcraped.la
+  gcraped_LDFLAGS= $(GTK_LIBS) $(VTE_LIBS)
+endif
 
 
 # LIBRARIES (LIBCRAPED and LIBGCRAPED)
-lib_LTLIBRARIES = libcraped.la libgcraped.la
+lib_LTLIBRARIES = libcraped.la
+if ENABLE_GUI
+  lib_LTLIBRARIES += libgcraped.la
+endif
 include_HEADERS = src/lib/craped.h
 pkginclude_HEADERS = libsys/include/libsys/def.h
 
@@ -70,6 +83,7 @@ libcraped_la_LIBADD = \
 	$(builddir)/tui/libtui.la \
 	$(NULL)
 
+if ENABLE_GUI
 libgcraped_la_SOURCES = \
 	$(CRAPED_LIBS_SOURCES) \
 	src/lib/setup-gtk-ui.c \
@@ -85,3 +99,4 @@ libgcraped_la_LIBADD = \
 	$(builddir)/gtk-ui/libgtkui.la \
 	$(NULL)
 libgcraped_la_LDFLAGS = $(GTK_LIBS) $(VTE_LIBS)
+endif

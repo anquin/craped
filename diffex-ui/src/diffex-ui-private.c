@@ -69,7 +69,8 @@ void uiBuildStatusLine_(UI *ui, Window *window, char **line, unsigned *size)
   (*line)[bufNamLen + 2] = ']';
 }
 
-Terminal *uiGetMiniTerminal_(UI *ui)
-{
-  return ui->miniTerminal;
-}
+/* TODO: remove */
+/* Terminal *uiGetMiniTerminal_(UI *ui) */
+/* { */
+/*   return ui->miniTerminal; */
+/* } */

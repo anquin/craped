@@ -1,4 +1,6 @@
-#!/bin/bash
+#/usr/bin/env bash
+
+set -e
 
 cd diffex-ui && aclocal && libtoolize && autoheader && automake --add-missing && autoconf && cd ..
 cd editor && aclocal && libtoolize && autoheader && automake --add-missing && autoconf && cd ..

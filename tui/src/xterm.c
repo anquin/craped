@@ -53,7 +53,7 @@ Terminal *initXTerm(XTerm *term, XTerm *parent, unsigned posX, unsigned posY)
     tcflush(term->fd, TCIFLUSH);
     tcsetattr(term->fd, TCSANOW, &(term->tio));
     setlocale(LC_CTYPE, "");
-
+    term->parent = NULL;
     term->posX = term->posY = 0;
   }
   else {

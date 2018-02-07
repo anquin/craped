@@ -20,74 +20,30 @@
 #include "setup-ui.h"
 
 #include <tui.h>
-#include <tui/xterm.h>
-#include <tui/xtermfactory.h>
 
 struct ui_setup
 {
   TextUI *textUi;
-  XTerm *rootTerm;
-  XTerm *uiRootTerm;
-  WindowManager *wndMan;
-  TerminalFactory *termFactory;
 };
 
 void setupUI(EditorSetup *edsetup)
 {
   UI *ui;
   TextUI *textUi;
-  WindowManager *wndMan;
-  TerminalFactory *termFactory;
-  XTerm *rootTerm;
-  XTerm *uiRootTerm;
-  XTerm *miniTerm;
-
-  rootTerm = createXTerm(NULL, 0, 0);
-  miniTerm = createXTerm(rootTerm, 1, terminalGetHeight(rootTerm) - 1);
-  xtermSetHeight(miniTerm, 1);
-  xtermSetWidth(miniTerm, terminalGetWidth(rootTerm) - 1);
-  uiRootTerm = createXTerm(rootTerm, 0, 0);
-  xtermSetHeight(uiRootTerm, terminalGetHeight(rootTerm) - 1);
-  termFactory = (TerminalFactory *)malloc(sizeof(TerminalFactory));
-  initXtermTerminalFactory(termFactory, uiRootTerm);
-
-  wndMan = (WindowManager *)malloc(sizeof(WindowManager));
-  initWindowManager(wndMan);
 
   textUi = (TextUI *)malloc(sizeof(TextUI));
-  initTextUI(textUi, uiRootTerm);
+  initTextUI(textUi);
 
-  ui = (DiffexUI *)malloc(sizeof(DiffexUI));
-  initDiffexUI(ui, textUi, wndMan, termFactory, miniTerm);
-
+  edsetup->ui = textUi->ui;
   edsetup->uiSetup = (UISetup *)malloc(sizeof(UISetup));
-  edsetup->ui = ui;
   edsetup->uiSetup->textUi = textUi;
-  edsetup->uiSetup->wndMan = wndMan;
-  edsetup->uiSetup->termFactory = termFactory;
-  edsetup->uiSetup->uiRootTerm = uiRootTerm;
-  edsetup->uiSetup->rootTerm = rootTerm;
 }
 
 void cleanupUI(EditorSetup *edsetup)
 {
-  destroyDiffexUI(edsetup->ui);
-  free(edsetup->ui);
-
   destroyTextUI(edsetup->uiSetup->textUi);
   free(edsetup->uiSetup->textUi);
-
-  destroyWindowManager(edsetup->uiSetup->wndMan);
-  free(edsetup->uiSetup->wndMan);
-
-  destroyTerminalFactory(edsetup->uiSetup->termFactory);
-  free(edsetup->uiSetup->termFactory);
-
-  destroyTerminal(edsetup->uiSetup->uiRootTerm);
-  free(edsetup->uiSetup->uiRootTerm);
-
-  destroyTerminal(edsetup->uiSetup->rootTerm);
-  free(edsetup->uiSetup->rootTerm);
-
   free(edsetup->uiSetup);
+  destroyDiffexUI(edsetup->ui);
+  free(edsetup->ui);
 }

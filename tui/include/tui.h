@@ -20,15 +20,21 @@
 #ifndef TUI_H
 #define TUI_H
 
-#include <diffex-ui.h>
-#include <uicore/terminal.h>
+#include <uicore/ui.h>
+#include <uicore/terminalfactory.h>
+#include <uicore/windowmanager.h>
 
 typedef struct actual_ui
 {
   Terminal *rootTerm;
+  Terminal *wndManRootTerm;
+  Terminal *miniTerm;
+  WindowManager *wndMan;
+  TerminalFactory *termFactory;
+  UI *ui;
 } TextUI;
 
-void initTextUI(TextUI *textUi, Terminal *rootTerm);
+void initTextUI(TextUI *textUi);
 void destroyTextUI(TextUI *textUi);
 
 #endif

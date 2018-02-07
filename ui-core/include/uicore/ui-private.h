@@ -34,6 +34,7 @@ void uiGetCenteredMessage_(UI *ui, char **message, unsigned *size);
 
 void uiBuildStatusLine_(UI *ui, Window *window, char **line, unsigned *size);
 
-Terminal *uiGetMiniTerminal_(UI *ui);
+/* TODO: remove */
+/* Terminal *uiGetMiniTerminal_(UI *ui); */
 
 #endif

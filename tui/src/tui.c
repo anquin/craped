@@ -18,19 +18,59 @@
  */
 
 #include "tui.h"
+#include <diffex-ui.h>
 #include <diffexui/diffex-ui-private.h>
 #include <tui/xterm.h>
+#include <tui/xtermfactory.h>
 #include <string.h>
 
 #include <libsys/dbglog.h>
 
-void initTextUI(TextUI *textUi, Terminal *rootTerm)
+void initTextUI(TextUI *textUi)
 {
+  DiffexUI *ui;
+  WindowManager *wndMan;
+  TerminalFactory *termFactory;
+  XTerm *rootTerm;
+  XTerm *wndManRootTerm;
+  XTerm *miniTerm;
+
+  rootTerm = createXTerm(NULL, 0, 0);
+  miniTerm = createXTerm(rootTerm, 1, terminalGetHeight(rootTerm) - 1);
+  xtermSetHeight(miniTerm, 1);
+  xtermSetWidth(miniTerm, terminalGetWidth(rootTerm) - 1);
+  wndManRootTerm = createXTerm(rootTerm, 0, 0);
+  xtermSetHeight(wndManRootTerm, terminalGetHeight(rootTerm) - 1);
+  termFactory = (TerminalFactory *)malloc(sizeof(TerminalFactory));
+  initXtermTerminalFactory(termFactory, wndManRootTerm);
+
+  wndMan = (WindowManager *)malloc(sizeof(WindowManager));
+  initWindowManager(wndMan);
+
+  ui = (DiffexUI *)malloc(sizeof(DiffexUI));
+  initDiffexUI(ui, textUi, wndMan, termFactory, miniTerm);
+
+  textUi->ui = ui;
+  textUi->wndMan = wndMan;
   textUi->rootTerm = rootTerm;
+  textUi->wndManRootTerm = wndManRootTerm;
+  textUi->termFactory = termFactory;
+  textUi->miniTerm = miniTerm;
 }
 
-void destroyTextUI(TextUI *actualUi)
+void destroyTextUI(TextUI *textUi)
 {
+  destroyWindowManager(textUi->wndMan);
+  free(textUi->wndMan);
+
+  destroyTerminalFactory(textUi->termFactory);
+  free(textUi->termFactory);
+
+  destroyTerminal(textUi->wndManRootTerm);
+  free(textUi->wndManRootTerm);
+
+  destroyTerminal(textUi->rootTerm);
+  free(textUi->rootTerm);
 }
 
 void ActualUIPrepareTerminal(ActualUI *actualUi, DiffexUI *ui,
@@ -39,16 +79,22 @@ void ActualUIPrepareTerminal(ActualUI *actualUi, DiffexUI *ui,
                              Terminal *terminal)
 {
   XTerm *root;
+  unsigned height, width;
 
-  if (terminal == uiGetMiniTerminal_(ui)) {
+  root = actualUi->rootTerm;
+
+  if (terminal == actualUi->miniTerm) {
+    xtermSetPosX(terminal, 1);
+    xtermSetPosY(terminal, terminalGetHeight(root) - 1);
     return;
   }
 
-  root = actualUi->rootTerm;
-  terminal->posX = posX * terminalGetWidth(root) / WNDMAN_MAX_SPLITS_H + 1;
-  terminal->posY = posY * terminalGetHeight(root) / WNDMAN_MAX_SPLITS_V;
-  terminal->height = sizeY * terminalGetHeight(root) / WNDMAN_MAX_SPLITS_V - 1;
-  terminal->width =  sizeX * terminalGetWidth(root) / WNDMAN_MAX_SPLITS_H - 1;
+  width = terminalGetWidth(root);
+  height = terminalGetHeight(root) - terminalGetHeight(actualUi->miniTerm);
+  xtermSetPosX(terminal, posX * width / WNDMAN_MAX_SPLITS_H + 1);
+  xtermSetPosY(terminal, posY * height / WNDMAN_MAX_SPLITS_V);
+  terminal->height = sizeY * height / WNDMAN_MAX_SPLITS_V - 1;
+  terminal->width =  sizeX * width / WNDMAN_MAX_SPLITS_H - 1;
 }
 
 void ActualUIDrawTerminal(ActualUI *actualUi, DiffexUI *ui, Terminal *terminal)
@@ -131,12 +177,14 @@ unsigned ActualUIGetCenteredTextMax(ActualUI *actualUi, DiffexUI *diffexUi)
 
 #define WRITE_STATUS_LINE(m) do {                                        \
     XTerm *term;                                                         \
-    term = createXTerm(actualUi->rootTerm, wndPosX, wndPosY);            \
+    term = createXTerm(actualUi->wndManRootTerm, wndPosX, wndPosY);            \
     ActualUIPrepareTerminal(actualUi, ui, wndPosX, wndPosY,              \
                             wndSizeX, wndSizeY, term);                   \
-    terminalSetCursor(actualUi->rootTerm, xtermGetPosX(term),            \
+    terminalSetCursor(actualUi->wndManRootTerm, xtermGetPosX(term),            \
                       xtermGetPosY(term) + terminalGetHeight(term));     \
-    terminalWrite(actualUi->rootTerm, m, size);                       \
+    terminalWrite(actualUi->wndManRootTerm, m, size);                          \
+    destroyTerminal(term);                                               \
+    free(term);                                                          \
   }while(0)
 
 void ActualUIDrawStatusLine(ActualUI *actualUi, DiffexUI *ui,
