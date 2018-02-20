@@ -36,6 +36,7 @@ void terminalDelete(Terminal *, Size);
 void terminalOutBlanks(Terminal *, Size);
 unsigned terminalGetWidth(Terminal *);
 unsigned terminalGetHeight(Terminal *);
+void terminalGetDimensions(Terminal *, unsigned *w, unsigned *h);
 void terminalFlush(Terminal *);
 KbInput *terminalGetInput(Terminal *);
 #include "box.h"

@@ -39,7 +39,7 @@ deBuffer_(Diffex *diffex, World *world, Window *window, Terminal *terminal);
 void deMiniWindow_(Diffex *diffex, UI *ui, World *world);
 void deStatusLine_(Diffex *diffex, UI *ui, Window *window, World *world);
 
-void diffexView(Diffex *diffex, UI *ui, World *world)
+void diffexView_(Diffex *diffex, UI *ui, World *world)
 {
   Window *activeWindow;
   Terminal *activeTerminal;
@@ -58,6 +58,17 @@ void diffexView(Diffex *diffex, UI *ui, World *world)
   if (worldIsAlive(world)) {
    worldSetCurrentBuffer(world, activeBufName, 0);
   }
+}
+
+void diffexView(Diffex *diffex, UI *ui, World *world)
+{
+  if (ui->forceCleanup && diffex->mode == DE_UPDATE) {
+    diffex->mode = DE_ERASE;
+    diffexView_(diffex, ui, world);
+    ui->forceCleanup = 0;
+    diffex->mode = DE_SHOW;
+  }
+  diffexView_(diffex, ui, world);
 }
 
 void deWindowManager_(Diffex *diffex, UI *ui, World *world)

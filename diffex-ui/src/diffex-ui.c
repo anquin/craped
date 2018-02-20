@@ -32,6 +32,7 @@ void initDiffexUI(DiffexUI *diffexUi, ActualUI *actualUi,
 {
   int i;
   Mode *mode;
+  diffexUi->forceCleanup = 0;
   diffexUi->actualUi = actualUi;
   diffexUi->windowManager = windowManager;
   diffexUi->termFactory = termFactory;
@@ -225,4 +226,9 @@ KbInput *uiWaitForInput(UI *ui)
 void uiActivateMiniWindow(UI *ui, short flag)
 {
   ui->miniWindowActive = flag;
+}
+
+void uiForceCleanupOnNextRedisplay(UI *ui)
+{
+  ui->forceCleanup = 1;
 }

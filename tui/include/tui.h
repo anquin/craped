@@ -32,6 +32,8 @@ typedef struct actual_ui
   WindowManager *wndMan;
   TerminalFactory *termFactory;
   UI *ui;
+  unsigned prevRootTermWidth;
+  unsigned prevRootTermHeight;
 } TextUI;
 
 void initTextUI(TextUI *textUi);

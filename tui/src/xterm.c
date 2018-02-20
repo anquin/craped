@@ -216,6 +216,19 @@ unsigned terminalGetHeight(Terminal *term)
   return term->height;
 }
 
+void terminalGetDimensions(Terminal *term, unsigned *w, unsigned *h)
+{
+  if (term->parent == NULL) {
+    struct winsize ws;
+    ioctl(0, TIOCGWINSZ, &ws);
+    *w = ws.ws_row;
+    *h = ws.ws_col;
+  } else {
+    *w = term->width;
+    *h = term->height;
+  }
+}
+
 void terminalFlush(Terminal *term)
 {
   fflush(stdout);

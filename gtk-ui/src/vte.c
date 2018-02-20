@@ -137,6 +137,12 @@ unsigned terminalGetHeight(Terminal *term)
   return vte_terminal_get_row_count(VTE_TERMINAL(term->wg));
 }
 
+void terminalGetDimensions(Terminal *term, unsigned *w, unsigned *h)
+{
+  *w = vte_terminal_get_column_count(VTE_TERMINAL(term->wg));
+  *y = vte_terminal_get_row_count(VTE_TERMINAL(term->wg));
+}
+
 void terminalFlush(Terminal *term)
 {
 }

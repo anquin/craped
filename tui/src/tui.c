@@ -210,8 +210,21 @@ void ActualUIMainLoop(ActualUI *actualUi, UI *ui)
 {
   KbInput *input;
   unsigned wndId;
+  unsigned currRootTermWidth;
+  unsigned currRootTermHeight;
+
+  actualUi->prevRootTermWidth = terminalGetWidth(actualUi->rootTerm);
+  actualUi->prevRootTermHeight = terminalGetHeight(actualUi->rootTerm);
 
   do {
     input = terminalGetInput(ui->terminals[windowGetId(uiGetActiveWindow(ui))]);
+    terminalGetDimensions(actualUi->rootTerm,
+                          &currRootTermWidth, &currRootTermHeight);
+    if (currRootTermWidth != actualUi->prevRootTermWidth
+        || currRootTermHeight != actualUi->prevRootTermHeight) {
+      uiForceCleanupOnNextRedisplay(ui);
+      actualUi->prevRootTermWidth = currRootTermWidth;
+      actualUi->prevRootTermHeight = currRootTermHeight;
+    }
   } while (uiObserverHandleInput(ui->observer, input) == UI_CONTINUE);
 }

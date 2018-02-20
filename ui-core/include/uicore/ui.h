@@ -43,5 +43,6 @@ char *uiGetWindowBufferName(UI *, Window *wnd);
 void uiSetWindowHasStatusLine(UI *, short flag);
 KbInput *uiWaitForInput(UI *);
 void uiActivateMiniWindow(UI *, short flag);
+void uiForceCleanupOnNextRedisplay(UI *ui);
 
 #endif
