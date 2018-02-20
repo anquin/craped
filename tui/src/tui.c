@@ -144,15 +144,15 @@ void ActualUIEraseBox(ActualUI *actualUi,
 #define WRITE_CENTERED(m, s) if (s) {                         \
     register unsigned halfSz;                                 \
     unsigned x, y;                                            \
-    XTerm *root = actualUi->rootTerm;                         \
+    XTerm *mainTerm = actualUi->wndManRootTerm;               \
                                                               \
     halfSz = sz >> 1;                                         \
                                                               \
-    x = (terminalGetWidth(root) >> 1) - halfSz;               \
-    y = terminalGetHeight(root) >> 1;                         \
+    x = (terminalGetWidth(mainTerm) >> 1) - halfSz;           \
+    y = terminalGetHeight(mainTerm) >> 1;                     \
                                                               \
-    terminalSetCursor(root, x, y);                            \
-    terminalWrite(root, m, s);                                \
+    terminalSetCursor(mainTerm, x, y);                        \
+    terminalWrite(mainTerm, m, s);                            \
   }
 
 void ActualUIDrawCenteredText(ActualUI *actualUi, DiffexUI *diffexUi,
