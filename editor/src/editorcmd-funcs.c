@@ -344,3 +344,8 @@ void editorCmdFnCancel(Editor *editor, EditorCmd *editorCmd)
 {
   editorCancel(editor);
 }
+
+void editorCmdFnRedrawEntireScreen(Editor *editor, EditorCmd *editorCmd)
+{
+  editorRedrawEntireScreen(editor);
+}

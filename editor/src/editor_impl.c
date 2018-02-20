@@ -108,6 +108,8 @@ void editorCreateDefaultCommands_(Editor *editor)
   editorRegisterCommand(editor,
                         "prompt_to_bind", editorCmdFnPromptToBindKeyCombo);
   editorRegisterCommand(editor, "cancel", editorCmdFnCancel);
+  editorRegisterCommand(editor, "redraw_entire_screen",
+                        editorCmdFnRedrawEntireScreen);
 }
 
 void editorBindKeyCombo(Editor *editor, char *keyCombo, char *cmdStr)
@@ -193,6 +195,7 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "M-b", "bind");
   /* editorBindKeyCombo(editor, "C-l l", "insert int main(int argc, char *argv[])\n{\n\n  return 0;\n}\n"); */
   editorBindKeyCombo(editor, "C-g", "cancel");
+  editorBindKeyCombo(editor, "M-u", "redraw_entire_screen");
 }
 
 void initEditor(Editor *editor,
@@ -950,6 +953,12 @@ editorFetchBufferData(Editor *editor, Byte *dest, Position beg, Position end)
 void editorCancel(Editor *editor)
 {
   editorRecoverFromPromptedInput(editor);
+}
+
+void editorRedrawEntireScreen(Editor *editor)
+{
+  uiForceCleanupOnNextRedisplay(editor->ui);
+  uiRedisplay(editor->ui, editor->world);
 }
 
 void editorAddExtension(Editor *editor, EditorExtension *extension)

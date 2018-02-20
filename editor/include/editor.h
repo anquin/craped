@@ -99,6 +99,7 @@ void editorRegisterExtensionCommand(Editor *editor, const char *editorExtKey,
 void editorBindKeyCombo(Editor *editor, char *keyCombo, char *cmdStr);
 void editorShowMessage(Editor *, char *, short lf);
 void editorCancel(Editor *editor);
+void editorRedrawEntireScreen(Editor *editor);
 typedef struct editor_extension EditorExtension;
 void editorAddExtension(Editor *editor, EditorExtension *extension);
 EditorExtension *editorGetExtension(Editor *editor, char *key);
