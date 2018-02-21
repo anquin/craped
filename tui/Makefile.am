@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = -I m4
+
 libtui_la_SOURCES =															\
 	src/tui.c																			\
   src/xterm.c																		\

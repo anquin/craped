@@ -1,15 +1,12 @@
 AC_PREREQ([2.69])
 AC_INIT([craped], [0.0.1])
 AC_CONFIG_AUX_DIR([.])
-AC_CONFIG_SRCDIR([src/lib/craped.h])
+AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 
 # Checks for programs.
 AC_PROG_CC
-AM_PROG_AR
-LT_INIT
 
 AC_ARG_ENABLE(gui,
 AS_HELP_STRING([--enable-gui],
@@ -37,7 +34,7 @@ AC_FUNC_MALLOC
 
 
 
-AC_CONFIG_SUBDIRS([libsys subeditor ui-core diffex-ui tui sharing editor])
+AC_CONFIG_SUBDIRS([libsys subeditor ui-core diffex-ui tui sharing editor lib])
 if [ x"$enable_gui" = x"true"]; then
   AC_CONFIG_SUBDIRS([gtk-ui])
 fi

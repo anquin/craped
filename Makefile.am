@@ -5,7 +5,8 @@ SUBDIRS = \
 	ui-core \
 	diffex-ui \
 	tui \
-	editor
+	editor \
+  lib
 
 if ENABLE_GUI
 	SUBDIRS += gtk-ui
@@ -23,11 +24,10 @@ endif
 
 AM_CFLAGS = \
 	$(BASE_CFLAGS) \
-	-I$(srcdir)/libsys/include \
-	-I$(srcdir)/editor/include \
+	-I$(srcdir)/lib/include \
 	$(NULL)
 
-AM_LDFLAGS = -lpthread
+# AM_LDFLAGS = -lpthread
 
 
 # APPLICATION
@@ -37,66 +37,13 @@ if ENABLE_GUI
 endif
 
 craped_SOURCES = src/main.c
-craped_LDADD = $(builddir)/libcraped.la
 
 if ENABLE_GUI
-  gcraped_SOURCES = src/main.c
-  gcraped_LDADD = $(builddir)/libgcraped.la
+  craped_LDFLAGS = -L$(builddir)/lib/.libs/ -lgcraped
   gcraped_LDFLAGS= $(GTK_LIBS) $(VTE_LIBS)
+else
+  craped_LDFLAGS = -L$(builddir)/lib/.libs/ -lcraped
 endif
 
-
-# LIBRARIES (LIBCRAPED and LIBGCRAPED)
-lib_LTLIBRARIES = libcraped.la
-if ENABLE_GUI
-  lib_LTLIBRARIES += libgcraped.la
-endif
-include_HEADERS = src/lib/craped.h
-pkginclude_HEADERS = libsys/include/libsys/def.h
-
-CRAPED_LIBS_SOURCES = \
-	src/lib/setup.c \
-	src/lib/craped.c \
-	src/lib/craped-editor-subscriber.c \
-	$(NULL)
-
-CRAPED_LIBS_CFLAGS = \
-	-I$(srcdir)/libsys/include \
-	-I$(srcdir)/subeditor/include \
-	-I$(srcdir)/sharing/include \
-	-I$(srcdir)/ui-core/include \
-	-I$(srcdir)/diffex-ui/include \
-	-I$(srcdir)/editor/include \
-	$(NULL)
-
-libcraped_la_SOURCES = \
-	$(CRAPED_LIBS_SOURCES) \
-	src/lib/setup-tui.c \
-	$(NULL)
-libcraped_la_CFLAGS = \
-	$(BASE_CFLAGS) \
-	$(CRAPED_LIBS_CFLAGS) \
-	-I$(srcdir)/tui/include \
-	$(NULL)
-libcraped_la_LIBADD = \
-	$(builddir)/editor/libeditor.la \
-	$(builddir)/tui/libtui.la \
-	$(NULL)
-
-if ENABLE_GUI
-libgcraped_la_SOURCES = \
-	$(CRAPED_LIBS_SOURCES) \
-	src/lib/setup-gtk-ui.c \
-	$(NULL)
-libgcraped_la_CFLAGS = \
-	$(BASE_CFLAGS) \
-	$(CRAPED_LIBS_CFLAGS) \
-	-I$(srcdir)/gtk-ui/include \
-	$(GTK_CFLAGS) \
-	$(NULL)
-libgcraped_la_LIBADD = \
-	$(builddir)/editor/libeditor.la \
-	$(builddir)/gtk-ui/libgtkui.la \
-	$(NULL)
-libgcraped_la_LDFLAGS = $(GTK_LIBS) $(VTE_LIBS)
-endif
+# include_HEADERS = include/craped.h
+# pkginclude_HEADERS = libsys/include/libsys/def.h

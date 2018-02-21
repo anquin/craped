@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = -I m4
+
 libeditor_la_SOURCES = \
 	src/editor_impl.c \
 	src/editorcmd.c \

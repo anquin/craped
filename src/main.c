@@ -20,8 +20,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <libsys/def.h>  /* Needed because libcraped is not yet installed */
-#include "lib/craped.h"
+/* Needed because libcraped is not yet installed */
+#include "../libsys/include/libsys/def.h"
+
+#include <craped.h>
 
 int main(int argc, char *argv[])
 {

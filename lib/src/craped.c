@@ -31,6 +31,10 @@
 #include "setup-ui.h"
 #include "craped-editor-subscriber.h"
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 struct craped
 {
   Editor *editor;
@@ -55,7 +59,7 @@ Craped *createCraped(int argc, char *argv[], CrapedSubscriber **subscribers)
   craped = (Craped *)malloc(sizeof(Craped));
 
   edsetup = (EditorSetup *)malloc(sizeof(EditorSetup));
-  setup(edsetup, argc, argv);
+  setup(edsetup, argc, argv, PACKAGE_STRING);
 
   subsLen = 10; i = 0;
   editorSubscribers =

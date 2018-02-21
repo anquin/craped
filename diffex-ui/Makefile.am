@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = -I m4
+
 libdiffexui_la_SOURCES =													\
 	src/diffex-ui-update.c												\
 	src/diffex-ui.c																\

@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = -I m4
+
 libuicore_la_SOURCES =													\
 	src/buffer_point_moves.c											\
 	src/framer.c																	\

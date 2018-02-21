@@ -70,7 +70,7 @@ void editorCmdFnBackspace(Editor *editor, EditorCmd *editorCmd)
 
 void editorCmdFnDelete(Editor *editor, EditorCmd *editorCmd)
 {
-  editorDelete(editor, editorCmd->paramSz);
+  editorDelete(editor, 1);
 }
 
 void editorCmdFnLineFeed(Editor *editor, EditorCmd *editorCmd)

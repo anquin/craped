@@ -173,6 +173,7 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "C-e", "next_word");
   editorBindKeyCombo(editor, "C-q", "prev_word");
   editorBindKeyCombo(editor, "backspace", "backspace");
+  editorBindKeyCombo(editor, "C-h", "backspace");
   editorBindKeyCombo(editor, "delete", "delete");
   editorBindKeyCombo(editor, "tab", "insert_tab");
   editorBindKeyCombo(editor, "return", "line_feed");
@@ -186,6 +187,7 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "M-s", "hsplit_window");
   editorBindKeyCombo(editor, "M-v", "vsplit_window");
   editorBindKeyCombo(editor, "M-o", "next_window");
+  editorBindKeyCombo(editor, "M-n", "next_window");
   editorBindKeyCombo(editor, "M-p", "prev_window");
   editorBindKeyCombo(editor, "M-k", "remove_current_window");
   editorBindKeyCombo(editor, "C-k", "close_current_buffer");

@@ -10,6 +10,7 @@ cd sharing && aclocal && libtoolize && autoheader && automake --add-missing && a
 cd subeditor && aclocal && libtoolize && autoheader && automake --add-missing && autoconf && cd ..
 cd tui && aclocal && libtoolize && autoheader && automake --add-missing && autoconf && cd ..
 cd ui-core && aclocal && libtoolize && autoheader && automake --add-missing && autoconf && cd ..
-aclocal && libtoolize && autoheader && automake --add-missing && autoconf
+cd lib && aclocal && libtoolize && autoheader && automake --add-missing && autoconf && cd ..
+aclocal && autoheader && automake --add-missing && autoconf
 
-mkdir build && cd build && ../configure --enable-debug
+mkdir build && cd build && ../configure --enable-debug --prefix=$HOME/subroot

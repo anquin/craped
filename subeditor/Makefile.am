@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = -I m4
+
 libsubeditor_la_SOURCES = \
 	src/buffer.c \
 	src/buffer_commands.c \

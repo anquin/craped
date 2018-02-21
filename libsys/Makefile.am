@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = -I m4
+
 libsys_la_SOURCES = \
 	src/hashing.c \
 	src/quicksearch.c \

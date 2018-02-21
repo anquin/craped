@@ -17,29 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+#ifndef SETUP_H
+#define SETUP_H
+
+#include <uicore/ui.h>
+
+typedef struct ui_setup UISetup;
+
+typedef struct editor_setup
+{
+  const char *progName;
+  UI *ui;
+  struct ui_setup *uiSetup;
+
+  int nFilesToOpen;
+  char **filesToOpen;
+} EditorSetup;
+
+void setup(EditorSetup *edsetup, int argc, char **argv, const char *welcomeMsg);
+void cleanup(EditorSetup *edsetup);
+
 #endif
-#include "setup.h"
-#include "craped.h"
-
-
-void parseCmdLineArgs(EditorSetup *edsetup, int argc, char *argv[]);
-
-void setup(EditorSetup *edsetup, int argc, char *argv[])
-{
-  edsetup->progName = PACKAGE_STRING;
-  /* TODO: parse configuration file */
-  parseCmdLineArgs(edsetup, argc, argv);
-  setupUI(edsetup);
-}
-
-void cleanup(EditorSetup *edsetup)
-{
-  cleanupUI(edsetup);
-}
-
-void parseCmdLineArgs(EditorSetup *edsetup, int argc, char *argv[]) {
-  edsetup->filesToOpen = argv + 1;
-  edsetup->nFilesToOpen = argc - 1;
-}

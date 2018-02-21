@@ -3,12 +3,11 @@ AC_INIT([libsys], [0.0.1])
 AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_SRCDIR([include/libsys.h])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_AUX_DIR([.])
+AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 : ${CFLAGS="-g"}
 AC_PROG_CC
 AM_PROG_AR
-AC_PROG_RANLIB
 LT_INIT
 
 # Checks for header files.

@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = -I m4
+
 libsharing_la_SOURCES =													\
 	src/buffer_server.c														\
 	src/sharing_server.c													\

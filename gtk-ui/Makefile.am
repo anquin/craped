@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = -I m4
+
 libgtkui_la_SOURCES =															\
 	src/gtk-ui.c																		\
   src/vte.c																				\
