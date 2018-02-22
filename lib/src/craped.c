@@ -44,7 +44,9 @@ struct craped
 
 const char CRAPED_EXT_KEY[] = "craped";
 
-Craped *createCraped(int argc, char *argv[], CrapedSubscriber **subscribers)
+Craped * createCraped(int argc, char *argv[],
+                      CrapedSubscriber **subscribers,
+                      const char *welcomeMsg)
 {
   Craped *craped;
   EditorSetup *edsetup;
@@ -59,7 +61,7 @@ Craped *createCraped(int argc, char *argv[], CrapedSubscriber **subscribers)
   craped = (Craped *)malloc(sizeof(Craped));
 
   edsetup = (EditorSetup *)malloc(sizeof(EditorSetup));
-  setup(edsetup, argc, argv, PACKAGE_STRING);
+  setup(edsetup, argc, argv, welcomeMsg);
 
   subsLen = 10; i = 0;
   editorSubscribers =

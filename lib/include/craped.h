@@ -41,7 +41,9 @@ typedef struct craped_subscriber
 CrapedSubscriber *createCrapedSubscriber(void *impl, CrapedSubscriberFn fn);
 
 /* "subscribers" is a NULL terminated array of subscribers */
-Craped *createCraped(int argc, char *argv[], CrapedSubscriber **subscribers);
+Craped * createCraped(int argc, char *argv[],
+                      CrapedSubscriber **subscribers,
+                      const char *welcomeMsg);
 void destroyCraped(Craped *craped);
 
 /* API */

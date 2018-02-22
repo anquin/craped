@@ -30,7 +30,7 @@ void parseCmdLineArgs(EditorSetup *edsetup, int argc, char *argv[]);
 
 void setup(EditorSetup *edsetup, int argc, char **argv, const char *welcomeMsg)
 {
-  edsetup->progName = (char *)malloc(sizeof(char) * strlen(welcomeMsg));
+  edsetup->progName = welcomeMsg;
   strcpy(edsetup->progName, welcomeMsg);
   /* TODO: parse configuration file */
   parseCmdLineArgs(edsetup, argc, argv);
