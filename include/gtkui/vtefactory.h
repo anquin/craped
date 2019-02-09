@@ -17,26 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
+#ifndef VTE_FACTORY
+#define VTE_FACTORY
 
-/* Needed because libcraped is not yet installed */
-#include "libsys/def.h"
+#include <uicore/terminalfactory.h>
+#include "vte.h"
 
-#include <craped.h>
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-int main(int argc, char *argv[])
+typedef struct terminal_factory
 {
-  const char progName[] = PACKAGE_STRING;
-  Craped *craped;
-  CrapedSubscriber *subscribers[] = { NULL };
-  craped = createCraped(argc, argv, subscribers, progName);
-  crapedRun(craped);
-  destroyCraped(craped);
-  free(craped);
-  return 0;
-}
+} VteTerminalFactory;
+
+void initVteTerminalFactory(VteTerminalFactory *);
+
+#endif
