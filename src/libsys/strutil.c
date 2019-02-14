@@ -17,13 +17,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBSYS_H
-#define LIBSYS_H
-
-#include <libsys/def.h>
+#include <stdlib.h>
+#include <string.h>
+#include <libsys/strutil.h>
 #include <libsys/mem.h>
-#include <libsys/hashing.h>
-#include <libsys/socket.h>
-#include <libsys/quicksearch.h>
 
-#endif
+char *copy_str(char *s)
+{
+  return copy_str_n(s, strlen(s));
+}
+
+char *copy_str_n(char *s, size_t n)
+{
+  return copy_str_n_cb(s, n, NULL);
+}
+
+char *copy_str_cb(char *s, char (*cb)(char *s, size_t *i))
+{
+  return copy_str_n_cb(s, strlen(s), NULL);
+}
+
+char *copy_str_n_cb(char *s, size_t n, char (*cb)(char *s, size_t *i))
+{
+  size_t i;
+  char *cpy, *ptr;
+  if (s == NULL) return NULL;
+  ptr = cpy = lsmalloc(sizeof(*s) * n + 1);
+  for (i = 0; s[i] != '\0' && i < n; i++) {
+    if (cb != NULL) *ptr = cb(s, &i);
+    else *ptr = s[i];
+    ++ptr;
+  }
+  *ptr = '\0';
+  return cpy;
+}

@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <libsys/mem.h>
 
 EditorCmdTree *createEditorCmdTree(void)
 {
@@ -35,7 +36,7 @@ void initEditorCmdTree(EditorCmdTree *node)
   node->cmd = NULL;
   memset(node->subTree, 0, KEY_MAX_VAL * sizeof(EditorCmdTree *));
   node->symbolSubTree = (HashTable *)malloc(sizeof(HashTable));
-  initHashTable(node->symbolSubTree, 257);  /* 257 is prime */
+  hash_table_init(node->symbolSubTree, 257);  /* 257 is prime */
 }
 
 void destroyEditorCmdTree(EditorCmdTree *node)
@@ -45,12 +46,12 @@ void destroyEditorCmdTree(EditorCmdTree *node)
   for (i = 0; i < KEY_MAX_VAL; i++) {
     if (node->subTree[i] != NULL) {
       destroyEditorCmdTree(node->subTree[i]);
-      destroyHashTable(node->subTree[i]->symbolSubTree);
+      hash_table_fini(node->subTree[i]->symbolSubTree);
       free(node->subTree[i]);
       node->subTree[i] = NULL;
     }
   }
-  destroyHashTable(node->symbolSubTree);
+  hash_table_fini(node->symbolSubTree);
   free(node->symbolSubTree);
 }
 
@@ -71,16 +72,13 @@ void editorCmdTreeBind(EditorCmdTree *node, KbInput *kbInputList, EditorCmd *cmd
     }
     else {
       KbInput *kbInputClone;
-      Hasheable *hasheable;
+      Hashed *hashed;
       EditorCmdTree *newNode;
       kbInputClone = (KbInput *)malloc(sizeof(KbInput));
       *kbInputClone = *kbInputList;
       newNode = createEditorCmdTree();
-      hasheable = createHasheable((unsigned (*)(void *, unsigned int))
-                                  kbInputHashFn,
-                                  (int (*)(void *, void *))kbInputEqualsFn,
-                                  (void *)kbInputClone);
-      hashTablePut(node->symbolSubTree, hasheable, (void *)newNode);
+      hashed = hash_kb_input(lsnew(Hashed), kbInputClone);
+      hash_table_put(node->symbolSubTree, hashed, (void *)newNode);
       node = newNode;
     }
     kbInputList = kbInputList + 1;
@@ -106,12 +104,11 @@ void editorCmdTreeUnbind(EditorCmdTree *node, KbInput *kbInputList)
     }
   }
   else {
-    Hasheable *hasheable;
+    Hashed hashed;
     EditorCmdTree *nextNode;
-    hasheable = createHasheable((unsigned (*)(void *, unsigned))kbInputHashFn,
-                                (int (*)(void *, void *))kbInputEqualsFn,
-                                (void *)kbInputList);
-    nextNode = hashTableGet(node->symbolSubTree, hasheable);
+    hash_kb_input(&hashed, kbInputList);
+    nextNode = hash_table_get(node->symbolSubTree, &hashed);
+    hashed_fini(&hashed);
     if (nextNode != NULL) {
       editorCmdTreeUnbind(nextNode, kbInputList + 1);
     }
@@ -150,12 +147,11 @@ EditorCmdTree *editorCmdTreeGet(EditorCmdTree *node, KbInput *kbInputList)
     return editorCmdTreeGet(node->subTree[kbInputList->key], kbInputList + 1);
   }
   else {
-    Hasheable *hasheable;
+    Hashed hashed;
     EditorCmdTree *nextNode;
-    hasheable = createHasheable((unsigned (*)(void *, unsigned))kbInputHashFn,
-                                (int (*)(void *, void *))kbInputEqualsFn,
-                                kbInputList);
-    nextNode = hashTableGet(node->symbolSubTree, hasheable);
+    hash_kb_input(&hashed, kbInputList);
+    nextNode = hash_table_get(node->symbolSubTree, &hashed);
+    hashed_fini(&hashed);
     if (nextNode != NULL) {
       return editorCmdTreeGet(nextNode, kbInputList + 1);
     }

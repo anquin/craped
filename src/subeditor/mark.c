@@ -21,6 +21,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <libsys/mem.h>
+#include <libsys/strhash.h>
+
 void initMark(Mark *mark, char *name, Position bytePos, Byte flags)
 {
   strncpy(mark->name, name, MARK_NAME_MAX);
@@ -46,39 +49,42 @@ void destroyMark(Mark *mark)
 void initMarkChain(MarkChain *markChain, unsigned mod)
 {
   markChain->list = NULL;
-  initHashTable(&markChain->hashTable, mod);
+  hash_table_init(&markChain->hashTable, mod);
 }
 
 void markChainPushFront(MarkChain *markChain, char *name, Position bytePos, Byte flags)
 {
   Mark *m;
   Byte markFlags;
-  Hasheable *key;
+  Hashed *key;
 
   m = createMark(name, bytePos, flags);
   m->next = markChain->list;
   markChain->list = m;
   strncpy(m->name, name, MARK_NAME_MAX);
 
-  key = createHasheable(strHashFn, (int (*)(void *, void *))strcmp, (void *)name);
+  key = hash_string(lsnew(Hashed), (char *)(name));
 
-  hashTablePut(&markChain->hashTable, key, m);
+  hash_table_put(&markChain->hashTable, key, m);
 }
 
 void markChainRemove(MarkChain *markChain, char *nome)
 {
-  Hasheable key;
+  Hashed key;
 
-  initHasheable(&key, strHashFn, (int (*)(void *, void *))strcmp, (void *)nome);
-
-  hashTableRemove(&markChain->hashTable, &key);
+  hash_string(&key, (char *)(nome));
+  hash_table_remove(&markChain->hashTable, &key);
+  hashed_fini(&key);
 }
 
 void *markChainFind(MarkChain *markChain, char *nome)
 {
-  Hasheable key;
+  Hashed key;
+  void *info;
 
-  initHasheable(&key, strHashFn, (int (*)(void *, void *))strcmp, (void *)nome);
+  hash_string(&key, (char *)(nome));
+  info = hash_table_get(&markChain->hashTable, &key);
+  hashed_fini(&key);
 
-  return hashTableGet(&markChain->hashTable, &key);
+  return info;
 }

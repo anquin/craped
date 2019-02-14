@@ -20,6 +20,8 @@
 #ifndef KEYS_H
 #define KEYS_H
 
+#include <libsys/hashing.h>
+
 typedef enum keys
 {
   NO_KEY=0,
@@ -68,8 +70,7 @@ typedef struct kb_input
 } KbInput;
 
 
-unsigned kbInputHashFn(KbInput *kbInput, unsigned mod);
-int kbInputEqualsFn(KbInput *this, KbInput *other);
 KbInput *kbInputParse(char **keyStr);
+Hashed *hash_kb_input(Hashed *hashed, KbInput *kb_input);
 
 #endif

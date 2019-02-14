@@ -20,7 +20,9 @@
 #include "editor_impl.h"
 #include "editorcmd-funcs.h"
 #include "frontend.h"
+#include <libsys/mem.h>
 #include <libsys/socket.h>
+#include <libsys/strhash.h>
 #include <uicore/keys.h>
 #include "keybinding.h"
 
@@ -239,14 +241,14 @@ void initEditor(Editor *editor,
   uiSetObserver((UI *)ui, editor);
 
   editor->extensions = (HashTable *)malloc(sizeof(HashTable));
-  initHashTable(editor->extensions, 257);  /* 257 is prime */
+  hash_table_init(editor->extensions, 257);  /* 257 is prime */
 }
 
 void destroyEditor(Editor *editor)
 {
   destroySharingServer(editor->sharingServer);
   destroyEditorCmdHome(editor->editorCmdHome);
-  destroyHashTable(editor->extensions);
+  hash_table_fini(editor->extensions);
   free(editor->sharingServer);
   free(editor->editorCmdHome);
   free(editor->extensions);
@@ -965,36 +967,28 @@ void editorRedrawEntireScreen(Editor *editor)
 
 void editorAddExtension(Editor *editor, EditorExtension *extension)
 {
-  Hasheable *hasheable;
-  hasheable = createHasheable(strHashFn,
-                              (int (*)(void *, void *))strcmp,
-                              (void *)extension->key);
-  hashTablePut(editor->extensions, hasheable, extension);
+  Hashed *hashed;
+  hashed = hash_string(lsnew(Hashed), (char *)(extension->key));
+  hash_table_put(editor->extensions, hashed, extension);
 }
 
 EditorExtension *editorGetExtension(Editor *editor, char *key)
 {
-  Hasheable *hasheable;
-  hasheable = createHasheable(strHashFn,
-                              (int (*)(void *, void *))strcmp,
-                              (void *)key);
+  Hashed hashed;
+  hash_string(&hashed, key);
   EditorExtension * match =
-    (EditorExtension *)hashTableGet(editor->extensions, hasheable);
+    (EditorExtension *)hash_table_get(editor->extensions, &hashed);
 
-  destroyHasheable(hasheable);
-  free(hasheable);
+  hashed_fini(&hashed);
   return match;
 }
 
 void editorRemoveExtension(Editor *editor, char *key)
 {
-  Hasheable *hasheable;
-  hasheable = createHasheable(strHashFn,
-                              (int (*)(void *, void *))strcmp,
-                              (void *)key);
-  hashTableRemove(editor->extensions, hasheable);
-  destroyHasheable(hasheable);
-  free(hasheable);
+  Hashed hashed;
+  hash_string(&hashed, key);
+  hash_table_remove(editor->extensions, &hashed);
+  hashed_fini(&hashed);
 }
 
 

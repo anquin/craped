@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2016 Andre Q. Barbosa
  *
- * This file is part of Craped.
+ * This file is part of NoNameYet.
  *
  * Craped is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBSYS_H
-#define LIBSYS_H
-
-#include <libsys/def.h>
+#include <stdlib.h>
 #include <libsys/mem.h>
-#include <libsys/hashing.h>
-#include <libsys/socket.h>
-#include <libsys/quicksearch.h>
 
-#endif
+void *lsmalloc(size_t size)
+{
+  void *ptr;
+  /* printf("Mallocating %u bytes...", size); */
+  ptr = malloc(size);
+  /* printf(" Mallocated: %x.\n", ptr); */
+  return ptr;
+}
+
+void lsfree(void *ptr)
+{
+  /* printf("Freeing %x...", ptr); */
+  free(ptr);
+  /* printf(" Freed %x.\n", ptr); */
+}
+
+void *lsrealloc(void *ptr, size_t size)
+{
+  /* printf("Reallocating %u bytes...", size); */
+  ptr = realloc(ptr, size);
+  /* printf(" Reallocated: %x.\n", ptr); */
+  return ptr;
+}

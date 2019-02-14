@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2016 Andre Q. Barbosa
  *
- * This file is part of Craped.
+ * This file is part of NoNameYet.
  *
  * Craped is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBSYS_H
-#define LIBSYS_H
+#ifndef LIBSYS_MEM_H
+#define LIBSYS_MEM_H
 
-#include <libsys/def.h>
-#include <libsys/mem.h>
-#include <libsys/hashing.h>
-#include <libsys/socket.h>
-#include <libsys/quicksearch.h>
+#include <stddef.h>
+
+void *lsmalloc(size_t size);
+void *lsrealloc(void *ptr, size_t size);
+void lsfree(void *ptr);
+
+#define lsnew(type) (type *)lsmalloc(sizeof(type))
+#define lsdel(ptr) lsfree(ptr); ptr = NULL;
 
 #endif

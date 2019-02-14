@@ -24,7 +24,9 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include <libsys/mem.h>
 #include <libsys/hashing.h>
+#include <libsys/strhash.h>
 
 EditorCmdDeclaration *
 createEditorCmdDeclaration(char *name, EditorCmdExecuteFn fn)
@@ -76,49 +78,44 @@ EditorCmdHome *createEditorCmdHome(void)
 {
   EditorCmdHome *editorCmdHome;
   editorCmdHome = (EditorCmdHome *)malloc(sizeof(EditorCmdHome));
-  initHashTable(&editorCmdHome->editorCmdEntries, 227);
+  hash_table_init(&editorCmdHome->editorCmdEntries, 227);
   return editorCmdHome;
 }
 
 void destroyEditorCmdHome(EditorCmdHome *editorCmdHome)
 {
-  destroyHashTable(&editorCmdHome->editorCmdEntries);
+  hash_table_fini(&editorCmdHome->editorCmdEntries);
 }
 
 void editorCmdHomeRegister(EditorCmdHome *editorCmdHome,
                            EditorCmdDeclaration *cmdDecl)
 {
-  Hasheable *hasheable;
-  hasheable = createHasheable(strHashFn,
-                              (int (*)(void *, void *))strcmp,
-                              (void *)cmdDecl->name);
-  hashTablePut(&editorCmdHome->editorCmdEntries, hasheable, cmdDecl);
+  Hashed *hashed;
+  hashed = hash_string(lsnew(Hashed), cmdDecl->name);
+  hash_table_put(&editorCmdHome->editorCmdEntries, hashed, cmdDecl);
 }
 
 void editorCmdHomeUnregister(EditorCmdHome *editorCmdHome, char *name)
 {
-  Hasheable *hasheable;
-  hasheable = createHasheable(strHashFn,
-                              (int (*)(void *, void *))strcmp,
-                              (void *)name);
-  hashTableRemove(&editorCmdHome->editorCmdEntries, hasheable);
+  Hashed hashed;
+  hash_string(&hashed, name);
+  hash_table_remove(&editorCmdHome->editorCmdEntries, &hashed);
+  hashed_fini(&hashed);
 }
 
 EditorCmd *
 editorCmdHomeCreateCmd(EditorCmdHome *editorCmdHome, char *name, int paramSz, char *param)
 {
   EditorCmd *editorCmd;
-  Hasheable *hasheable;
-  hasheable = createHasheable(strHashFn,
-                              (int (*)(void *, void *))strcmp,
-                              (void *)name);
-
+  Hashed hashed;
+  hash_string(&hashed, name);
   editorCmd = (EditorCmd *)malloc(sizeof(EditorCmd));
   editorCmd->paramSz = paramSz;
   editorCmd->param = param;
   editorCmd->decl =
-    (EditorCmdDeclaration *)hashTableGet(&editorCmdHome->editorCmdEntries,
-                                         hasheable);
+    (EditorCmdDeclaration *)hash_table_get(&editorCmdHome->editorCmdEntries,
+                                           &hashed);
+  hashed_fini(&hashed);
 
   if (editorCmd->decl == NULL) {
     free(editorCmd);

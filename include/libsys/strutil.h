@@ -17,13 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBSYS_H
-#define LIBSYS_H
+#ifndef STRUTIL_H
+#define STRUTIL_H
 
-#include <libsys/def.h>
-#include <libsys/mem.h>
-#include <libsys/hashing.h>
-#include <libsys/socket.h>
-#include <libsys/quicksearch.h>
+#include <stddef.h>
+
+char *copy_str(char *s);
+char *copy_str_n(char *s, size_t n);
+char *copy_str_cb(char *s, char (*cb)(char *s, size_t *i));
+char *copy_str_n_cb(char *s, size_t n, char (*cb)(char *s, size_t *i));
 
 #endif

@@ -17,13 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBSYS_H
-#define LIBSYS_H
-
-#include <libsys/def.h>
+#include <string.h>
+#include <libsys/strhash.h>
 #include <libsys/mem.h>
-#include <libsys/hashing.h>
-#include <libsys/socket.h>
-#include <libsys/quicksearch.h>
+#include <libsys/strutil.h>
 
-#endif
+/* Of course this can be improved */
+Hash hash_string_fn(char *str)
+{
+  Hash hash;
+
+  hash = 0;
+  while (*(str++)) {
+    hash += (Hash)(31 * (*str));
+  }
+
+  return hash;
+}
+
+Hashed *hash_string(Hashed *hashed, char *str)
+{
+  Hash hash = hash_string_fn(str);
+  return hashed_init(hashed, hash, copy_str(str),
+                     (int (*)(void *, void *))strcmp);
+}

@@ -17,13 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBSYS_H
-#define LIBSYS_H
+#ifndef STRHASH_H
+#define STRHASH_H
 
-#include <libsys/def.h>
-#include <libsys/mem.h>
-#include <libsys/hashing.h>
-#include <libsys/socket.h>
-#include <libsys/quicksearch.h>
+#include "hashing.h"
+
+Hashed *hash_string(Hashed *hashed, char *str);
 
 #endif

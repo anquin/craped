@@ -76,7 +76,7 @@ void destroyEditorFrontend(EditorFrontend *frontend)
 void editorFrontendAddSubscriber(EditorFrontend *frontend,
                                  EditorSubscriber *subscriber)
 {
-  EditorSubscriberChainNode *curr, *newNode;;
+  EditorSubscriberChainNode *curr, *newNode;
   newNode =
     (EditorSubscriberChainNode *)malloc(sizeof(EditorSubscriberChainNode));
   newNode->subscriber = subscriber;

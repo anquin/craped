@@ -20,26 +20,23 @@
 #ifndef LIBSYS_HASHING_H
 #define LIBSYS_HASHING_H
 
-typedef struct hasheable
+typedef unsigned Hash;
+
+typedef struct hashed
 {
-  unsigned (*hashfn)(void *, unsigned);
   int (*equalsfn)(void *, void *);
-
+  Hash hash;
   void *info;
-} Hasheable;
+} Hashed;
 
-void initHasheable(Hasheable *hasheable, unsigned (*hashfn)(void *, unsigned),
-		   int (*equalsfn)(void *, void *), void *);
-Hasheable *createHasheable(unsigned (*hashfn)(void *, unsigned),
-			   int (*equalsfn)(void *, void *), void *info);
-void destroyHasheable(Hasheable *hasheable);
-unsigned hasheableHashFn(Hasheable *hasheable, unsigned mod);
-int hasheableEquaslFn(Hasheable *hasheable, void *info);
-unsigned strHashFn(void *s, unsigned mod);
+Hashed *hashed_init(Hashed *hashed, Hash hash, void *info,
+                    int (*eq_fn)(void *, void *));
+Hashed *hashed_fini(Hashed *hashed);
+int hashed_equals(Hashed *hashed, void *info);
 
 typedef struct hash_node
 {
-  Hasheable *key;
+  Hashed *key;
   void *info;
   struct hash_node *next;
 } HashNode;
@@ -50,12 +47,12 @@ typedef struct hash_table
   HashNode **table;
 } HashTable;
 
-void initHashTable(HashTable *hashTable, unsigned mod);
-void destroyHashTable(HashTable *hashTable);
-void hashTablePut(HashTable *hashTable, Hasheable *key, void *info);
-void *hashTableGet(HashTable *hashTable, Hasheable *key);
-void hashTableRemove(HashTable *hashTable, Hasheable *key);
+void hash_table_init(HashTable *hashTable, unsigned mod);
+void hash_table_fini(HashTable *hashTable);
+void hash_table_put(HashTable *hashTable, Hashed *key, void *info);
+void *hash_table_get(HashTable *hashTable, Hashed *key);
+void hash_table_remove(HashTable *hashTable, Hashed *key);
 //Iterator *hashTableGetIterator(HashTable *hashTable);
-#define hashTableMod(hashTable) (hashTable->mod)
+#define hash_table_mod(hashTable) (hashTable->mod)
 
 #endif

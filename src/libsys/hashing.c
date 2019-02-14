@@ -22,31 +22,22 @@
 #include <string.h>
 #include <assert.h>
 
-void initHasheable(Hasheable *hasheable, unsigned (*hashfn)(void *, unsigned),
-		   int (*equalsfn)(void *, void *), void *info)
+Hashed *hashed_init(Hashed *hashed, Hash hash, void *info,
+                    int (*eq_fn)(void *, void *))
 {
-  hasheable->hashfn = hashfn;
-  hasheable->equalsfn = equalsfn;
-  hasheable->info = info;
+  hashed->hash = hash;
+  hashed->equalsfn = eq_fn;
+  hashed->info = info;
+  return hashed;
 }
 
-Hasheable *createHasheable(unsigned (*hashfn)(void *, unsigned),
-			   int (*equalsfn)(void *, void *), void *info)
-{
-  Hasheable *hasheable;
-
-  hasheable = (Hasheable *)malloc(sizeof(Hasheable));
-  initHasheable(hasheable, hashfn, equalsfn, info);
-
-  return hasheable;
-}
-
-void destroyHasheable(Hasheable *hasheable)
+Hashed *hashed_fini(Hashed *hashed)
 {
   /* Does nohing */
+  return hashed;
 }
 
-HashNode *createHashNode(Hasheable *key, void *info, HashNode *next)
+static HashNode *createHashNode(Hashed *key, void *info, HashNode *next)
 {
   HashNode *node;
 
@@ -58,23 +49,24 @@ HashNode *createHashNode(Hasheable *key, void *info, HashNode *next)
   return node;
 }
 
-void initHashTable(HashTable *hashTable, unsigned mod)
+void hash_table_init(HashTable *hashTable, unsigned mod)
 {
   hashTable->table = (HashNode **)malloc(sizeof(HashNode *) * mod);
   memset(hashTable->table, 0, sizeof(HashNode *) * mod);
   hashTable->mod = mod;
 }
 
-void destroyHashTable(HashTable *hashTable)
+void hash_table_fini(HashTable *hashTable)
 {
   /* TODO */
 }
 
-void hashTablePut(HashTable *hashTable, Hasheable *key, void *info)
+#define hash_to_idx(hash, mod) (hash % mod)
+
+void hash_table_put(HashTable *hashTable, Hashed *key, void *info)
 {
   unsigned pos;
-
-  pos = hasheableHashFn(key, hashTable->mod);
+  pos = hash_to_idx(key->hash, hashTable->mod);
 
   if (hashTable->table[pos] == NULL) {
     hashTable->table[pos] = createHashNode(key, info, NULL);
@@ -84,14 +76,13 @@ void hashTablePut(HashTable *hashTable, Hasheable *key, void *info)
   }
 }
 
-void *hashTableGet(HashTable *hashTable, Hasheable *key)
+void *hash_table_get(HashTable *hashTable, Hashed *key)
 {
   HashNode *node;
-
-  node = hashTable->table[hasheableHashFn(key, hashTable->mod)];
+  node = hashTable->table[hash_to_idx(key->hash, hashTable->mod)];
 
   while (node != NULL) {
-    if (!hasheableEqualsFn(key, node->key->info)) {
+    if (!hashed_equals(key, node->key->info)) {
       break;
     }
     node = node->next;
@@ -104,16 +95,16 @@ void *hashTableGet(HashTable *hashTable, Hasheable *key)
   return node->info;
 }
 
-void hashTableRemove(HashTable *hashTable, Hasheable *key)
+void hash_table_remove(HashTable *hashTable, Hashed *key)
 {
   HashNode *prev;
   HashNode *node;
-  unsigned hash = hasheableHashFn(key, hashTable->mod);
+  unsigned pos = hash_to_idx(key->hash, hashTable->mod);
 
-  node = hashTable->table[hash];
+  node = hashTable->table[pos];
 
-  if (!hasheableEqualsFn(key, node->key->info)) {
-    hashTable->table[hash] = node->next;
+  if (!hashed_equals(key, node->key->info)) {
+    hashTable->table[pos] = node->next;
     free(node);
     return;
   }
@@ -122,8 +113,8 @@ void hashTableRemove(HashTable *hashTable, Hasheable *key)
 
   while (prev != NULL) {
     if (prev->next != NULL) {
-      if (!hasheableEqualsFn(key, prev->next)) {
-	break;
+      if (!hashed_equals(key, prev->next)) {
+        break;
       }
     }
     prev = prev->next;
@@ -136,19 +127,4 @@ void hashTableRemove(HashTable *hashTable, Hasheable *key)
   }
 }
 
-unsigned strHashFn(void *s, unsigned mod)
-{
-  unsigned hash;
-  char *str = (char *)s;
-
-  hash = 0;
-  while (*(str++)) {
-    hash += (unsigned)(31 * (*str));
-  }
-  hash %= mod;
-
-  return hash;
-}
-
-unsigned hasheableHashFn(Hasheable *hasheable, unsigned mod) {return hasheable->hashfn(hasheable->info, mod);}
-int hasheableEqualsFn(Hasheable *hasheable, void *info) {return hasheable->equalsfn(hasheable->info, info);}
+int hashed_equals(Hashed *hashed, void *info) {return hashed->equalsfn(hashed->info, info);}

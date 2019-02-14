@@ -21,22 +21,8 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-
-unsigned kbInputHashFn(KbInput *kbInput, unsigned mod)
-{
-  unsigned hash;
-  char *info = (char *)kbInput->info;
-  unsigned i;
-
-  hash = kbInput->key;
-
-  for (i = 0; i < kbInput->size; i++) {
-    hash += (unsigned)(31 * info[i]);
-  }
-  hash %= mod;
-
-  return hash;
-}
+#include <libsys/strhash.h>
+#include <libsys/mem.h>
 
 int kbInputEqualsFn(KbInput *this, KbInput *other)
 {
@@ -47,6 +33,28 @@ int kbInputEqualsFn(KbInput *this, KbInput *other)
     return 1;
   }
   return memcmp(this->info, other->info, this->size);
+}
+
+Hash hash_kb_input_fn(KbInput *kbInput)
+{
+  Hash hash;
+  char *info = (char *)kbInput->info;
+  unsigned i;
+
+  hash = kbInput->key;
+
+  for (i = 0; i < kbInput->size; i++) {
+    hash += (unsigned)(31 * info[i]);
+  }
+
+  return hash;
+}
+
+Hashed *hash_kb_input(Hashed *hashed, KbInput *kb_input)
+{
+  Hash hash = hash_kb_input_fn(kb_input);
+  return hashed_init(hashed, hash, kb_input,
+                     (int (*)(void *, void *))kbInputEqualsFn);
 }
 
 Key keyGetKeyByName(char *name)
