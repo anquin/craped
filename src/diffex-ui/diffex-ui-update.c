@@ -407,7 +407,7 @@ void deBuffer_(Diffex *diffex, World *world, Window *window, Terminal *terminal)
         textDiff(&curr, &old, &currSz, &oldSz, &diff1Sz, &diff2Sz, &walker);
       while (currSz || oldSz) {
         unsigned writeSz;
-        writeSz = ((curr[diff1Sz - 1] == '\n') ? diff1Sz - 1 : diff1Sz);
+        writeSz = (diff1Sz && (curr[diff1Sz - 1] == '\n') ? diff1Sz - 1 : diff1Sz);
 
         if (diff2Sz) {
           terminalSetCursor(terminal, col, row);

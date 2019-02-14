@@ -27,7 +27,7 @@ typedef struct ui DiffexUI;
 
 #include <diffexui/actual-ui.h>
 
-#define MINI_WINDOW_ID ((unsigned)-1)
+#define MINI_WINDOW_ID WNDMAN_MAX_WINDOWS
 
 #include <diffexui/diffex.h>
 
