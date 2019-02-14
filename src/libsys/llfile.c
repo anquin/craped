@@ -46,11 +46,17 @@ LLFile *fileOpen_ll(char *filepath, FileOpenMode mode, FileError *error)
 
   opnmode = 0;
   opnflags = 0;
-  if (mode & FILE_OPEN_MODE_R) {
+  if ((mode & FILE_OPEN_MODE_R) && (mode & FILE_OPEN_MODE_W)) {
+    opnflags |= O_RDWR;
     opnflags |= O_APPEND;
-  }
-  if (mode & FILE_OPEN_MODE_W) {
-    opnflags |= O_APPEND;
+  } else {
+    if (mode & FILE_OPEN_MODE_R) {
+      opnflags |= O_RDONLY;
+    }
+    if (mode & FILE_OPEN_MODE_W) {
+      opnflags |= O_WRONLY;
+      opnflags |= O_APPEND;
+    }
   }
   if (mode & FILE_OPEN_MODE_CREATE) {
     opnflags |= O_CREAT;

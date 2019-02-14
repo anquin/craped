@@ -177,6 +177,7 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "backspace", "backspace");
   editorBindKeyCombo(editor, "C-h", "backspace");
   editorBindKeyCombo(editor, "delete", "delete");
+  editorBindKeyCombo(editor, "C-x", "delete");
   editorBindKeyCombo(editor, "tab", "insert_tab");
   editorBindKeyCombo(editor, "return", "line_feed");
   editorBindKeyCombo(editor, "M-j", "line_feed");
@@ -866,11 +867,24 @@ void editorPointToLineBegin(Editor *editor)
 
 void editorWriteBuffer(Editor *editor)
 {
+  char *buffer_name;
+  buffer_name = worldGetBufferName(editor->world);
+
   if (!strlen(worldGetBufferFilePath(editor->world))) {
-    worldSetBufferFilePath(editor->world,
-                           worldGetBufferName(editor->world));
+    worldSetBufferFilePath(editor->world, buffer_name);
   }
+
   worldWriteBuffer(editor->world);
+
+  if (worldGetBufferFlags(editor->world) & WORLD_BUFFER_FLAG_MODIFIED) {
+    editorShowMessage(editor, "Buffer \"", 0);
+    editorShowMessage(editor, buffer_name, 0);
+    editorShowMessage(editor, "\" saved", 1);
+  } else {
+    editorShowMessage(editor, "Buffer \"", 0);
+    editorShowMessage(editor, worldGetBufferName(editor->world), 0);
+    editorShowMessage(editor, "\" could not be saved", 1);
+  }
 }
 
 char *fileName(char *fpath)

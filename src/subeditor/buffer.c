@@ -219,7 +219,7 @@ void bufferWrite(Buffer *buf)
   Stream *file_stream;
   FileError file_error;
 
-  file_stream = openStreamWithExistingBuffer(buf->filePath, FILE_OPEN_MODE_R,
+  file_stream = openStreamWithExistingBuffer(buf->filePath, FILE_OPEN_MODE_W,
                                              &buf->data, &file_error);
   assert(file_error == FILE_ERROR_NO_ERROR);
 

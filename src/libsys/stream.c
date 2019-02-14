@@ -23,6 +23,7 @@
 #include "page_factory.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 FileError readToBuffer_(Stream *stream, Position *where)
 {
@@ -52,6 +53,8 @@ Stream *openStream_(char *filepath, FileOpenMode mode, PagedRawData *data,
   Stream *stream;
   Byte *buffer;
   Position where;
+
+  *error = FILE_ERROR_NO_ERROR;
 
   fileio = (FileIO *)malloc(sizeof(FileIO));
   stream = (Stream *)malloc(sizeof(Stream));
@@ -135,7 +138,27 @@ Size fileWrite_stream(FileIO *fileio, Byte *content, Size sz)
 
 FileError fileCommit_stream(FileIO *fileio)
 {
-  /* TODO */
-  DBGLOG("fileCommit_stream() not implemented yet.\n", 0);
-  return FILE_ERROR_OPERATION_NOT_IMPLEMENTED;
+  Byte *bytes;
+  Size size;
+  FileError ferr;
+  FileIO *dest_file;
+  const FileOpenMode mode = FILE_OPEN_MODE_W | FILE_OPEN_MODE_TRUNC;
+
+  size = pagedRawDataSize(STREAM(fileio)->data);
+  bytes = malloc(sizeof(Byte) * size);
+  pagedRawDataRead(STREAM(fileio)->data, 0, bytes, size);
+  dest_file = FILEIO(fileOpen_ll(STREAM(fileio)->filepath, mode, &ferr));
+  fileWrite(dest_file, bytes, size);
+  fileClose(dest_file);
+  free(bytes);
+  free(dest_file);
+  return FILE_ERROR_NO_ERROR;
+
+  /* TODO: */
+  /* This is unefficient, better aproach would be to create a function, */
+  /* for example rawDataFetchChunks(), that would return an array of direct */
+  /* pointers to the stored data portions, then iterate through this array */
+  /* and call fileWrite() so it becomes unecessary to mallocate an entire new */
+  /* intermediate buffer containing the whole file content in order to
+     write it. */
 }

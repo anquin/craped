@@ -30,7 +30,7 @@ FileError validateFileOpenMode(FileOpenMode *mode)
   if ((*mode & FILE_OPEN_MODE_W)
       && !(*mode & FILE_OPEN_MODE_R)
       && !(*mode & FILE_OPEN_MODE_APPEND)) {
-    *mode &= FILE_OPEN_MODE_TRUNC;
+    *mode |= FILE_OPEN_MODE_TRUNC;
   }
 
   return FILE_ERROR_NO_ERROR;
