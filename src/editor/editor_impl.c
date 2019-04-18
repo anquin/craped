@@ -66,6 +66,8 @@ void editorCreateDefaultCommands_(Editor *editor)
   editorRegisterCommand(editor, "cursor_left", editorCmdFnMoveLeft);
   editorRegisterCommand(editor, "cursor_up", editorCmdFnMoveUp);
   editorRegisterCommand(editor, "cursor_down", editorCmdFnMoveDown);
+  editorRegisterCommand(editor, "page_up", editorCmdFnPageUp);
+  editorRegisterCommand(editor, "page_down", editorCmdFnPageDown);
   editorRegisterCommand(editor, "prev_word", editorCmdFnPrevWord);
   editorRegisterCommand(editor, "next_word", editorCmdFnNextWord);
   editorRegisterCommand(editor, "backspace", editorCmdFnBackspace);
@@ -168,6 +170,8 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "uparrow", "cursor_up");
   editorBindKeyCombo(editor, "C-w", "cursor_up");
   editorBindKeyCombo(editor, "downarrow", "cursor_down");
+  editorBindKeyCombo(editor, "M-a", "page_up");
+  editorBindKeyCombo(editor, "M-d", "page_down");
   editorBindKeyCombo(editor, "C-s", "cursor_down");
   editorBindKeyCombo(editor, "C-c", "point_to_line_begin");
   editorBindKeyCombo(editor, "C-v", "point_to_end_of_line");
@@ -560,6 +564,49 @@ void editorMoveDown(Editor *editor)
                                             pnew, 0, 0, NULL,
                                             currBuffer),
                              editorIsBufferShared(editor));
+}
+
+void editorMovePage_(Editor *editor, int n)
+{
+  Mode *mode;
+  Position pnew;
+  Window *currWnd;
+  char *currBuffer;
+  unsigned i, win_size_x, win_size_y;
+  MoveBufferPointFn moveLineBufferPointFn;
+
+  currBuffer = worldGetBufferName(editor->world);
+
+  currWnd = uiGetActiveWindow(editor->ui);
+  mode = windowGetMode(currWnd);
+  moveLineBufferPointFn = modeGetBufferPointLineFn(mode);
+
+  worldAddMark(editor->world, "*PGMV*");;
+  worldSetPoint(editor->world, windowGetTop(currWnd));
+  uiGetWindowSize(editor->ui, &win_size_x, &win_size_y);
+  if (n < 0) {
+    moveLineBufferPointFn(editor->world, win_size_y);
+  }
+  moveLineBufferPointFn(editor->world, n * (win_size_y + win_size_y / 2));
+  pnew = worldGetPoint(editor->world);
+  worldMarkToPoint(editor->world, "*PGMV*");
+  worldRemoveMark(editor->world, "*PGMV*");
+
+  editorProcessWorldCommand_(editor,
+                             createWorldCmd(WORLDCMD_SET_POINT,
+                                            pnew, 0, 0, NULL,
+                                            currBuffer),
+                             editorIsBufferShared(editor));
+}
+
+void editorPageUp(Editor *editor)
+{
+  editorMovePage_(editor , -1);
+}
+
+void editorPageDown(Editor *editor)
+{
+  editorMovePage_(editor , 1);
 }
 
 void editorPrevWord(Editor *editor)

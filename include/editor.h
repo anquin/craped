@@ -58,6 +58,8 @@ void editorMoveLeft(Editor *editor);
 void editorMoveRight(Editor *editor);
 void editorMoveUp(Editor *editor);
 void editorMoveDown(Editor *editor);
+void editorPageUp(Editor *editor);
+void editorPageDown(Editor *editor);
 void editorPrevWord(Editor *editor);
 void editorNextWord(Editor *editor);
 void editorConnectToSharing(Editor *editor, char *host, int port);

@@ -192,6 +192,13 @@ void uiSplitWindowVert(UI *ui)
   ui->terminals[wndId] = terminalFactoryCreate(ui->termFactory);
 }
 
+void uiGetWindowSize(UI *ui, unsigned *x, unsigned *y)
+{
+  Terminal *term;
+  term = ui->terminals[windowGetId(uiGetActiveWindow(ui))];
+  terminalGetDimensions(term, x, y);
+}
+
 void uiSetWindowBufferName(UI *ui, Window *wnd, char *bufName)
 {
   windowSetBufferName(wnd, bufName);

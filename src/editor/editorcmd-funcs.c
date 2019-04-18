@@ -103,6 +103,16 @@ void editorCmdFnMoveDown(Editor *editor, EditorCmd *editorCmd)
   editorMoveDown(editor);
 }
 
+void editorCmdFnPageUp(Editor *editor, EditorCmd *editorCmd)
+{
+  editorPageUp(editor);
+}
+
+void editorCmdFnPageDown(Editor *editor, EditorCmd *editorCmd)
+{
+  editorPageDown(editor);
+}
+
 void editorCmdFnPrevWord(Editor *editor, EditorCmd *editorCmd)
 {
   editorPrevWord(editor);

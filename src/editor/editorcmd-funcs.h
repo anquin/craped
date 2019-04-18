@@ -33,6 +33,8 @@ void editorCmdFnMoveLeft(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnMoveRight(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnMoveUp(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnMoveDown(Editor *editor, EditorCmd *editorCmd);
+void editorCmdFnPageUp(Editor *editor, EditorCmd *editorCmd);
+void editorCmdFnPageDown(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnPrevWord(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnNextWord(Editor *editor, EditorCmd *editorCmd);
 void editorCmdFnPromptToInitSharing(Editor *editor, EditorCmd *editorCmd);
