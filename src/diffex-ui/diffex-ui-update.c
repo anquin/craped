@@ -245,7 +245,7 @@ void deStatusLine_(Diffex *diffex, UI *ui, Window *window, World *world)
   if (diffex->mode != DE_ERASE) {
     windowGetPosition(window, &posX, &posY);
     windowGetSize(window, &sizeX, &sizeY);
-    uiBuildStatusLine_(ui, window, &text, &size);
+    uiBuildStatusLine_(ui, window, world, &text, &size);
   }
 
   deFifoPopPushUInt(diffex, &oldSize, &size);

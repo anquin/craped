@@ -208,7 +208,7 @@ void bufferRead(Buffer *buf)
   file_content = (Byte *)malloc(sizeof(Byte) * max);
   fileRead(FILEIO(file_stream), file_content, max);
   /* pagedRawDataClearToEnd(&buf->data, buf->bytePoint); */
-  buf->flags ^= BUFFER_FLAG_MODIFIED;
+  buf->flags &= (!BUFFER_FLAG_MODIFIED);
 
   fileClose(FILEIO(file_stream));
 }
@@ -223,8 +223,8 @@ void bufferWrite(Buffer *buf)
                                              &buf->data, &file_error);
   assert(file_error == FILE_ERROR_NO_ERROR);
 
-  if (fileCommit(FILEIO(file_stream)) != FILE_ERROR_NO_ERROR) {
-    buf->flags ^= BUFFER_FLAG_MODIFIED;
+  if (fileCommit(FILEIO(file_stream)) == FILE_ERROR_NO_ERROR) {
+    buf->flags &= (!BUFFER_FLAG_MODIFIED);
   }
 
   fileClose(FILEIO(file_stream));

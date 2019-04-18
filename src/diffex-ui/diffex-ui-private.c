@@ -47,13 +47,14 @@ void uiGetCenteredMessage_(UI *ui, char **message, unsigned *size)
   }
 }
 
-void uiBuildStatusLine_(UI *ui, Window *window, char **line, unsigned *size)
+void uiBuildStatusLine_(UI *ui, Window *window, World *world,
+                        char **line, unsigned *size)
 /* FIXME: This function currently assumes
    that every char is represented by 1 byte. */
 {
   char *bufferName;
   Terminal *term;
-  size_t bufNamLen;
+  size_t bufNamLen, i;
 
   term = uiGetWindowTerminalById_(ui, windowGetId(window));
   *size = terminalGetWidth(term);
@@ -64,9 +65,24 @@ void uiBuildStatusLine_(UI *ui, Window *window, char **line, unsigned *size)
 
   bufferName = windowGetBufferName(window);
   bufNamLen = strlen(bufferName);
-  (*line)[1] = '[';
-  memcpy((*line) + 2, bufferName, sizeof(char) * bufNamLen);
-  (*line)[bufNamLen + 2] = ']';
+  if (size >(bufNamLen + 2)) {
+    (*line)[1] = '[';
+    memcpy((*line) + 2, bufferName, sizeof(char) * bufNamLen);
+    (*line)[bufNamLen + 2] = ']';
+    i = bufNamLen + 2 + 1;
+  }
+  /* ++i; */
+  /* if (i <= size) { */
+  /*   if (worldGetBufferGetFlags(world) & WORLD_BUFFER_FLAG_SHARED) { */
+  /*     (*line)[i++] = '$'; */
+  /*   } */
+  /* } */
+  ++i;
+  if (i <= size) {
+    if (worldGetBufferFlags(world) & WORLD_BUFFER_FLAG_MODIFIED) {
+      (*line)[i++] = '@';
+    }
+  }
 }
 
 /* TODO: remove */
