@@ -923,7 +923,7 @@ void editorWriteBuffer(Editor *editor)
 
   worldWriteBuffer(editor->world);
 
-  if (worldGetBufferFlags(editor->world) & WORLD_BUFFER_FLAG_MODIFIED) {
+  if (!(worldGetBufferFlags(editor->world) & WORLD_BUFFER_FLAG_MODIFIED)) {
     editorShowMessage(editor, "Buffer \"", 0);
     editorShowMessage(editor, buffer_name, 0);
     editorShowMessage(editor, "\" saved", 1);
