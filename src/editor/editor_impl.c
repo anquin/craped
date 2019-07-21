@@ -958,7 +958,14 @@ void editorOpenFile(Editor *editor, char *filePath)
   worldCreateBuffer(editor->world, bufferName);
   worldSetCurrentBuffer(editor->world, bufferName, 1);
   worldSetBufferFilePath(editor->world, filePath);
+
   worldReadBuffer(editor->world);
+  if ((worldGetBufferFlags(editor->world) & WORLD_BUFFER_FLAG_READ_ERROR)) {
+    editorShowMessage(editor, "File \"", 0);
+    editorShowMessage(editor, worldGetBufferFilePath(editor->world), 0);
+    editorShowMessage(editor, "\" could not be read", 1);
+  }
+
   uiSetWindowBufferName(editor->ui, activeWnd, bufferName);
   worldNotifyObservers(editor->world);
 }
