@@ -936,17 +936,22 @@ void editorWriteBuffer(Editor *editor)
 
 char *fileName(char *fpath)
 {
-  char *fname;
+  char *fname[2];
 
-  fname = fpath;
+  fname[1] = fname[0] = fpath;
   while (*fpath != '\0') {
-    if (*fpath == '\\') {
-      fname = fpath;
+    if (*fpath == '/') {
+      fname[0] = fname[1];
+      fname[1] = fpath;
     }
     fpath += 1;
   }
 
-  return fname;
+  if (fname[1][1] == '\0')
+    /* Probably a directory path ending with '/' */
+    return fname[0] + ((fname[0][0] == '/') ? 1 : 0);
+
+  return fname[1] + ((fname[1][0] == '/') ? 1 : 0);
 }
 
 void editorOpenFile(Editor *editor, char *filePath)
