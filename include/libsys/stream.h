@@ -26,6 +26,7 @@
 struct stream
 {
   FileIO *file;
+  FileOpenMode openMode;
 
   /* The buffer used by the stream. */
   PagedRawData *data;

@@ -26,6 +26,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <errno.h>
+
 LLFile *fileOpen_ll(char *filepath, FileOpenMode mode, FileError *error)
 {
   FileIO *fileio;
@@ -71,12 +73,24 @@ LLFile *fileOpen_ll(char *filepath, FileOpenMode mode, FileError *error)
 
   llfile->fd = open(filepath, opnflags, opnmode);
   if (llfile->fd == -1) {
-    *error = FILE_ERROR_CANNOT_OPEN;
+    if (errno == ENOENT) {
+      *error = FILE_ERROR_NOT_EXIST;
+    }
+    else {
+      *error = FILE_ERROR_CANNOT_OPEN;
+    }
     free(llfile);free(fileio);
     fileio = NULL;
     llfile = NULL;
   }
   else {
+    if ((opnmode & FILE_OPEN_MODE_R) && (opnmode & FILE_OPEN_MODE_W))
+      fileio->mode = FILE_MODE_RW;
+    else if (opnmode & FILE_OPEN_MODE_R)
+      fileio->mode = FILE_MODE_RO;
+    else if (opnmode & FILE_OPEN_MODE_W)
+      fileio->mode = FILE_MODE_WO;
+
     *error = FILE_ERROR_NO_ERROR;
   }
   return llfile;

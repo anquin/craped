@@ -168,6 +168,7 @@ void ActualUIEraseCenteredText(ActualUI *actualUi, DiffexUI *diffexUi,
   m = (char *)malloc(sizeof(char) * sz);
   memset(m, ' ', sz);
   WRITE_CENTERED(m, sz);
+  free(m);
 }
 
 unsigned ActualUIGetCenteredTextMax(ActualUI *actualUi, DiffexUI *diffexUi)

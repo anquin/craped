@@ -27,11 +27,11 @@ FileError validateFileOpenMode(FileOpenMode *mode)
     return FILE_ERROR_INVALID_OPEN_MODE;
   }
 
-  if ((*mode & FILE_OPEN_MODE_W)
-      && !(*mode & FILE_OPEN_MODE_R)
-      && !(*mode & FILE_OPEN_MODE_APPEND)) {
-    *mode |= FILE_OPEN_MODE_TRUNC;
-  }
+  /* if ((*mode & FILE_OPEN_MODE_W) */
+  /*     && !(*mode & FILE_OPEN_MODE_R) */
+  /*     && !(*mode & FILE_OPEN_MODE_APPEND)) { */
+  /*   *mode |= FILE_OPEN_MODE_TRUNC; */
+  /* } */
 
   return FILE_ERROR_NO_ERROR;
 }

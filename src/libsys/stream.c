@@ -25,6 +25,20 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
+static FileError configFileIO_(Stream *stream)
+{
+  LLFile *llfile;
+  FileError error;
+  llfile = fileOpen_ll(stream->filepath, stream->openMode, &error);
+  if (error == FILE_ERROR_NO_ERROR) {
+    FILEIO(llfile)->mode = FILEIO(llfile)->mode;
+    FILEIO(llfile)->status = FILEIO(llfile)->status;
+    fileClose(FILEIO(llfile));
+  }
+  return error;
+}
+
 FileError readToBuffer_(Stream *stream, Position *where)
 {
   /* TODO: there must be a better to do this. */
@@ -32,7 +46,7 @@ FileError readToBuffer_(Stream *stream, Position *where)
   Size nbytes;
   LLFile *llfile;
   FileError error;
-  llfile = fileOpen_ll(stream->filepath, FILE_OPEN_MODE_R, &error);
+  llfile = fileOpen_ll(stream->filepath, stream->openMode, &error);
   if (error != FILE_ERROR_NO_ERROR) {
     return error;
   }
@@ -51,7 +65,6 @@ Stream *openStream_(char *filepath, FileOpenMode mode, PagedRawData *data,
 {
   FileIO *fileio;
   Stream *stream;
-  Byte *buffer;
   Position where;
 
   *error = FILE_ERROR_NO_ERROR;
@@ -65,17 +78,27 @@ Stream *openStream_(char *filepath, FileOpenMode mode, PagedRawData *data,
   STREAM(fileio)->ownsData = ownsData;
   STREAM(fileio)->data = data;
 
-  buffer = (Byte *)malloc(sizeof(maxPageSize));
-
   validateFileOpenMode(&mode);
+
   stream->filepath = filepath;
-  if (!(mode & FILE_OPEN_MODE_TRUNC)) {
+  stream->openMode = mode;
+  configFileIO_(stream);
+
+  if ((mode & FILE_OPEN_MODE_R) && (!(mode & FILE_OPEN_MODE_TRUNC))) {
     where = 0;
     *error = readToBuffer_(STREAM(fileio), &where);
     if (*error != FILE_ERROR_NO_ERROR) {
-      free(stream);free(fileio);
-      fileio = NULL;
-      stream = NULL;
+      if (*error == FILE_ERROR_NOT_EXIST
+          && mode & FILE_OPEN_MODE_CREATE) {
+        /* if (!(createEmptyFile(filepath))) { */
+        /*   return(openStream_(filepath, mode, data, ownsData, error)); */
+        /* } */
+        *error = FILE_ERROR_NO_ERROR;
+      } else {
+        free(stream);free(fileio);
+        fileio = NULL;
+        stream = NULL;
+      }
     }
   }
   return stream;
@@ -142,12 +165,17 @@ FileError fileCommit_stream(FileIO *fileio)
   Size size;
   FileError ferr;
   FileIO *dest_file;
-  const FileOpenMode mode = FILE_OPEN_MODE_W | FILE_OPEN_MODE_TRUNC;
+
+  if (fileMode(fileio) == FILE_MODE_RO) {
+    /* TODO: What does it mean to commit a non writeable stream? */
+    return FILE_ERROR_NO_ERROR;
+  }
 
   size = pagedRawDataSize(STREAM(fileio)->data);
   bytes = malloc(sizeof(Byte) * size);
   pagedRawDataRead(STREAM(fileio)->data, 0, bytes, size);
-  dest_file = FILEIO(fileOpen_ll(STREAM(fileio)->filepath, mode, &ferr));
+  dest_file = FILEIO(fileOpen_ll(STREAM(fileio)->filepath,
+                                 STREAM(fileio)->openMode, &ferr));
   fileWrite(dest_file, bytes, size);
   fileClose(dest_file);
   free(bytes);

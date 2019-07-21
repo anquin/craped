@@ -44,7 +44,7 @@ typedef enum file_error
 
 typedef enum file_mode
 {
-  FILE_MODE_RO,
+  FILE_MODE_RO=1,
   FILE_MODE_WO,
   FILE_MODE_RW
 } FileMode;
@@ -81,10 +81,10 @@ typedef struct file_io
 
 } FileIO;
 
-#define FILEIO(o) (o->file)
-#define LLFILE(o) (o->impl.llfile)
-#define STREAM(o) (o->impl.stream)
-#define RAMFILE(o) (o->impl.ramfile)
+#define FILEIO(o) (o ? o->file : (void *)0)
+#define LLFILE(o) (o ? o->impl.llfile : (void *)0)
+#define STREAM(o) (o ? o->impl.stream : (void *)0)
+#define RAMFILE(o) (o ? o->impl.ramfile : (void *)0)
 
 #ifndef FILE_DEFUN  /* Not been defined in fileio.c */
 #define FILE_DEFUN(ret_type, func_id, argdecl, arglst) \
@@ -105,6 +105,8 @@ FILE_DEFUN(Size, fileWrite, (FileIO *fileio, Byte *content, Size sz), (fileio, c
 
 /* Should do nothing if not stream */
 FILE_DEFUN(FileError, fileCommit, (FileIO *fileio), (fileio));
+
+#define fileMode(fileio) (((FileIO *)fileio)->mode)
 
 /* This function has side effects: fileOpenMode will be changed
    whenever a mode can be inferred. Eg.: write without read or

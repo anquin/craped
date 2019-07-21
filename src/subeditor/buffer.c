@@ -200,31 +200,35 @@ void bufferRead(Buffer *buf)
   FileError file_error;
 
   max = fileLength(buf->filePath);
-  assert(max != 0);
   file_stream = openStreamWithExistingBuffer(buf->filePath, FILE_OPEN_MODE_R,
                                              &buf->data, &file_error);
-  assert(file_error == FILE_ERROR_NO_ERROR);
+  if (file_error != FILE_ERROR_NO_ERROR) {
+    buf->flags |= BUFFER_FLAG_READ_ERROR;
+  } else {
+    file_content = (Byte *)malloc(sizeof(Byte) * max);
+    fileRead(FILEIO(file_stream), file_content, max);
+    /* pagedRawDataClearToEnd(&buf->data, buf->bytePoint); */
+    buf->flags &= (!BUFFER_FLAG_MODIFIED);
 
-  file_content = (Byte *)malloc(sizeof(Byte) * max);
-  fileRead(FILEIO(file_stream), file_content, max);
-  /* pagedRawDataClearToEnd(&buf->data, buf->bytePoint); */
-  buf->flags &= (!BUFFER_FLAG_MODIFIED);
-
-  fileClose(FILEIO(file_stream));
+    fileClose(FILEIO(file_stream));
+  }
 }
 
 void bufferWrite(Buffer *buf)
 {
-  unsigned max = 512;
   Stream *file_stream;
   FileError file_error;
 
-  file_stream = openStreamWithExistingBuffer(buf->filePath, FILE_OPEN_MODE_W,
+  file_stream = openStreamWithExistingBuffer(buf->filePath,
+                                             FILE_OPEN_MODE_W
+                                             | FILE_OPEN_MODE_TRUNC
+                                             | FILE_OPEN_MODE_CREATE,
                                              &buf->data, &file_error);
-  assert(file_error == FILE_ERROR_NO_ERROR);
 
-  if (fileCommit(FILEIO(file_stream)) == FILE_ERROR_NO_ERROR) {
-    buf->flags &= (!BUFFER_FLAG_MODIFIED);
+  if (file_error == FILE_ERROR_NO_ERROR) {
+    if (fileCommit(FILEIO(file_stream)) == FILE_ERROR_NO_ERROR) {
+      buf->flags &= (!BUFFER_FLAG_MODIFIED);
+    }
   }
 
   fileClose(FILEIO(file_stream));

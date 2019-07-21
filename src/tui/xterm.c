@@ -245,7 +245,7 @@ terminalDrawEraseBox(Terminal *term, struct box *box, short erase)
   unsigned bkpX, bkpY;
   unsigned currX, currY;
   unsigned x, y;
-  static vchar = 0, hchar = 1;
+  static unsigned short vchar = 0, hchar = 1;
   static char fills[2][2] = {{"|-"}, {"  "}};
 
   terminalGetCursor(term, &bkpX, &bkpY);
