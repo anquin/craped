@@ -19,7 +19,6 @@
 
 #include <subeditor/def.h>
 #include "subeditor-internal.h"
-#include "buffer_commands.h"
 #include "subeditor/world_observer.h"
 
 #include <stdlib.h>

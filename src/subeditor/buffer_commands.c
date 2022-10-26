@@ -23,6 +23,8 @@
 
 #include <stdlib.h>
 
+struct buffer_command_counts BufferCommandCounts;
+
 void bufCmdSetPoint(BufferCommand *bufCmd, Buffer *buf);
 void bufCmdMovePointForward(BufferCommand *bufCmd, Buffer *buf);
 void bufCmdMovePointBackward(BufferCommand *bufCmd, Buffer *buf);

@@ -64,7 +64,7 @@ void initBufferCommand(BufferCommand *bufCmd, BufferCmdType *type,
 		       Position bytePos, Size opSize, Byte *content);
 void destroyBufferCommand(BufferCommand *bufCmd);
 
-struct
+extern struct buffer_command_counts
 {
   CommandCount bufCmdCountPointSet;
   CommandCount bufCmdCountPointMoveForward;

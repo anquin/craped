@@ -48,9 +48,9 @@ void destroyWorldCmdListLock(WorldCmdListLock *lock)
   pthread_mutex_destroy(lock->mut);
   pthread_cond_destroy(lock->readOK);
   pthread_cond_destroy(lock->writeOK);
-  free(lock);
   free(lock->readOK);
   free(lock->writeOK);
+  free(lock);
 }
 
 

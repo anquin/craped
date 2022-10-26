@@ -20,6 +20,9 @@
 #include "setup-ui.h"
 
 #include <tui.h>
+#include <libsys.h>
+#include "setup.h"
+#include <diffex-ui.h>
 
 struct ui_setup
 {
@@ -28,22 +31,21 @@ struct ui_setup
 
 void setupUI(EditorSetup *edsetup)
 {
-  UI *ui;
   TextUI *textUi;
 
-  textUi = (TextUI *)malloc(sizeof(TextUI));
+  textUi = (TextUI *)lsmalloc(sizeof(TextUI));
   initTextUI(textUi);
 
   edsetup->ui = textUi->ui;
-  edsetup->uiSetup = (UISetup *)malloc(sizeof(UISetup));
+  edsetup->uiSetup = (UISetup *)lsmalloc(sizeof(UISetup));
   edsetup->uiSetup->textUi = textUi;
 }
 
 void cleanupUI(EditorSetup *edsetup)
 {
   destroyTextUI(edsetup->uiSetup->textUi);
-  free(edsetup->uiSetup->textUi);
-  free(edsetup->uiSetup);
+  lsfree(edsetup->uiSetup->textUi);
+  lsfree(edsetup->uiSetup);
   destroyDiffexUI(edsetup->ui);
-  free(edsetup->ui);
+  lsfree(edsetup->ui);
 }
