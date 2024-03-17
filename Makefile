@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-g -c -I./include/ -DSUBEDITOR_INLINE_= -DPACKAGE_STRING=\"craped\"
+CFLAGS=-Wall -g -c -I./include/ -DSUBEDITOR_INLINE_= -DPACKAGE_STRING=\"craped\"
 LDFLAGS=-lpthread
 
 .PHONY: all clean craped dirs
