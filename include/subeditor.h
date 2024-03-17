@@ -67,6 +67,7 @@ void worldWriteBuffer(World *world);
 UInt32 worldGetBufferFlags(World *world);
 void worldSetBufferFlag(World *world, UInt32 flagMask, short isSet);
 void worldNotifyObservers(World *world);
+void worldUndo(World *world);
 SUBEDITOR_INLINE_ short worldIsAlive(World *world);
 SUBEDITOR_INLINE_ char *worldGetBufferName(World *world);
 SUBEDITOR_INLINE_ Size worldBufferSize(World *world);

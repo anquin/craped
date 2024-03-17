@@ -112,6 +112,7 @@ void editorCreateDefaultCommands_(Editor *editor)
   editorRegisterCommand(editor,
                         "prompt_to_bind", editorCmdFnPromptToBindKeyCombo);
   editorRegisterCommand(editor, "cancel", editorCmdFnCancel);
+  editorRegisterCommand(editor, "undo", editorCmdFnUndo);
   editorRegisterCommand(editor, "redraw_entire_screen",
                         editorCmdFnRedrawEntireScreen);
 }
@@ -204,6 +205,7 @@ EditorCmdTree *generateEditorDefaultKeyBindings(Editor *editor)
   editorBindKeyCombo(editor, "M-b", "bind");
   /* editorBindKeyCombo(editor, "C-l l", "insert int main(int argc, char *argv[])\n{\n\n  return 0;\n}\n"); */
   editorBindKeyCombo(editor, "C-g", "cancel");
+  editorBindKeyCombo(editor, "C-z", "undo");
   editorBindKeyCombo(editor, "M-u", "redraw_entire_screen");
 }
 
@@ -236,13 +238,12 @@ void initEditor(Editor *editor,
   editor->sharingServer = sharingServer;
   editor->editorCmdHome = createEditorCmdHome();
   editorCreateDefaultCommands_(editor);
+  editor->startupMessage = startupMessage;
   editor->editorCmdTree = (EditorCmdTree *)malloc(sizeof(EditorCmdTree));
   initEditorCmdTree(editor->editorCmdTree);
   generateEditorDefaultKeyBindings(editor);
 
   uiSetWindowHasStatusLine((UI *)ui, 1);
-  uiSayCentered((UI *)ui, startupMessage);
-  uiRedisplay((UI *)ui, world);
   uiSetObserver((UI *)ui, editor);
 
   editor->extensions = (HashTable *)malloc(sizeof(HashTable));
@@ -274,12 +275,22 @@ void editorShowMessage(Editor *editor, char *msg, short lf)
   }
   worldSetBufferFlag(editor->world, WORLD_BUFFER_FLAG_RDONLY, 1);
   worldSetCurrentBuffer(editor->world, bufferName, 0);
-  uiRedisplay(editor->ui, editor->world);
+  worldNotifyObservers(editor->world);
+}
+
+void editorUndo(Editor *editor)
+{
+  worldUndo(editor->world);
+  worldNotifyObservers(editor->world);
 }
 
 void editorRun(Editor *editor)
 {
+  uiBegin(editor->ui);
+  uiSayCentered(editor->ui, editor->startupMessage);
+  uiRedisplay(editor->ui, editor->world);
   uiMainLoop(editor->ui);
+  uiEnd(editor->ui);
 }
 
 
@@ -566,7 +577,7 @@ void editorMoveDown(Editor *editor)
                              editorIsBufferShared(editor));
 }
 
-void editorMovePage_(Editor *editor, int n)
+static void editorMovePage_(Editor *editor, int n)
 {
   Mode *mode;
   Position pnew;
@@ -689,7 +700,7 @@ void editorPromptForInput(Editor *editor, char *editorCmdStr, char *label)
   editorCmdTreeBind(editor->editorCmdTree, kbInput, editorCmd);
   /* FIXME: Why this doesn't work? */
   /* editorBindKeyCombo(editor, "return", editorCmdStr); */
-  uiRedisplay(editor->ui, editor->world);
+  worldNotifyObservers(editor->world);
   worldSetCurrentBuffer(editor->world, "*prompt*", 1);
   worldSetPoint(editor->world, 0);
   worldDelete(editor->world, labelLen);
@@ -782,7 +793,7 @@ void editorNextWindow(Editor *editor)
                                            uiGetActiveWindow(editor->ui));
   uiNextWindow(editor->ui);
   worldSetCurrentBuffer(editor->world, activeWndBufName, 0);
-  uiRedisplay(editor->ui, editor->world);
+  worldNotifyObservers(editor->world);
 }
 
 void editorPrevWindow(Editor *editor)
@@ -792,7 +803,7 @@ void editorPrevWindow(Editor *editor)
                                            uiGetActiveWindow(editor->ui));
   uiPrevWindow(editor->ui);
   worldSetCurrentBuffer(editor->world, activeWndBufName, 0);
-  uiRedisplay(editor->ui, editor->world);
+  worldNotifyObservers(editor->world);
 }
 
 void editorInitSharing(Editor *editor)

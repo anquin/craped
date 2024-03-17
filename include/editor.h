@@ -100,6 +100,7 @@ void editorRegisterExtensionCommand(Editor *editor, const char *editorExtKey,
                                     char *cmdStr, void *fn);
 void editorBindKeyCombo(Editor *editor, char *keyCombo, char *cmdStr);
 void editorShowMessage(Editor *, char *, short lf);
+void editorUndo(Editor *editor);
 void editorCancel(Editor *editor);
 void editorRedrawEntireScreen(Editor *editor);
 typedef struct editor_extension EditorExtension;

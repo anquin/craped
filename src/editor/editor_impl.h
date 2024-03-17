@@ -34,6 +34,7 @@ struct editor
   EditorCmdHome *editorCmdHome;
   EditorCmdTree *editorCmdTree;
   HashTable *extensions;
+  const char *startupMessage;
 };
 
 struct editor_extension

@@ -32,6 +32,7 @@ void initDiffexUI(DiffexUI *diffexUi, ActualUI *actualUi,
 {
   int i;
   Mode *mode;
+  diffexUi->alive = 0;
   diffexUi->forceCleanup = 0;
   diffexUi->actualUi = actualUi;
   diffexUi->windowManager = windowManager;
@@ -68,14 +69,28 @@ void destroyDiffexUI(DiffexUI *diffexUi)
   destroyDiffex(diffexUi->diffex);
 }
 
+void uiBegin(UI *diffexUi)
+{
+  diffexUi->alive = 1;
+}
+
+void uiEnd(UI *diffexUi)
+{
+  diffexUi->alive = 0;
+  diffexSetMode(diffexUi->diffex, DE_ERASE);
+  diffexView(diffexUi->diffex, diffexUi, NULL);
+}
+
 void uiRedisplay(UI *diffexUi, World *world)
 {
-  if (!worldIsAlive(world)) {
-    diffexSetMode(diffexUi->diffex, DE_ERASE);
-  }
-  diffexView(diffexUi->diffex, diffexUi, world);
-  if (diffexGetMode(diffexUi->diffex) == DE_SHOW) {
-    diffexSetMode(diffexUi->diffex, DE_UPDATE);
+  if (diffexUi->alive) {
+    if (!worldIsAlive(world)) {
+      diffexSetMode(diffexUi->diffex, DE_ERASE);
+    }
+    diffexView(diffexUi->diffex, diffexUi, world);
+    if (diffexGetMode(diffexUi->diffex) == DE_SHOW) {
+      diffexSetMode(diffexUi->diffex, DE_UPDATE);
+    }
   }
 }
 
@@ -197,6 +212,13 @@ void uiGetWindowSize(UI *ui, unsigned *x, unsigned *y)
   Terminal *term;
   term = ui->terminals[windowGetId(uiGetActiveWindow(ui))];
   terminalGetDimensions(term, x, y);
+}
+
+void uiGetWindowCursor(UI *ui, unsigned *x, unsigned *y)
+{
+  Terminal *term;
+  term = ui->terminals[windowGetId(uiGetActiveWindow(ui))];
+  terminalGetCursor(term, x, y);
 }
 
 void uiSetWindowBufferName(UI *ui, Window *wnd, char *bufName)

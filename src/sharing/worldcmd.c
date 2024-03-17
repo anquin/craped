@@ -31,10 +31,10 @@ WorldCmdExecuteFn worldCmds[] = { worldCmdDestroy,
 
 WorldCmd *
 createWorldCmd(WorldCmdType type,
-	       Position position,
-	       Size size,
-	       Size contentSize,
-	       Byte *content,
+               Position position,
+               Size size,
+               Size contentSize,
+               Byte *content,
                char *bufferName)
 {
   WorldCmd *worldCmd = (WorldCmd *)malloc(sizeof(WorldCmd));
@@ -45,11 +45,11 @@ createWorldCmd(WorldCmdType type,
 
 void
 initWorldCmd(WorldCmd *cmd,
-	     WorldCmdType type,
-	     Position position,
-	     Size size,
-	     Size contentSize,
-	     Byte *content,
+             WorldCmdType type,
+             Position position,
+             Size size,
+             Size contentSize,
+             Byte *content,
              char *bufferName)
 {
   cmd->type = type;

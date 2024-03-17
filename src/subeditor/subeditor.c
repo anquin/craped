@@ -20,6 +20,7 @@
 #include <subeditor/def.h>
 #include "subeditor-internal.h"
 #include "subeditor/world_observer.h"
+#include "undo.h"
 
 #include <stdlib.h>
 #include <assert.h>
@@ -196,16 +197,22 @@ void worldPrevBuffer(World *world)
   world->bufferChain = world->bufferChain->prev;
 }
 
+static SUBEDITOR_INLINE_
+void execAndPushBufCmd_(BufferCommand *bufCmd, World *world)
+{
+  if (bufferCommandExec(bufCmd, world->bufferChain->buf) > 0) {
+    bufferCmdStackPush(world->bufferChain->bufCmdStack, bufCmd);
+  }
+}
+
 void worldInsert(World *world, Byte *src, Size size)
 {
   BufferCommand *bufCmd;
 
   bufCmd = createBufferCommand(BUF_CMD_INSERT,
-			       bufferGetPoint(world->bufferChain->buf),
-			       size, src);
-  bufferCommandExec(bufCmd, world->bufferChain->buf);
-
-  bufferCmdStackPush(world->bufferChain->bufCmdStack, bufCmd);
+                               bufferGetPoint(world->bufferChain->buf),
+                               size, src);
+  execAndPushBufCmd_(bufCmd, world);
 }
 
 void worldDelete(World *world, Size size)
@@ -213,74 +220,53 @@ void worldDelete(World *world, Size size)
   BufferCommand *bufCmd;
 
   bufCmd = createBufferCommand(BUF_CMD_DELETE,
-			       bufferGetPoint(world->bufferChain->buf),
-			       size, NULL);
-  bufferCommandExec(bufCmd, world->bufferChain->buf);
-
-  bufferCmdStackPush(world->bufferChain->bufCmdStack, bufCmd);
+                               bufferGetPoint(world->bufferChain->buf),
+                               size, NULL);
+  execAndPushBufCmd_(bufCmd, world);
 }
 
 Size worldGetChunk(World *world, Byte *dest, Size size)
 {
-  /* TODO: usar o BufferCommand */
   return bufferGetChunk(world->bufferChain->buf, dest, size);
 }
 
 Size worldGetChunkByMark(World *world, Byte *dest, char *markName)
 {
-  /* TODO: usar o BufferCommand */
   return bufferGetChunkByMarkName(world->bufferChain->buf, dest, markName);
 }
 
 void worldMovePointForward(World *world, Size size)
 {
-  BufferCommand *bufCmd;
-  bufCmd = createBufferCommand(BUF_CMD_MOVE_POINT_FORWARD,
-                               bufferGetPoint(world->bufferChain->buf),
-                               size, NULL);
-  bufferCommandExec(bufCmd, world->bufferChain->buf);
-  bufferCmdStackPush(world->bufferChain->bufCmdStack, bufCmd);
+  bufferMovePointForward(world->bufferChain->buf, size);
 }
 
 void worldMovePointBackward(World *world, Size size)
 {
-  BufferCommand *bufCmd;
-  bufCmd = createBufferCommand(BUF_CMD_MOVE_POINT_BACKWARD,
-                               bufferGetPoint(world->bufferChain->buf),
-                               size, NULL);
-  bufferCommandExec(bufCmd, world->bufferChain->buf);
-  bufferCmdStackPush(world->bufferChain->bufCmdStack, bufCmd);
+  bufferMovePointBackward(world->bufferChain->buf, size);
 }
 
 void worldSetPoint(World *world, Position bytePos)
 {
-  BufferCommand *bufCmd;
-  bufCmd = createBufferCommand(BUF_CMD_SET_POINT, bytePos, 0, NULL);
-  bufferCommandExec(bufCmd, world->bufferChain->buf);
-  bufferCmdStackPush(world->bufferChain->bufCmdStack, bufCmd);
+  bufferSetPoint(world->bufferChain->buf, bytePos);
 }
 
 void worldAddMark(World *world, char *name)
 {
-  /* TODO: usar o BufferCommand */
   bufferAddMark(world->bufferChain->buf, name, 0);
 }
 
 void worldRemoveMark(World *world, char *name)
 {
-  /* TODO: usar o BufferCommand */
   bufferRemoveMark(world->bufferChain->buf, name);
 }
 
 void worldMarkToPoint(World *world, char *name)
 {
-  /* TODO: usar o BufferCommand */
   bufferMarkToPoint(world->bufferChain->buf, name);
 }
 
 void worldPointToMark(World *world, char *name)
 {
-  /* TODO: usar o BufferCommand */
   bufferPointToMark(world->bufferChain->buf, name);
 }
 
@@ -338,6 +324,20 @@ void worldNotifyObservers(World *world)
 {
   if (world->observer != NULL) {
     observerUpdate(world->observer, world);
+  }
+}
+
+void worldUndo(World *world)
+{
+  int bufChanged;
+  BufferCommand *bufCmd;
+
+  bufChanged = 0;
+  while (!bufferCmdStackEmpty(world->bufferChain->bufCmdStack) && !bufChanged) {
+    bufCmd = bufferCmdStackPop(world->bufferChain->bufCmdStack);
+    bufChanged = undo(world->bufferChain->buf, bufCmd) > 0;
+    destroyBufferCommand(bufCmd);
+    free(bufCmd);
   }
 }
 

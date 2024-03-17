@@ -45,6 +45,7 @@ struct ui
   Terminal *miniTerminal;
   short miniWindowActive;
   short forceCleanup;
+  short alive;
 };
 
 void initDiffexUI(DiffexUI *, ActualUI *actualUi,

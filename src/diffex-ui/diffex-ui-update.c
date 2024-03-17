@@ -44,7 +44,7 @@ void diffexView_(Diffex *diffex, UI *ui, World *world)
   Window *activeWindow;
   Terminal *activeTerminal;
   char *activeBufName;
-  if (worldIsAlive(world)) {
+  if ((world != NULL) && worldIsAlive(world)) {
     activeBufName = worldGetBufferName(world);
   }
   CALL(deWindowManager_, (diffex, ui, world));
@@ -55,7 +55,7 @@ void diffexView_(Diffex *diffex, UI *ui, World *world)
   terminalGrabFocus(activeTerminal);
   DBGLOG("\n", 0);
   deFifoSwap(diffex);
-  if (worldIsAlive(world)) {
+  if ((world != NULL) && worldIsAlive(world)) {
    worldSetCurrentBuffer(world, activeBufName, 0);
   }
 }

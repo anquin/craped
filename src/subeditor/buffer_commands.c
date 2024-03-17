@@ -22,47 +22,14 @@
 #include "buffer_commands.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 struct buffer_command_counts BufferCommandCounts;
+int bufCmdInsert(BufferCommand *bufCmd, Buffer *buf);
+int bufCmdDelete(BufferCommand *bufCmd, Buffer *buf);
 
-void bufCmdSetPoint(BufferCommand *bufCmd, Buffer *buf);
-void bufCmdMovePointForward(BufferCommand *bufCmd, Buffer *buf);
-void bufCmdMovePointBackward(BufferCommand *bufCmd, Buffer *buf);
-void bufCmdInsert(BufferCommand *bufCmd, Buffer *buf);
-void bufCmdDelete(BufferCommand *bufCmd, Buffer *buf);
-
-static struct buffer_cmd_type _BUF_CMD_SET_POINT;
-static struct buffer_cmd_type _BUF_CMD_MOVE_POINT_FORWARD;
-static struct buffer_cmd_type _BUF_CMD_MOVE_POINT_BACKWARD;
 static struct buffer_cmd_type _BUF_CMD_INSERT;
 static struct buffer_cmd_type _BUF_CMD_DELETE;
-
-static struct buffer_cmd_type _BUF_CMD_SET_POINT =
-  {
-    "set_point",
-    bufCmdSetPoint,
-    &(BufferCommandCounts.bufCmdCountPointSet),
-    &_BUF_CMD_SET_POINT
-  };
-BufferCmdType *BUF_CMD_SET_POINT = &_BUF_CMD_SET_POINT;
-
-static struct buffer_cmd_type _BUF_CMD_MOVE_POINT_FORWARD =
-  {
-    "point_move",
-    bufCmdMovePointForward,
-    &(BufferCommandCounts.bufCmdCountPointMoveForward),
-    &_BUF_CMD_MOVE_POINT_FORWARD
-  };
-BufferCmdType *BUF_CMD_MOVE_POINT_FORWARD = &_BUF_CMD_MOVE_POINT_FORWARD;
-
-static struct buffer_cmd_type _BUF_CMD_MOVE_POINT_BACKWARD =
-  {
-    "point_move",
-    bufCmdMovePointBackward,
-    &(BufferCommandCounts.bufCmdCountPointMoveBackward),
-    &_BUF_CMD_MOVE_POINT_BACKWARD
-  };
-BufferCmdType *BUF_CMD_MOVE_POINT_BACKWARD = &_BUF_CMD_MOVE_POINT_BACKWARD;
 
 static struct buffer_cmd_type _BUF_CMD_INSERT =
   {
@@ -71,7 +38,7 @@ static struct buffer_cmd_type _BUF_CMD_INSERT =
     &(BufferCommandCounts.bufCmdCountInsert),
     &_BUF_CMD_DELETE
   };
-BufferCmdType *BUF_CMD_INSERT = &_BUF_CMD_INSERT;
+const BufferCmdType * const BUF_CMD_INSERT = &_BUF_CMD_INSERT;
 
 static struct buffer_cmd_type _BUF_CMD_DELETE =
   {
@@ -80,7 +47,7 @@ static struct buffer_cmd_type _BUF_CMD_DELETE =
     &(BufferCommandCounts.bufCmdCountDelete),
     &(_BUF_CMD_INSERT)
   };
-BufferCmdType *BUF_CMD_DELETE = &_BUF_CMD_DELETE;
+const BufferCmdType * const BUF_CMD_DELETE = &_BUF_CMD_DELETE;
 
 BufferCommand *createBufferCommand(BufferCmdType *type, Position bytePos,
 		    Size opSize, Byte *content)
@@ -107,48 +74,59 @@ void destroyBufferCommand(BufferCommand *bufCmd)
   /* No need to do something */
 }
 
-void bufCmdSetPoint(BufferCommand *bufCmd, Buffer *buf)
+int bufCmdInsert(BufferCommand *bufCmd, Buffer *buf)
 {
+  if (!bufCmd->opSize) return 0;
+  if (buf->flags & BUFFER_FLAG_RDONLY) return -1;
+
   bufferSetPoint(buf, bufCmd->bytePos);
+  return (bufferInsert(buf, bufCmd->content, bufCmd->opSize)
+          == bufCmd->opSize) ? 1 : -1;
 }
 
-void bufCmdMovePointForward(BufferCommand *bufCmd, Buffer *buf)
+int bufCmdDelete(BufferCommand *bufCmd, Buffer *buf)
 {
-  bufferMovePointForward(buf, bufCmd->opSize);
-}
+  if (!bufCmd->opSize) return 0;
+  if (buf->flags & BUFFER_FLAG_RDONLY) return -1;
 
-void bufCmdMovePointBackward(BufferCommand *bufCmd, Buffer *buf)
-{
-  bufferMovePointBackward(buf, bufCmd->opSize);
-}
-
-void bufCmdInsert(BufferCommand *bufCmd, Buffer *buf)
-{
-  bufferInsert(buf, bufCmd->content, bufCmd->opSize);
-}
-
-void bufCmdDelete(BufferCommand *bufCmd, Buffer *buf)
-{
-  bufferDelete(buf, bufCmd->opSize);
+  bufCmd->content = (Byte *)malloc(sizeof(bufCmd->opSize));
+  bufferSetPoint(buf, bufCmd->bytePos);
+  bufferGetChunk(buf, bufCmd->content, bufCmd->opSize);
+  return (bufferDelete(buf, bufCmd->opSize) == bufCmd->opSize)
+    ? 1 : -1;
 }
 
 void initBufferCmdStack(BufferCmdStack *bufCmdStk)
 {
   bufCmdStk->max = BUFFER_CMD_STACK_MAX;
-  bufCmdStk->top = BUFFER_CMD_STACK_MAX;
+  bufCmdStk->areasz = BUFFER_CMD_STACK_AREA_SZ;
+  bufCmdStk->top = bufCmdStk->max;
+  bufCmdStk->stack = bufCmdStk->area + bufCmdStk->max;
 }
 
 void bufferCmdStackPush(BufferCmdStack *stk, BufferCommand *cmd)
 {
-  if (stk->top < stk->max) {
-    stk->stack[--stk->top] = cmd;
+  if (stk->stack == stk->area) {
+    stk->stack = stk->area + stk->max;
+    memcpy(stk->stack, stk->area, stk->max);
+    stk->top = stk->max;
+  }
+  stk->stack[--stk->top] = cmd;
+  if (stk->top < 0) {
+    stk->stack += stk->top;
+    stk->top = 0;
   }
 }
 
 BufferCommand *bufferCmdStackPop(BufferCmdStack *stk)
 {
-  if (stk->top > 0) {
-    return stk->stack[stk->top--];
+  if (stk->top < stk->max) {
+    return stk->stack[stk->top++];
   }
   return NULL;
+}
+
+int bufferCmdStackEmpty(BufferCmdStack *stk)
+{
+  return (stk->top >= stk->max);
 }

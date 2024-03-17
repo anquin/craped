@@ -29,7 +29,14 @@ struct buffer_command;
 typedef struct buffer_cmd_type
 {
   char name[CMD_NAME_MAX];
-  void (*execute)(struct buffer_command *, Buffer *);
+
+  /* Returns:
+     <0 if no command was ran
+     0 if buf wasn't changed
+     >0 if buffer was changed */
+  int (*execute)(struct buffer_command *, Buffer *);
+
+  /* For statistics(?) */
   CommandCount *timesUsed;
 
   /* CommandType to rollback */
@@ -37,15 +44,12 @@ typedef struct buffer_cmd_type
 
 } BufferCmdType;
 
-extern BufferCmdType *BUF_CMD_SET_POINT;
-extern BufferCmdType *BUF_CMD_MOVE_POINT_FORWARD;
-extern BufferCmdType *BUF_CMD_MOVE_POINT_BACKWARD;
-extern BufferCmdType *BUF_CMD_INSERT;
-extern BufferCmdType *BUF_CMD_DELETE;
+extern const BufferCmdType * const BUF_CMD_INSERT;
+extern const BufferCmdType * const BUF_CMD_DELETE;
 
 typedef struct buffer_command
 {
-  BufferCmdType *type;
+  const BufferCmdType *type;
 
   /* == Buffer State Infos == */
   Position bytePos;
@@ -66,24 +70,27 @@ void destroyBufferCommand(BufferCommand *bufCmd);
 
 extern struct buffer_command_counts
 {
-  CommandCount bufCmdCountPointSet;
-  CommandCount bufCmdCountPointMoveForward;
-  CommandCount bufCmdCountPointMoveBackward;
   CommandCount bufCmdCountInsert;
   CommandCount bufCmdCountDelete;
 } BufferCommandCounts;
 
+#ifndef BUFFER_CMD_STACK_MAX
 #define BUFFER_CMD_STACK_MAX 256
+#endif
+#define BUFFER_CMD_STACK_AREA_SZ (BUFFER_CMD_STACK_MAX * 2)
 
 typedef struct buffer_cmd_stack
 {
+  int top;
   unsigned max;
-  unsigned top;
-  BufferCommand *stack[BUFFER_CMD_STACK_MAX];
+  unsigned areasz;
+  BufferCommand *area[BUFFER_CMD_STACK_AREA_SZ];
+  BufferCommand **stack;
 } BufferCmdStack;
 
 void initBufferCmdStack(BufferCmdStack *bufCmdStk);
 void bufferCmdStackPush(BufferCmdStack *stk, BufferCommand *cmd);
 BufferCommand *bufferCmdStackPop(BufferCmdStack *stk);
+int bufferCmdStackEmpty(BufferCmdStack *stk);
 
 #endif

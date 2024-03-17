@@ -27,6 +27,8 @@
 
 typedef struct ui UI;
 
+void uiBegin(UI *);
+void uiEnd(UI *);
 void uiRedisplay(UI *, World *);
 Window *uiGetActiveWindow(UI *);
 Window *uiFindWindow(UI *, char *bufName);
@@ -39,6 +41,7 @@ void uiRemoveCurrentWindow(UI *);
 void uiSplitWindowHorz(UI *);
 void uiSplitWindowVert(UI *);
 void uiGetWindowSize(UI *, unsigned *x, unsigned *y);
+void uiGetWindowCursor(UI *, unsigned *x, unsigned *y);
 void uiSetWindowBufferName(UI *, Window *wnd, char *bufName);
 char *uiGetWindowBufferName(UI *, Window *wnd);
 void uiSetWindowHasStatusLine(UI *, short flag);

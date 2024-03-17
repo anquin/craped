@@ -47,18 +47,18 @@ typedef struct world_cmd
 
 WorldCmd *
 createWorldCmd(WorldCmdType type,
-	       Position position,
-	       Size size,
-	       Size contentSize,
-	       Byte *content,
+               Position position,
+               Size size,
+               Size contentSize,
+               Byte *content,
                char *bufferName);
 void
 initWorldCmd(WorldCmd *cmd,
-	     WorldCmdType type,
-	     Position position,
-	     Size size,
-	     Size contentSize,
-	     Byte *content,
+             WorldCmdType type,
+             Position position,
+             Size size,
+             Size contentSize,
+             Byte *content,
              char *bufferName);
 
 void copyWorldCmd(WorldCmd *dest, WorldCmd *src);

@@ -17,29 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+#ifndef UNDO_H
+#define UNDO_H
+
+#include "buffer.h"
+#include "buffer_commands.h"
+
+/* Returns:
+   <0 if no command was ran
+   0 if buf wasn't changed
+   >0 if buffer was changed */
+int undo(Buffer *buf, BufferCommand *cmd);
+
 #endif
-#include "setup.h"
-#include "craped.h"
-
-static void parseCmdLineArgs(EditorSetup *edsetup, int argc, char *argv[]);
-
-void setup(EditorSetup *edsetup, int argc, char **argv, const char *welcomeMsg)
-{
-  edsetup->progName = welcomeMsg;
-  /* TODO: parse configuration file */
-  parseCmdLineArgs(edsetup, argc, argv);
-  setupUI(edsetup);
-}
-
-void cleanup(EditorSetup *edsetup)
-{
-  cleanupUI(edsetup);
-}
-
-static void parseCmdLineArgs(EditorSetup *edsetup, int argc, char *argv[])
-{
-  edsetup->filesToOpen = argv + 1;
-  edsetup->nFilesToOpen = argc - 1;
-}
