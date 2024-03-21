@@ -144,7 +144,9 @@ deWindow_(Diffex *diffex, UI *ui, Window *window, World *world)
                             sizeX, sizeY, terminal);
     terminalClear(terminal);
     ActualUIDrawTerminal(ui->actualUi, ui, terminal);
-    ActualUIDrawBox(ui->actualUi, ui, terminal);
+    if (posX) {
+      ActualUIDrawBox(ui->actualUi, ui, terminal);
+    }
     CALL(deBuffer_, (diffex, world, window, terminal));
 
     IF (windowHasStatusLine(window))
@@ -161,7 +163,9 @@ deWindow_(Diffex *diffex, UI *ui, Window *window, World *world)
                               sizeX, sizeY, terminal);
       ActualUIEraseBox(ui->actualUi, ui, terminal);
       ActualUIDrawTerminal(ui->actualUi, ui, terminal);
-      ActualUIDrawBox(ui->actualUi, ui, terminal);
+      if (posX) {
+        ActualUIDrawBox(ui->actualUi, ui, terminal);
+      }
 
       diffex->mode = DE_ERASE;
       CALL(deBuffer_, (diffex, world, window, terminal));

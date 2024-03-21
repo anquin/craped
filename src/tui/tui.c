@@ -84,17 +84,17 @@ void ActualUIPrepareTerminal(ActualUI *actualUi, DiffexUI *ui,
   root = actualUi->rootTerm;
 
   if (terminal == actualUi->miniTerm) {
-    xtermSetPosX(terminal, 1);
+    xtermSetPosX(terminal, 0);
     xtermSetPosY(terminal, terminalGetHeight(root) - 1);
     return;
   }
 
   width = terminalGetWidth(root);
   height = terminalGetHeight(root) - terminalGetHeight(actualUi->miniTerm);
-  xtermSetPosX(terminal, posX * width / WNDMAN_MAX_SPLITS_H + 1);
+  xtermSetPosX(terminal, posX * width / WNDMAN_MAX_SPLITS_H + (posX ? 1 : 0));
   xtermSetPosY(terminal, posY * height / WNDMAN_MAX_SPLITS_V);
   terminal->height = sizeY * height / WNDMAN_MAX_SPLITS_V - 1;
-  terminal->width =  sizeX * width / WNDMAN_MAX_SPLITS_H - 1;
+  terminal->width =  sizeX * width / WNDMAN_MAX_SPLITS_H - (posX ? 1 : 0);
 }
 
 void ActualUIDrawTerminal(ActualUI *actualUi, DiffexUI *ui, Terminal *terminal)
